@@ -36,10 +36,32 @@ stuff = {
     },
     bosses : {
         'Slime' : new Boss( 'Slime', 'A giant slime with a giant ego. He is the guardian of the exit of the first floor.', 
-                        new Stats(['Attack', 'Defense', 'Health'],[new SubStats(new Decimal(25)), new SubStats(new Decimal(15)), new Decimal(10000)]),
-                        'Mini', new Decimal(0)),
+                        new Stats(['Attack', 'Defense', 'Health'],[new SubStats(new Decimal(27)), new SubStats(new Decimal(15)), new Decimal(10000)]),
+                        'Mini', new Decimal(0), new Moveset([
+                            [new AttackMove('Basic Attack', 'A normal attack from a normal enemy.',[new Decimal(1)],['mul']),
+                             new AttackMove('Basic Triple Attack', 'A normal attack from a normal enemy targeting three beings at once.',[new Decimal(1)],['mul'], new Decimal(3))],
+                            [new DefenseMove('Defend', 'The enemy takes a defensive stance, increasing defenses.', [new Decimal(3)], ['mul']),
+                            new CombinedMove('Attack and Defend', 'The enemy takes a stance where defending and attacking is easier.', [new AttackMove('','',[new Decimal(2)], ['mul'], new Decimal(2)), new DefenseMove('','',[new Decimal(2)], ['mul'])])]])),
     }
 }
+
+//A popup window for your inspection needs
+const PopupWindow = {
+    container: document.querySelector('#PopupWindowContainer'),
+    show(left, top, content) {
+        this.container.hidden = false;
+        this.container.innerHTML = content;
+        this.container.style.left = left + 5;
+        this.container.style.top = top + 5;
+    },
+    move(left, top) {
+        this.container.style.left = left + 5;
+        this.container.style.top = top + 5;
+    },
+    hide() {
+        this.container.hidden = true;
+    },
+};
 
 const UtilityFunctions = {
     get_compare_color(value1,value2, decimal = true) {
@@ -75,11 +97,11 @@ function StylizeDecimals(decimal, floor = false) {
         return decimal.mantissa.toFixed(2) + 'e' + decimal.exponent;
     }
     if(!floor) {
-        if(decimal.exponent > 2){
+        if(decimal.exponent > 4){
             return (decimal.mantissa*Math.pow(10,decimal.exponent)).toFixed(0);
         }
         else {
-            return (decimal.mantissa*Math.pow(10,decimal.exponent)).toFixed(2-decimal.exponent);
+            return (decimal.mantissa*Math.pow(10,decimal.exponent)).toFixed(Math.min(5-decimal.exponent, 2), 2);
         }
     }
     else {

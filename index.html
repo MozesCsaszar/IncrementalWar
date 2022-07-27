@@ -6,9 +6,15 @@
 
 
 <body id ="body">
-    <div style="color:gold;float:left;">Gold: &nbsp<div id = "GoldText">0000</div></div>
+    <div id="PopupWindowContainer" hidden>
+
+    </div>
+    <div id="PageTopResourcesContainer">
+        <div id="CurrentGoldContainer">Gold: &nbsp<div id = "GoldText">0000</div></div>
+    </div>
+    
     <br>
-    <!--B  BUTTON FOR PAGES-->
+    <!--   BUTTONS FOR PAGES-->
     <div id = "PageButtonsContainer">
         <button class='page_button' id = "TowerPageButton" hidden>Tower</button>
         <button class='page_button' id = "ArmyPageButton" hidden>Army</button>
@@ -16,8 +22,10 @@
         <button class='page_button' id = "BuyWeaponPageButton" hidden>Weapon</button>
         <button class='page_button' id = "SettingsPageButton">Settings</button>
         <!--   A LINE TO BE UNDER THE BUTTONS-->
-        <hr style="height:3px; position: absolute; left:3 ;border-width:0;color:gray;background-color:green;width:400px;">
+        
     </div>
+
+    <hr style="height:3px; border:none; margin-top:-5px; background-color:limegreen;width:100%;">
     
     <div id="OfflinePageContainer">
         <div id="OfflineGreeting">Welcome back, Captain!</div>
@@ -29,64 +37,69 @@
     <div id= "TowerPageContainer">
 
         <!--   CHANGE ARMY BUTTONS-->
-        <button class='toggle_button change_army_button'>1</button>
-        <button class='toggle_button change_army_button'>2</button>
-        <button class='toggle_button change_army_button'>3</button>
-
-        <div id = 'TowerPageArmyInfo' class = 'info_text' style = 'top:150px;'>Test, Test, but what do I test? I test if this test is visible or not, thanks tests.</div>
-
-        <div id = 'TowerPageTowerInfo' class = 'info_text' style = 'top:150px;left:260px;'>Test, Test, but what do I test? I test if this test is visible or not, thanks tests.</div>
-
-        <div class='tower'>
-            <div class='tower_top3 tower_part'></div>
-            <div class='tower_top2 tower_part'></div>
-            <div class='tower_top1 tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-            <div class='tower_floor tower_part'></div>
-        </div>
-        <div id = "TowerLevelsContainer">
-            <div class='tower_level' hidden = 'true'></div>
-            <div class='tower_level' hidden = 'true'></div>
-            <div class='tower_level' hidden = 'true'></div>
-            <div class='tower_level' hidden = 'true'></div>
-            <div class='tower_level' hidden = 'true'></div>
-            <div class='tower_level' hidden = 'true'></div>
-            <div class='tower_level' hidden = 'true'></div>
-            <div class='tower_level' hidden = 'true'></div>
-            <div class='tower_level' hidden = 'true'></div>
-            <div class='tower_level' hidden = 'true'></div>
-            <div class='tower_level' hidden = 'true'></div>
-            <div class='tower_level' hidden = 'true'></div>
+        <div class="toggle_button_container">
+            <button class='toggle_button change_army_button'>1</button>
+            <button class='toggle_button change_army_button'>2</button>
+            <button class='toggle_button change_army_button'>3</button>
         </div>
         
+        <div class="tower_page_container">
+            <div id = 'TowerPageArmyInfo' class = 'info_text' style="order:1;">Test, Test, but what do I test? I test if this test is visible or not, thanks tests.</div>
+
+            <div id = 'TowerPageTowerInfo' class = 'info_text' style="order:2;">Test, Test, but what do I test? I test if this test is visible or not, thanks tests.</div>
+
+            <div class='tower' style="order:3;">
+                <div class='tower_top3 tower_part'></div>
+                <div class='tower_top2 tower_part'></div>
+                <div class='tower_top1 tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+                <div class='tower_floor tower_part'></div>
+            </div>
+
+            <div id = "TowerLevelsContainer" style="order:4;">
+                <div class='tower_level' hidden = 'true'></div>
+                <div class='tower_level' hidden = 'true'></div>
+                <div class='tower_level' hidden = 'true'></div>
+                <div class='tower_level' hidden = 'true'></div>
+                <div class='tower_level' hidden = 'true'></div>
+                <div class='tower_level' hidden = 'true'></div>
+                <div class='tower_level' hidden = 'true'></div>
+                <div class='tower_level' hidden = 'true'></div>
+                <div class='tower_level' hidden = 'true'></div>
+                <div class='tower_level' hidden = 'true'></div>
+                <div class='tower_level' hidden = 'true'></div>
+                <div class='tower_level' hidden = 'true'></div>
+            </div>
+            
+        </div>
 
     </div>
 
     <div id = "BossArmySelectionPageContainer" hidden>
-        
+        <button id="BackFromBossArmySelectionPage">Back</button>
         <div class = 'fighting_army_select_label' hidden>Army I: &nbsp&nbsp&nbsp<button class='toggle_button select_boss_army_button'>1</button>
             <button class='toggle_button select_boss_army_button'>2</button>
             <button class='toggle_button select_boss_army_button'>3</button>
@@ -167,7 +180,7 @@
                 <span class = "army_in_boss_fight_attack_text army_in_boss_fight_bar"></span>
             </div>
         </div>
-        <div class="boss_in_boss_fight">
+        <div class="boss_in_boss_fight" >
             <label class="boss_in_boss_fight_name">Blank</label>
             <br>
             <div class="boss_in_boss_fight_health_background" style:>
@@ -185,6 +198,13 @@
                 <span class = "boss_in_boss_fight_attack_text boss_in_boss_fight_bar"></span>
             </div>
         </div>
+        <div id="BossFightMoveFeed">
+            <div class="boss_fight_move_feed_element"></div> <br>
+            <div class="boss_fight_move_feed_element"></div> <br>
+            <div class="boss_fight_move_feed_element"></div> <br>
+            <div class="boss_fight_move_feed_element"></div> <br>
+            <div class="boss_fight_move_feed_element"></div> <br>
+        </div>
     </div>
 
     <div id = "BossFightingResultPageContainer" hidden></div>
@@ -197,10 +217,12 @@
         <div style="position:absolute;left:560px;top:162px;" id = "ArmyLevelText">Army level: 100</div> <button hidden id = "ArmyLevelUpButton" style = "position:absolute;left:680px;top:160px;">Level up!</button> <div style="position:absolute;left:755px;top:162px;" id = "ArmyLevelUpCost"></div>
         <div id = 'ArmyPagePartInfo' class = 'info_text' style='left:560; top:185px; ' hidden>ERROR</div>
 
-
-        <button class='select_army_button'>Army 1</button>
-        <button class='select_army_button'>Army 2</button>
-        <button class='select_army_button'>Army 3</button>
+        <div class="select_army_button_container">
+            <button class='select_army_button'>Army 1</button>
+            <button class='select_army_button'>Army 2</button>
+            <button class='select_army_button'>Army 3</button>
+        </div>
+        
 
         <br>
 

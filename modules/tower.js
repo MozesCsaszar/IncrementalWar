@@ -158,9 +158,9 @@ class TowerLevel extends ParentTowerLevel {
             //unlock new levels
             if(!this.unlocked_next_levels) {
                 for(let j = 0; j < this.unlocks.length; j++) {
-                    let un = TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].unlocks[j];
+                    let un = this.unlocks[j];
                     Unlockables.unlock(['towerLevels',un[0]] , 0, un[1]);
-                    /*
+                    //* CHANGE THIS (MOVE IT SOMEWHERE ELSE)
                     if(un[0] == TowerPage.Tower.currentFloor) {
                         TowerPage.towerLevels[un[1]].hidden = false;
                     }
@@ -176,28 +176,6 @@ class TowerLevel extends ParentTowerLevel {
     }
 };
 
-/*
-    Boss types:
-        -Mini, Normal
-    Boss soldier_loss_ratio:
-        0 - no soldier lost, 1 - all soldies who are wounded (no Health at the end of fight) are lost,
-        (0, 1) - a percentage of wounded soldiers lost
-*/
-//used for boss and miniboss fights
-class Boss {
-    constructor(name, desc, stats, type, soldier_loss_ratio) {
-        this.stats = stats;
-        this.name = name;
-        this.desc = desc;
-        this.type = type;
-        this.soldier_loss_ratio = soldier_loss_ratio;
-        this.attacks_per_second = 1;
-    }
-
-    attack() {
-        return this.stats['Attack'];
-    }
-}
 /*
     bosses - the names of the bosses from stuff which you need to fight
     max_selectible_armies - max number of armies the player can bring to the fight
@@ -262,8 +240,6 @@ class BossFightLevel extends ParentTowerLevel {
         document.querySelector("#PageButtonsContainer").hidden = true;
         BossArmySelectionPage.fight = new Fight([this.boss], 1, false)
         HidePages(5);
-
-        //remove armies selected from the fights from tower
 
         return false;
     }
@@ -336,18 +312,18 @@ const TowerPage = {
         TowerPage.displayOnLoad();
     },
 };
-
-TowerPage.Tower.floors[0] = new TowerFloor([new TowerLevel(100,50,500,730, 0, new Stats(['Defense'],[new SubStats(new Decimal(1))]), new Decimal(500), new Decimal(0.2), [[0, 1], [0, 2]], 'Sewers 1', 'Stinky and bad. The first level of the sewers.'),
-                                            new TowerLevel(100,50,449,679, 3, new Stats(['Defense'],[new SubStats(new Decimal(2))]), new Decimal(250), new Decimal(0.3), [[0, 3], [0, 4]], 'Sewers 2', 'Stinky and bad. The first level of the sewers.'),
-                                            new TowerLevel(100,50,449,781, 3, new Stats(['Defense'],[new SubStats(new Decimal(2))]), new Decimal(250), new Decimal(0.3), [[0, 3], [0, 5]], 'Sewers 3', 'Stinky and bad. The first level of the sewers.'),
-                                            new TowerLevel(120,50,423,745, 2,new Stats(['Defense'],[new SubStats(new Decimal(3.4))]), new Decimal(450), new Decimal(3), [[0, 6]], 'Sewers 4', 'Stinky and bad. The first level of the sewers.'),
-                                            new TowerLevel(30,50,385,705, 3, new Stats(['Defense'],[new SubStats(new Decimal(2.5))]), new Decimal(600), new Decimal(1),[[1, 0]], 'Sewers 5', 'Stinky and bad. The first level of the sewers.'),
-                                            new TowerLevel(30,50,385,859, 3, new Stats(['Defense'],[new SubStats(new Decimal(2.5))]), new Decimal(600), new Decimal(1),[[1, 0]], 'Sewers 6', 'Stinky and bad. The first level of the sewers.'),
-                                            new TowerLevel(80,50,397,792, 1,new Stats(['Defense'],[new SubStats(new Decimal(7.5))]), new Decimal(900), new Decimal(12),[[0,7]], 'Sewers 7', 'Stinky and bad. The first level of the sewers.'),
-                                            new TowerLevel(30,70,300,850, 0,new Stats(['Defense'],[new SubStats(new Decimal(15))]), new Decimal(1200), new Decimal(40),[[0,8]], 'Sewers 8', 'Stinky and bad. The first level of the sewers.'),
-                                            new BossFightLevel(30,70,250,850, 0,'Slime', new Decimal(1200), new Decimal(40),[], 'Sewer\'s Top', 'The topmost level of the sewers. It is lit with candles. You don\'t want to find out what lurks in the shadows, but will have to do so eventually...'),],
+                                                                    //730 = -630
+TowerPage.Tower.floors[0] = new TowerFloor([new TowerLevel(100,50,500,100, 0, new Stats(['Defense'],[new SubStats(new Decimal(1))]), new Decimal(500), new Decimal(0.2), [[0, 1], [0, 2]], 'Sewers 1', 'Stinky and bad. The first level of the sewers.'),
+                                            new TowerLevel(100,50,449,49, 3, new Stats(['Defense'],[new SubStats(new Decimal(2))]), new Decimal(250), new Decimal(0.3), [[0, 3], [0, 4]], 'Sewers 2', 'Stinky and bad. The first level of the sewers.'),
+                                            new TowerLevel(100,50,449,151, 3, new Stats(['Defense'],[new SubStats(new Decimal(2))]), new Decimal(250), new Decimal(0.3), [[0, 3], [0, 5]], 'Sewers 3', 'Stinky and bad. The first level of the sewers.'),
+                                            new TowerLevel(120,50,423,115, 2,new Stats(['Defense'],[new SubStats(new Decimal(3.4))]), new Decimal(450), new Decimal(3), [[0, 6]], 'Sewers 4', 'Stinky and bad. The first level of the sewers.'),
+                                            new TowerLevel(30,50,385,75, 3, new Stats(['Defense'],[new SubStats(new Decimal(2.5))]), new Decimal(600), new Decimal(1),[[1, 0]], 'Sewers 5', 'Stinky and bad. The first level of the sewers.'),
+                                            new TowerLevel(30,50,385,229, 3, new Stats(['Defense'],[new SubStats(new Decimal(2.5))]), new Decimal(600), new Decimal(1),[[1, 0]], 'Sewers 6', 'Stinky and bad. The first level of the sewers.'),
+                                            new TowerLevel(80,50,397,162, 1,new Stats(['Defense'],[new SubStats(new Decimal(7.5))]), new Decimal(900), new Decimal(12),[[0,7]], 'Sewers 7', 'Stinky and bad. The first level of the sewers.'),
+                                            new TowerLevel(30,70,300,220, 0,new Stats(['Defense'],[new SubStats(new Decimal(15))]), new Decimal(1200), new Decimal(40),[[0,8]], 'Sewers 8', 'Stinky and bad. The first level of the sewers.'),
+                                            new BossFightLevel(30,70,230,220, 0,'Slime', new Decimal(1200), new Decimal(40),[], 'Sewer\'s Top', 'The topmost level of the sewers. It is lit with candles. You don\'t want to find out what lurks in the shadows, but will have to do so eventually...'),],
                                         'Sewers', 'Stinky and bad and it gets worse the higher you go.');
-TowerPage.Tower.floors[1] = new TowerFloor([new TowerLevel(100,50,300,500, 0, new Stats(['Defense'],[new SubStats(new Decimal(5))]),new Decimal(300),new Decimal(2),[],'The Slums','When you venture beyond the sewers, the place looks like a big slum, full of giant rats.')],'Rat-haven','A place where the rats thrive.')
+TowerPage.Tower.floors[1] = new TowerFloor([new TowerLevel(100,50,300,100, 0, new Stats(['Defense'],[new SubStats(new Decimal(5))]),new Decimal(300),new Decimal(2),[],'The Slums','When you venture beyond the sewers, the place looks like a big slum, full of giant rats.')],'Rat-haven','A place where the rats thrive.')
 
 TowerPage.towerFloors = Array.from(document.querySelectorAll('.tower_part'));
 TowerPage.towerLevels = document.querySelectorAll('.tower_level');

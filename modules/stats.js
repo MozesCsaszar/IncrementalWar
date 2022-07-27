@@ -118,7 +118,6 @@ class SubStats {
         if(other.type == 'SubStats') {
             for(let ss in other) {
                 if(! this[ss].lte(other[ss])) {
-                    console.log(ss, this[ss], other[ss]);
                     return false;
                 }
             }
@@ -127,7 +126,6 @@ class SubStats {
         else {
             for(let ss in this) {
                 if(!this[ss].lte(other)) {
-                    console.log(ss, this[ss], other);
                     return false;
                 }
             }

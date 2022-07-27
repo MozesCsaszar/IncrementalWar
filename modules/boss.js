@@ -31,6 +31,7 @@ const BossArmySelectionPage = {
         }
         BossArmySelectionPage.startFightButton.hidden = true;
     },
+    save() {},
     load() {},
 };
 
@@ -48,7 +49,22 @@ BossArmySelectionPage.difficultyGauge = document.querySelector('#BossFightDiffic
 BossArmySelectionPage.startFightButton = document.querySelector('#StartBossFightButton');
 BossArmySelectionPage.startFightButton.addEventListener('click', function() {
     BossFightPage.fight = BossArmySelectionPage.fight;
+    for(let i = 0; i < BossArmySelectionPage.fight.max_selectible_armies; i++) {
+        for(let j = 0; j < TowerPage.Tower.raidedFloors.length; j++) {
+            if(TowerPage.Tower.raidedFloors[j][0] == BossArmySelectionPage.fight.selected_armies[i]) {
+                BossFightPage.armiesRemovedFrom.push(TowerPage.Tower.raidedFloors.splice(j,1)[0]);
+                break;
+            }
+        }
+    }
     HidePages(6);
+});
+//Back to tower page button
+document.querySelector("#BackFromBossArmySelectionPage").addEventListener('click', function() {
+    //get page buttons back
+    document.querySelector("#PageButtonsContainer").hidden = false;
+    //return to tower page
+    HidePages(0);
 });
 
 //click events for army selection buttons
@@ -87,6 +103,145 @@ for(let i = 0; i < BossArmySelectionPage.nrArmies; i++) {
     }
 }
 
+class CombatMove {
+    constructor(name, desc ) {
+        this.name = name;
+        this.desc = desc;
+    }
+
+    modify_stats(stats) {
+        return stats;
+    }
+};
+
+//A move that only modifies the 'Attack' value of one or more stats object(s)
+class AttackMove extends CombatMove {
+    constructor(name, desc, modifiers=[], modifier_types=[], targets = new Decimal(1)) {
+        super(name, desc);
+        this.modifiers = modifiers;
+        this.modifier_types = modifier_types;
+        this.attack_targets = targets;
+    }
+
+    get type() {
+        return 'AttackMove';
+    }
+
+    modify_stats(stats) {
+        stats = stats.add(new Stats([],[]));
+        for(let i = 0; i < this.modifier_types; i++) {
+            stats['Attack'] = stats['Attack'][this.modifier_types[i]](this.modifiers[i]);
+        }
+        stats['Attack'] = stats['Attack'];
+        return stats;
+    }
+};
+
+//A move that only modifies the 'Defense' value of one or more stats object(s)
+class DefenseMove extends CombatMove {
+    constructor(name, desc, modifiers=[], modifier_types=[], targets = new Decimal(1)) {
+        super(name, desc);
+        this.modifiers = modifiers;
+        this.modifier_types = modifier_types;
+        this.defense_targets = targets;
+    }
+
+    get type() {
+        return 'DefenseMove';
+    }
+
+    modify_stats(stats) {
+        //create a copy
+        stats = stats.add(new Stats([],[]));
+        for(let i = 0; i < this.modifier_types; i++) {
+            console.log(this.modifier_types, i);
+            stats['Defense'] = stats['Defense'][this.modifier_types[i]](this.modifiers[i]);
+        }
+        return stats;
+    }
+};
+
+//A move that only modifies the 'Healht' value of one or more stats object(s)
+class HealMove extends CombatMove {
+
+};
+
+//A move that executes a combination of the above
+class CombinedMove extends CombatMove {
+    constructor(name, desc, moves = []) {
+        super(name, desc);
+        this.moves = moves;
+        this.attack_targets = new Decimal(0);
+        this.defense_targets = new Decimal(0);
+        //get attack and defense targets
+        for(let i = 0; i < this.moves.length; i++) {
+            if(this.moves[i].type == 'AttackMove') {
+                this.attack_targets = this.attack_targets.add(this.moves[i].attack_targets);
+            }
+            else if(this.moves[i].type == 'DefenseMove') {
+                this.defense_targets = this.defense_targets.add(this.moves[i].defense_targets);
+            }
+        }
+    }
+
+    get type() {
+        return 'CombinedMove';
+    }
+
+    modify_stats(stats) {
+        for(let i = 0; i < this.moves.length; i++) {
+            stats = this.moves[i].modify_stats(stats);
+        }
+        return stats;
+    }
+}
+
+//A class that stores Moves with rarity and priority and will choose the apropriate one
+/*
+    How priorities and rarities work:
+        -rarities can be Common (0), Uncommon(1), Rare(2), Special(3) and Ultra Rare(4)
+        -each rarity has a 1/2^m chance to be chosen (a random choosing between 1 and 2^n will happen, log_2(rand).floor() 
+         will be the rarity of the move used)
+        -then a move is gotten randomly from the selection
+    Please provide moves as a layered array!
+*/
+class Moveset {
+    constructor(moves=[[]]) {
+        this.moves = moves;
+    }
+
+    get_move() {
+        let rarity =  this.moves.length - 1 - Math.floor(Math.log2(1 + Math.floor( Math.random() * (2 ** this.moves.length - 1) )) );
+        let move_nr = Math.floor(Math.random() * this.moves[rarity].length);
+        return this.moves[rarity][move_nr];
+    }
+}
+/*
+    Boss types:
+        -Mini, Normal
+    Boss soldier_loss_ratio:
+        0 - no soldier lost, 1 - all soldies who are wounded (no Health at the end of fight) are lost,
+        (0, 1) - a percentage of wounded soldiers lost
+*/
+//used for boss and miniboss fights
+class Boss {
+    constructor(name, desc, stats, type, soldier_loss_ratio, moveset) {
+        this.stats = stats;
+        this.name = name;
+        this.desc = desc;
+        this.type = type;
+        this.soldier_loss_ratio = soldier_loss_ratio;
+        this.attacks_per_second = 1;
+        this.size = 100;
+        this.moveset = moveset;
+    }
+
+    attack() {
+        return this.stats['Attack'];
+    }
+}
+
+//simulates a whole army fighting against a boss
 class FightingArmy {
     constructor(army) {
         this.stats = army.stats.add(new Stats([],[]));
@@ -97,11 +252,13 @@ class FightingArmy {
         //when attack_counter reaches attack_time, the army attacks
         this.attack_time = new Decimal(1);
         this.attack_counter = new Decimal(0);
-        this.floating_damage = new Decimal(0);
+
+        this.size = 30;
+        this.deployed = new Decimal(0);
     }
 
     get_total_attack(target) {
-        return this.units.mul( this.stats.get_power(target.stats, 'Attack', 'Defense') );
+        return this.deployed.mul( this.stats.get_power(target.current_stats, 'Attack', 'Defense') );
     }
 
     do_attack(target) {
@@ -116,17 +273,41 @@ class FightingArmy {
         }
     }
 
-    get_attacked(power) {
-        this.total_health = this.total_health.sub(power);
-        this.floating_damage = this.floating_damage.add(power);
-        let nr_units_dead = this.floating_damage.div(this.stats['Health']).floor();
-        if(this.floating_damage.gte(this.stats['Health'])) {
-            this.units = this.units.sub(nr_units_dead);
-            this.floating_damage = this.floating_damage.sub(nr_units_dead.mul(this.stats['Health']));
+    deploy_around_boss(boss) {
+        let max_nr = new Decimal(boss.get_nr_around(this.size));
+        //while there can be units deployed around boss and you have units, do the deploy action
+        while(max_nr.gt(this.deployed) && this.units.gt(this.deployed)) {
+            boss.deploy_unit_around(this);
+            this.deployed = this.deployed.add(1);
         }
     }
 };
 
+//simualtes a single soldier fighting against a boss
+class FightingUnit {
+    constructor(army) {
+        this.army = army;
+        this.stats = army.stats.add(new Stats([], []));
+        this.is_dead = false;
+    }
+
+    lose_health(damage) {
+        let lost_health = this.stats['Health'].min(damage);
+        this.stats['Health'] = this.stats['Health'].sub(lost_health);
+        this.army.total_health = this.army.total_health.sub(lost_health);
+        if(this.stats['Health'].lte(new Decimal(0.00001))) {
+            this.die();
+        }
+    }
+
+    die() {
+        this.army.units = this.army.units.sub(1);
+        this.army.deployed = this.army.deployed.sub(1);
+        this.is_dead = true;
+    }
+}
+
+//simulates a boss fighting against armies represented by the FightingUnits which can get close enough to attack
 class FightingBoss {
     constructor(boss) {
         this.stats = boss.stats.add(new Stats([],[]));
@@ -138,14 +319,67 @@ class FightingBoss {
         this.attack_time = new Decimal(1);
         this.attack_counter = new Decimal(0);
         this.floating_damage = new Decimal(0);
+
+        this.moveset = boss.moveset;
+        
+        this.move = this.moveset.get_move();
+        this.current_stats = this.move.modify_stats(this.stats);
+        this.size = boss.size;
+
+        this.enemies_around = []
+        
     }
 
     get_total_attack(target) {
-        return this.units.mul( this.stats.get_power(target.stats, 'Attack', 'Defense') );
+        return this.units.mul( this.current_stats.get_power(target, 'Attack', 'Defense') );
     }
 
     do_attack(target) {
-        target.get_attacked(this.get_total_attack(target));
+        //find attack targets
+        let targets = [];
+        for(let i = 0; i < this.move.attack_targets; i++) {
+            let nr = Math.floor(Math.random() * this.enemies_around.length);
+            targets.push(nr);
+        }
+        //attack them
+        let dead = []
+        for(let i = 0; i < targets.length; i++) {
+            let enemy = this.enemies_around[targets[i]];
+            //if the enemy was targeted multiple times, but by now is dead, just roll with it
+            if(enemy.is_dead) {
+                continue;
+            }
+            let power = this.current_stats.get_power(enemy.stats, 'Attack', 'Defense');
+            enemy.lose_health(power);
+            if(enemy.is_dead) {
+                //remove enemy from around boss
+                dead.push(targets[i]);
+                //deploy new unit if applicable
+                enemy.army.deploy_around_boss(this);
+            }
+        }
+        //remove the dead from the army
+        for(let i = 0; i < dead.length; i++) {
+            this.enemies_around[dead[i]] = -1;
+        }
+        let i = 0;
+        while(i < this.enemies_around.length) {
+            if(this.enemies_around[i] == -1) {
+                this.enemies_around.splice(i, 1);
+            }
+            else {
+                i++;
+            }
+        }
+
+        //move feed, maybe move it somewhere else?
+        BossFightPage.feedMoves.push(this.move);
+        if(BossFightPage.feedMoves.length > BossFightPage.feedElements.length) {
+            BossFightPage.feedMoves.shift();
+        }
+        BossFightPage.update_feed();
+        this.move = this.moveset.get_move();
+        this.current_stats = this.move.modify_stats(this.stats);
     }
 
     tick(tick_per_sec, target) {
@@ -164,6 +398,39 @@ class FightingBoss {
             this.units = this.units.sub(nr_units_dead);
             this.floating_damage = this.floating_damage.sub(nr_units_dead.mul(this.stats['Health']));
         }
+    }
+    //a function which calculates how many units can there be around the boss at a given moment
+    //works with numbers currently, please change this!
+    get_nr_around = function(u_s) {
+        function is_good(n, u_s) {
+            let x = (n - 2) / (2 * n) * Math.PI;
+            if(Math.cos(x) / (1 - Math.cos(x)) >= u_s) {
+                return true;
+            }
+            return false;
+        };
+
+        u_s = u_s / this.size;
+        let bot = 2, top = this.size * 10;
+        let mid = Math.floor( (top + bot) / 2 );
+        while(!is_good(mid, u_s)) {
+            top = mid;
+            mid = Math.floor( (top + bot) / 2 );
+            if(mid == 2) {
+                return 2;
+            }
+        }
+        let last;
+        while(is_good(mid, u_s)) {
+            last = mid;
+            bot = mid;
+            mid = Math.floor( (top + bot) / 2 );
+        }
+        return last;
+    }
+
+    deploy_unit_around(army) {
+        this.enemies_around.push(new FightingUnit(army));
     }
 };
 
@@ -183,6 +450,9 @@ const BossFightPage = {
     fightingBossStatuses: [],
     fightingArmiesNr: 0,
     fightingBossesNr: 0,
+    armiesRemovedFrom: [],
+    feedElements: [],
+    feedMoves: [],
     displayOnLoad() {
     },
     display() {
@@ -202,7 +472,12 @@ const BossFightPage = {
 
         //create actually fighting boss
         BossFightPage.fightingBosses.push(new FightingBoss(stuff['bosses'][BossFightPage.fight.bosses[0]]));
-        
+        BossFightPage.deploy_armies();
+    },
+    deploy_armies() {
+        for(let i = 0; i < BossFightPage.fightingArmies.length; i++) {
+            BossFightPage.fightingArmies[i].deploy_around_boss(BossFightPage.fightingBosses[0]);
+        }
     },
     get_width(curr, max) {
         return new Decimal(BossFightPage.barWidth).mul( curr.div(max) ).floor().toNumber();
@@ -211,7 +486,7 @@ const BossFightPage = {
         for(let i = 0; i < BossFightPage.fightingArmies.length; i++) {
             if(BossFightPage.fightingArmyStatuses[i] == 1) {
                 BossFightPage.fightingArmies[i].tick(20, BossFightPage.fightingBosses[0]);
-                if(BossFightPage.fightingArmies[i].total_health.lt(0)) {
+                if(BossFightPage.fightingArmies[i].total_health.lte(0.00001)) {
                     BossFightPage.fightingArmyStatuses[i] = 0;
                     BossFightPage.fightingArmies[i].total_health = new Decimal(0);
                     BossFightPage.fightingArmiesNr -= 1;
@@ -226,7 +501,7 @@ const BossFightPage = {
         for(let i = 0; i < BossFightPage.fightingBosses.length; i++) {
             if(BossFightPage.fightingBossStatuses[i] == 1) {
                 BossFightPage.fightingBosses[i].tick(20, BossFightPage.fightingArmies[0]);
-                if(BossFightPage.fightingBosses[i].total_health.lte(0)) {
+                if(BossFightPage.fightingBosses[i].total_health.lte(0.00001)) {
                     BossFightPage.fightingBossStatuses[i] = 0;
                     BossFightPage.fightingBosses[i].total_health = new Decimal(0);
                     BossFightPage.fightingBossesNr -= 1;
@@ -247,6 +522,11 @@ const BossFightPage = {
         else {
 
         }
+        //put armies back to raid what they were raiding before
+        for(let i = 0; i < BossFightPage.armiesRemovedFrom.length; i++) {
+            TowerPage.Tower.raidedFloors.push(BossFightPage.armiesRemovedFrom[i]);
+        }
+    
         //change page to fight end page
         HidePages(7);
     },
@@ -280,6 +560,16 @@ const BossFightPage = {
             BossFightPage.resolve_win();
         }
     },
+    update_feed() {
+        let i, ii = BossFightPage.feedMoves.length - 1;
+        for(i = 0; i < BossFightPage.feedMoves.length; i++, ii--) {
+            BossFightPage.feedElements[ii].innerHTML = BossFightPage.feedMoves[i].name;
+        }
+        for(i; i < BossFightPage.feedElements.length;i++) {
+            BossFightPage.feedElements[i].innerHTML = '';
+        }
+    },
+    save() {},
     load() {},
     
 }
@@ -303,6 +593,22 @@ for(let i = 0; i < BossFightPage.nrBossStatusBats; i++) {
     }
 }
 
+BossFightPage.feedElements = document.querySelectorAll('.boss_fight_move_feed_element');
+for(let i = 0; i < BossFightPage.feedElements.length; i++) {
+    BossFightPage.feedElements[i].addEventListener('mouseenter', function(event) {
+        if(BossFightPage.feedElements[i].innerHTML != '') {
+                    
+            PopupWindow.show(event.clientX, event.clientY, BossFightPage.feedMoves[BossFightPage.feedMoves.length - 1 - i].desc);
+        }
+    }); 
+    BossFightPage.feedElements[i].addEventListener('mousemove', function(event) {
+        PopupWindow.move(event.clientX, event.clientY);
+    }); 
+    BossFightPage.feedElements[i].addEventListener('mouseleave', function(event) {
+        PopupWindow.hide();
+    }); 
+}
+
 const BossFightingResultPage = {
     container : undefined,
     displayOnLoad() {
@@ -311,6 +617,7 @@ const BossFightingResultPage = {
     },
     displayEveryTick() {
     },
+    save() {},
     load() {},
 };
 

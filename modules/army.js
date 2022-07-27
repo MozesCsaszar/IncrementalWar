@@ -166,11 +166,6 @@ class Army {
                         return true;
                     }
                 }
-                else {
-                    console.log(stuff[type][element].requires, temp_s);
-
-                }
-                
             }
             return false;
         }
@@ -579,11 +574,11 @@ for(let type in ArmyPage.selects) {
                     ArmyPage.selects['weapons'][j].innerHTML = 'None';
                 }
             });
-            ArmyPage.selectButtons.creatures[i].addEventListener('mouseenter', function() {
+            ArmyPage.selectButtons.creatures[i].addEventListener('mouseenter', function(event) {
                 ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_change_text('creatures',ArmyPage.selectButtons.creatures[i].innerHTML, false);
                 //show info text for the changed part
                 ArmyPage.partInfo.hidden = false;
-                ArmyPage.partInfo.innerHTML = stuff.creatures[Player.armies[ArmyPage.currentArmy].creature].get_compare_text(stuff.creatures[ArmyPage.selectButtons.creatures[i].innerHTML])
+                ArmyPage.partInfo.innerHTML = stuff.creatures[Player.armies[ArmyPage.currentArmy].creature].get_compare_text(stuff.creatures[ArmyPage.selectButtons.creatures[i].innerHTML]);
             });
             ArmyPage.selectButtons.creatures[i].addEventListener('mouseleave', function() {
                 ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
