@@ -41,7 +41,9 @@ stuff = {
                             [new AttackMove('Basic Attack', 'A normal attack from a normal enemy.',[new Decimal(1)],['mul']),
                              new AttackMove('Basic Triple Attack', 'A normal attack from a normal enemy targeting three beings at once.',[new Decimal(1)],['mul'], new Decimal(3))],
                             [new DefenseMove('Defend', 'The enemy takes a defensive stance, increasing defenses.', [new Decimal(3)], ['mul']),
-                            new CombinedMove('Attack and Defend', 'The enemy takes a stance where defending and attacking is easier.', [new AttackMove('','',[new Decimal(2)], ['mul'], new Decimal(2)), new DefenseMove('','',[new Decimal(2)], ['mul'])])]])),
+                            new CombinedMove('Attack and Defend', 'The enemy takes a stance where defending and attacking is easier.', [new AttackMove('','',[new Decimal(2)], ['mul'], new Decimal(2)), new DefenseMove('','',[new Decimal(2)], ['mul'])])],
+                            [new AttackMove('Fife-Fold Attack', 'The slime empowers itself, then attacks five enemies at once with slightly increased prowess.', [new Decimal(1.5), ['mul'], new Decimal(5)])]
+                            ])),
     }
 }
 

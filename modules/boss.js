@@ -13,12 +13,13 @@ const BossArmySelectionPage = {
     display() {
         //show necessary army selects
         for(let i = 0; i < BossArmySelectionPage.fight.max_selectible_armies; i++) {
-            BossArmySelectionPage.armySelects[i][0].parentElement.hidden = false;
+            BossArmySelectionPage.armySelects[i][0].parentElement.parentElement.hidden = false;
         }
         //hide ones that are not useable in current fight
         for(let i = BossArmySelectionPage.fight.max_selectible_armies; i < BossArmySelectionPage.nrArmySelects; i++) {
-            BossArmySelectionPage.armySelects[i][0].parentElement.hidden = true;
+            BossArmySelectionPage.armySelects[i][0].parentElement.parentElement.hidden = true;
         }
+        BossArmySelectionPage.bossInfo.innerHTML = stuff['bosses'][BossArmySelectionPage.fight.bosses[0]].get_text();
     },
     displayEveryTick() {
     },
@@ -206,14 +207,33 @@ class CombinedMove extends CombatMove {
     Please provide moves as a layered array!
 */
 class Moveset {
+    static name_text_start = '<span style="color:';
+    static move_rarities = {0:'Common', 1: 'Uncommon', 2: 'Rare', 3:'Super', 4:'Ultra'}
+    static rarity_colors = {0: 'aliceblue', 1: '#20d000', 2: '#4848ff', 3: '#b000b0', 4: '#FF0000'}
+    static color_span_end = '">';
+    static name_text_end = '</span>'
+
     constructor(moves=[[]]) {
         this.moves = moves;
+        this.current_move = undefined;
+        this.current_move_place = [];
     }
 
     get_move() {
         let rarity =  this.moves.length - 1 - Math.floor(Math.log2(1 + Math.floor( Math.random() * (2 ** this.moves.length - 1) )) );
         let move_nr = Math.floor(Math.random() * this.moves[rarity].length);
-        return this.moves[rarity][move_nr];
+        this.current_move = this.moves[rarity][move_nr];
+        this.current_move_place = [rarity, move_nr];
+        return this.current_move;
+    }
+
+    get_current_move_name() {
+        return this.get_move_name(...this.current_move_place);
+    }
+
+    get_move_name(rarity, move_nr) {
+        return Moveset.name_text_start + Moveset.rarity_colors[rarity] + Moveset.color_span_end + this.moves[rarity][move_nr].name + ' (' +
+        Moveset.move_rarities[rarity] + ')' + Moveset.name_text_end;
     }
 }
 /*
@@ -238,6 +258,25 @@ class Boss {
 
     attack() {
         return this.stats['Attack'];
+    }
+
+    get_text() {
+        let t = '<b>' + this.name + '</b><br>' + 
+        '<i>' + this.type + '</i><br><br>' + 
+        this.stats.get_text() + '<br>' +
+        'Attacks/sec: ' + this.attacks_per_second + '<br>' +
+        'Size: ' + this.size + '<br>' +
+        'Moves: ';
+        for(let i = 0; i < this.moveset.moves.length; i++) {
+            for(let j = 0; j < this.moveset.moves[i].length; j++) {
+                if(i != 0 || j != 0) {
+                    t += ', '
+                }
+                t += this.moveset.get_move_name(i, j);
+            }
+        }
+        t += '.<br>';
+        return t;
     }
 }
 
@@ -373,10 +412,11 @@ class FightingBoss {
         }
 
         //move feed, maybe move it somewhere else?
-        BossFightPage.feedMoves.push(this.move);
+        BossFightPage.feedMoves.push([this, this.moveset.current_move_place]);
         if(BossFightPage.feedMoves.length > BossFightPage.feedElements.length) {
             BossFightPage.feedMoves.shift();
         }
+
         BossFightPage.update_feed();
         this.move = this.moveset.get_move();
         this.current_stats = this.move.modify_stats(this.stats);
@@ -473,6 +513,7 @@ const BossFightPage = {
         //create actually fighting boss
         BossFightPage.fightingBosses.push(new FightingBoss(stuff['bosses'][BossFightPage.fight.bosses[0]]));
         BossFightPage.deploy_armies();
+        document.querySelector('.boss_in_boss_fight_name').innerHTML = BossFightPage.fight.bosses[0];
     },
     deploy_armies() {
         for(let i = 0; i < BossFightPage.fightingArmies.length; i++) {
@@ -563,7 +604,7 @@ const BossFightPage = {
     update_feed() {
         let i, ii = BossFightPage.feedMoves.length - 1;
         for(i = 0; i < BossFightPage.feedMoves.length; i++, ii--) {
-            BossFightPage.feedElements[ii].innerHTML = BossFightPage.feedMoves[i].name;
+            BossFightPage.feedElements[ii].innerHTML = '<br>' + BossFightPage.feedMoves[i][0].moveset.get_move_name(...BossFightPage.feedMoves[i][1]) + '<br>';
         }
         for(i; i < BossFightPage.feedElements.length;i++) {
             BossFightPage.feedElements[i].innerHTML = '';
@@ -611,9 +652,34 @@ for(let i = 0; i < BossFightPage.feedElements.length; i++) {
 
 const BossFightingResultPage = {
     container : undefined,
+    resultInfo: undefined,
+    generate_message() {
+        let t;
+        if(BossFightPage.fightingArmiesNr == 0) {
+            t = 'You lost!<br>';
+            if(fight.lose_soldiers) {
+                t += 'With your loss, you lost all your soldiers as well!';
+            }
+            else {
+                t += 'Don\'t worry though, you didn\'t lose anyone, the magic of the Tower kept them all alive.';
+            }
+            
+        }
+        else {
+            t = 'You won!<br>';
+            if(fight.lose_soldiers) {
+                t += "Though you lost part of your army.";
+            }
+            else {
+                t += 'Don\'t worry, you didn\'t lose anyone, the magic of the Tower kept them all alive.';
+            }
+        }
+        return t;
+    },
     displayOnLoad() {
     },
     display() {
+        BossFightingResultPage.resultInfo.innerHTML = BossFightingResultPage.generate_message();
     },
     displayEveryTick() {
     },
@@ -622,4 +688,13 @@ const BossFightingResultPage = {
 };
 
 BossFightingResultPage.container = document.querySelector('#BossFightingResultPageContainer');
+BossFightingResultPage.resultInfo = document.querySelector("#AfterFightMessage");
+
+//Back to tower page button
+document.querySelector("#BackButtonFromResults").addEventListener('click', function() {
+    //get page buttons back
+    document.querySelector("#PageButtonsContainer").hidden = false;
+    //return to tower page
+    HidePages(0);
+});
 

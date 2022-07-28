@@ -99,34 +99,51 @@
     </div>
 
     <div id = "BossArmySelectionPageContainer" hidden>
-        <button id="BackFromBossArmySelectionPage">Back</button>
-        <div class = 'fighting_army_select_label' hidden>Army I: &nbsp&nbsp&nbsp<button class='toggle_button select_boss_army_button'>1</button>
-            <button class='toggle_button select_boss_army_button'>2</button>
-            <button class='toggle_button select_boss_army_button'>3</button>
+        <div class = 'fighting_army_select_label' hidden>
+            <div class="boss_army_select_army_name" style="grid-row:1; grid-column: 1;">Army I:</div>
+                    <div class="toggle_button_container">
+                    <button class='toggle_button select_boss_army_button'>1</button>
+                    <button class='toggle_button select_boss_army_button'>2</button>
+                    <button class='toggle_button select_boss_army_button'>3</button>
+                </div>  
+            <div class='select_boss_army_info' >So here goes your army info, you shouldn't see this normally, so please be on your way, than you.:))</div>
+        </div>
+        
+        <div class = 'fighting_army_select_label' style="grid-row:2; grid-column: 1;">Army II: &nbsp 
+            <div class="toggle_button_container">
+                <button class='toggle_button select_boss_army_button'>1</button>
+                <button class='toggle_button select_boss_army_button'>2</button>
+                <button class='toggle_button select_boss_army_button'>3</button>
+            </div>
+            
             <br>
             <div class='select_boss_army_info' >So here goes your army info, you shouldn't see this normally, so please be on your way, than you.:))</div>
         </div>
-        <div class = 'fighting_army_select_label' hidden>Army II: &nbsp <button class='toggle_button select_boss_army_button'>1</button>
-            <button class='toggle_button select_boss_army_button'>2</button>
-            <button class='toggle_button select_boss_army_button'>3</button>
-            <br>
-            <div class='select_boss_army_info' >So here goes your army info, you shouldn't see this normally, so please be on your way, than you.:))</div>
-        </div>
-        <div class = 'fighting_army_select_label' hidden>Army III: <button class='toggle_button select_boss_army_button'>1</button>
-            <button class='toggle_button select_boss_army_button'>2</button>
-            <button class='toggle_button select_boss_army_button'>3</button>
+        <div class = 'fighting_army_select_label' style="grid-row:3; grid-column: 1;">Army III: 
+            <div class="toggle_button_container">
+                <button class='toggle_button select_boss_army_button'>1</button>
+                <button class='toggle_button select_boss_army_button'>2</button>
+                <button class='toggle_button select_boss_army_button'>3</button>
+            </div>
             <br>
             <div class='select_boss_army_info'>So here goes your army info, you shouldn't see this normally, so please be on your way, than you.:))</div>
         </div>
-        <div id="BossInfo" style="position: absolute; left:700px;top:75px;"> 
-            <div id="BossInfoText" style="width:450px"></div>
+        
+        
+        <div id="BossFightDifficultyGauge" style="grid-row:1/3; grid-column: 2;text-align: center; align-self:center;">Difficulty</div>
+        <!-- The back and fight buttons -->
+        <div style="grid-row: 3; grid-column: 2; text-align: center; align-self: end;">
+            <button id="BackFromBossArmySelectionPage">Back</button>
+            <button id="StartBossFightButton" hidden>Fight</button>
         </div>
-        <div id="BossFightDifficultyGauge" style="position: absolute; left:475px; top:200px;">Difficulty</div>
-        <button id="StartBossFightButton" hidden>Fight</button>
+
+        <div id="BossInfo" style="grid-row:1/4; grid-column: 3;"> 
+            <div id="BossInfoText"></div>
+        </div>
     </div>
 
     <div id = "BossFightPageContainer" hidden>
-        <div class="army_in_boss_fight" hidden>
+        <div class="army_in_boss_fight" style="grid-column:1; grid-row: 1;" hidden>
             <label class="army_in_boss_fight_name">Army I</label>
             <br>
             <div class="army_in_boss_fight_health_background">
@@ -144,7 +161,7 @@
                 <span class = "army_in_boss_fight_attack_text  army_in_boss_fight_bar"></span>
             </div>
         </div>
-        <div class="army_in_boss_fight" hidden>
+        <div class="army_in_boss_fight" style="grid-column:1; grid-row: 2" hidden>
             <label class="army_in_boss_fight_name">Army II</label>
             <br>
             <div class="army_in_boss_fight_health_background">
@@ -162,7 +179,7 @@
                 <span class = "army_in_boss_fight_attack_text  army_in_boss_fight_bar"></span>
             </div>
         </div>
-        <div class="army_in_boss_fight" hidden>
+        <div class="army_in_boss_fight" style="grid-column:1; grid-row: 3;" hidden>
             <label class="army_in_boss_fight_name">Army III</label>
             <br>
             <div class="army_in_boss_fight_health_background">
@@ -180,10 +197,17 @@
                 <span class = "army_in_boss_fight_attack_text army_in_boss_fight_bar"></span>
             </div>
         </div>
-        <div class="boss_in_boss_fight" >
+        <div id="BossFightMoveFeed" style="grid-column:2; grid-row: 1/4;">
+            <div class="boss_fight_move_feed_element"></div> 
+            <div class="boss_fight_move_feed_element"></div> 
+            <div class="boss_fight_move_feed_element"></div> 
+            <div class="boss_fight_move_feed_element"></div>
+            <div class="boss_fight_move_feed_element"></div>
+        </div>
+        <div class="boss_in_boss_fight" style="grid-column:3; grid-row: 1;" >
             <label class="boss_in_boss_fight_name">Blank</label>
             <br>
-            <div class="boss_in_boss_fight_health_background" style:>
+            <div class="boss_in_boss_fight_health_background">
                 <span class = "boss_in_boss_fight_health_foreground boss_in_boss_fight_bar"></span>
                 <span class = "boss_in_boss_fight_health_text boss_in_boss_fight_bar"></span>
             </div>
@@ -198,66 +222,65 @@
                 <span class = "boss_in_boss_fight_attack_text boss_in_boss_fight_bar"></span>
             </div>
         </div>
-        <div id="BossFightMoveFeed">
-            <div class="boss_fight_move_feed_element"></div> <br>
-            <div class="boss_fight_move_feed_element"></div> <br>
-            <div class="boss_fight_move_feed_element"></div> <br>
-            <div class="boss_fight_move_feed_element"></div> <br>
-            <div class="boss_fight_move_feed_element"></div> <br>
-        </div>
+        
     </div>
 
-    <div id = "BossFightingResultPageContainer" hidden></div>
+    <div id = "BossFightingResultPageContainer" hidden>
+        <div id="AfterFightMessage">
+            Yeah, yeah, yeah.
+        </div>
+        <button id="BackButtonFromResults">Back</button>
+    </div>
     
     <div id = "ArmyPageContainer">
-        <!--   ARMY SELECTOR STUFF-->
-        <div id = 'ArmyPageInfo' class = 'info_text' style='left:300px; top:135px; '>ERROR</div>
-        <div style="border-left:4px solid green; height: 150px; position: absolute; left: 553px; top: 133px;"></div>
-        <div style="position:absolute;left:560px;top:135px;">Size of army: <input type="text" id='ArmySizeInput' style='width:100px;' value = 0> <button id="MaxArmySize">MAX</button></div>
-        <div style="position:absolute;left:560px;top:162px;" id = "ArmyLevelText">Army level: 100</div> <button hidden id = "ArmyLevelUpButton" style = "position:absolute;left:680px;top:160px;">Level up!</button> <div style="position:absolute;left:755px;top:162px;" id = "ArmyLevelUpCost"></div>
-        <div id = 'ArmyPagePartInfo' class = 'info_text' style='left:560; top:185px; ' hidden>ERROR</div>
-
+        
         <div class="select_army_button_container">
             <button class='select_army_button'>Army 1</button>
             <button class='select_army_button'>Army 2</button>
             <button class='select_army_button'>Army 3</button>
         </div>
         
+        <!--   ARMY SELECTOR STUFF-->
+        <div class="army_info_container">
+            <div class="army_management_container">
+                <div id = "ArmyLevelText">Army level: 100</div> <button hidden id = "ArmyLevelUpButton" style="width:80px;">Level up!</button> <div id = "ArmyLevelUpCost"></div>
+                <div>Size of army: <input type="text" id='ArmySizeInput' style='width:100px;' value = 0> <button id="MaxArmySize">MAX</button></div>
+                <div id = 'ArmyCreatureContainer' class = 'army_stuff_container' type = 'creatures' >
+                    &nbsp  Creature: <button id = 'CreatureSelect'>None</button>&nbsp <div class = 'creature_available_number' style="float:left;">(∞)</div>
+                </div>
+                <div id = 'CreatureSelectButtonsContainer' class='select_buttons_container' hidden>
+                    <button class = 'creature_select_button stuff_select_button'>None</button>
+                    <button class = 'creature_select_button stuff_select_button' hidden>Human</button>
+                </div>
+                <div hidden class = 'army_weapon_container army_stuff_container' type = 'weapons' >
+                    &nbsp  Weapon I: <button class='weapon_select'>None</button> &nbsp <div class = 'weapon_available_number' style=" float:left;">(∞)</div>
+                </div>
+                <div hidden class = 'army_weapon_container army_stuff_container' type = 'weapons' >
+                    &nbsp Weapon II: <button class='weapon_select'>None</button> &nbsp <div class = 'weapon_available_number' style=" float:left;">(∞)</div>
+                </div>
+                <div hidden='true' class = 'army_weapon_container army_stuff_container' type = 'weapons' >
+                    &nbsp Weapon III: <button class='weapon_select'>None</button>&nbsp <div class = 'weapon_available_number' style=" float:left;">(∞)</div>
+                </div>
+                <div hidden='true' class = 'army_weapon_container army_stuff_container' type = 'weapons' >
+                    &nbsp Weapon IV: <button class='weapon_select'>None</button>&nbsp <div class = 'weapon_available_number' style=" float:left;">(∞)</div>
+                </div>
+                <div hidden='true' class = 'army_weapon_container army_stuff_container' type = 'weapons'>
+                    &nbsp Weapon V: <button class='weapon_select'>None</button>&nbsp <div class = 'weapon_available_number' style=" float:left;">(∞)</div>
+                </div>
+                <div hidden='true' class = 'army_weapon_container army_stuff_container' type = 'weapons' >
+                    &nbsp Weapon VI: <button class='weapon_select'>None</button>&nbsp <div class = 'weapon_available_number' style=" float:left;">(∞)</div>
+                </div>
+                <div hidden='true' class = 'army_weapon_container army_stuff_container' type = 'weapons' >
+                    &nbsp  Weapon VII: <button class='weapon_select'>None</button>&nbsp <div class = 'weapon_available_number' style=" float:left;">(∞)</div>
+                </div>
+                <div hidden='false' class = 'army_weapon_container army_stuff_container' type = 'weapons' >
+                    &nbsp Weapon VIII: <button class='weapon_select'>None</button>&nbsp <div class = 'weapon_available_number' style=" float:left;">(∞)</div>
+                </div>
+            </div>
+            <div id = 'ArmyPageInfo' class = 'info_text' style='left:300px; top:135px; '>ERROR</div>
+            
+            <div id = 'ArmyPagePartInfo' class = 'info_text' style='left:560; top:185px; ' hidden>ERROR</div>
 
-        <br>
-
-        <div id = 'ArmyCreatureContainer' class = 'army_stuff_container' type = 'creatures' style = "margin-top:5px;">
-            &nbsp  Creature: <button id = 'CreatureSelect'>None</button>&nbsp <div class = 'CreatureAvailableNumber' style="float:left;">(∞)</div>
-        </div>
-
-        <div id = 'CreatureSelectButtonsContainer' class='select_buttons_container' hidden>
-            <button class = 'creature_select_button stuff_select_button'>None</button>
-            <button class = 'creature_select_button stuff_select_button' hidden>Human</button>
-        </div>
-
-        <div hidden class = 'army_weapon_container army_stuff_container' type = 'weapons' style = "margin-top:5px;">
-            &nbsp  Weapon I: <button class='weapon_select'>None</button> &nbsp <div class = 'WeaponAvailableNumber' style=" float:left;">(∞)</div>
-        </div>
-        <div hidden class = 'army_weapon_container army_stuff_container' type = 'weapons' style = "margin-top:5px;">
-            &nbsp Weapon II: <button class='weapon_select'>None</button> &nbsp <div class = 'WeaponAvailableNumber' style=" float:left;">(∞)</div>
-        </div>
-        <div hidden='true' class = 'army_weapon_container army_stuff_container' type = 'weapons' style = "margin-top:5px;">
-            &nbsp Weapon III: <button class='weapon_select'>None</button>&nbsp <div class = 'WeaponAvailableNumber' style=" float:left;">(∞)</div>
-        </div>
-        <div hidden='true' class = 'army_weapon_container army_stuff_container' type = 'weapons' style = "margin-top:5px;">
-            &nbsp Weapon IV: <button class='weapon_select'>None</button>&nbsp <div class = 'WeaponAvailableNumber' style=" float:left;">(∞)</div>
-        </div>
-        <div hidden='true' class = 'army_weapon_container army_stuff_container' type = 'weapons' style = "margin-top:5px;">
-            &nbsp Weapon V: <button class='weapon_select'>None</button>&nbsp <div class = 'WeaponAvailableNumber' style=" float:left;">(∞)</div>
-        </div>
-        <div hidden='true' class = 'army_weapon_container army_stuff_container' type = 'weapons' style = "margin-top:5px;">
-            &nbsp Weapon VI: <button class='weapon_select'>None</button>&nbsp <div class = 'WeaponAvailableNumber' style=" float:left;">(∞)</div>
-        </div>
-        <div hidden='true' class = 'army_weapon_container army_stuff_container' type = 'weapons' style = "margin-top:5px;">
-            &nbsp  Weapon VII: <button class='weapon_select'>None</button>&nbsp <div class = 'WeaponAvailableNumber' style=" float:left;">(∞)</div>
-        </div>
-        <div hidden='false' class = 'army_weapon_container army_stuff_container' type = 'weapons' style = "margin-top:5px;">
-            &nbsp Weapon VIII: <button class='weapon_select'>None</button>&nbsp <div class = 'WeaponAvailableNumber' style=" float:left;">(∞)</div>
         </div>
 
         <div id = 'WeaponSelectButtonsContainer' class='select_buttons_container' hidden>
@@ -270,26 +293,35 @@
     </div>
 
     <div id = "BuyCreaturePageContainer"> 
-        <i><div id = 'BuyCreaturePageInfo' class = 'info_text' style='left:340px; top:100px; '>Some text to see what will change and the info of your soldiers. Pretty simple and effective, I hope. </div></i> 
-        <button class='toggle_button creature_buy_number' style="position:absolute;left:600px; top: 70px;">I</button>    
-        <button class='toggle_button creature_buy_number' style="position:absolute;left:638px; top: 70px">X</button>    
-        <button class='toggle_button creature_buy_number' style="position:absolute;left:676px; top: 70px">C</button>    
-        <button class='toggle_button creature_buy_number' style="position:absolute;left:714px; top: 70px">M</button>    
-                                                                                     
-        <div style='margin-top:20px;' class = 'buyer_button_div'>  &nbsp Human &nbsp<button class = 'buy_button buy_creature' id='HumanBuyButton'>Buy</button>&nbsp<div style=" float:left; margin-top: 2px;">(0)</div></div>
-    
+        <div class="buyer_grid_container">
+            <div class = 'buyer_button_div'>  &nbsp Human &nbsp<button class = 'buy_button buy_creature' id='HumanBuyButton'>Buy</button>&nbsp<div style=" float:left; margin-top: 2px;">(0)</div></div>
+        </div>
+        
+        <i><div id = 'BuyCreaturePageInfo' class = 'info_text' ></div></i> 
+        
+        <div class="toggle_button_container">
+            <button class='toggle_button creature_buy_number' >I</button>    
+            <button class='toggle_button creature_buy_number' >X</button>    
+            <button class='toggle_button creature_buy_number' >C</button>    
+            <button class='toggle_button creature_buy_number' >M</button>    
+        </div>
     </div>
 
     <div id = "BuyWeaponPageContainer">
-        <i><div id = 'BuyWeaponPageInfo' class = 'info_text' style='left:340px; top:70pxpx; '>Some text to see what will change and the info of your soldiers. Pretty simple and effective, I hope. </div></i> 
-        <button class='toggle_button weapon_buy_number' style="position:absolute;left:600px; top: 70px;">I</button>    
-        <button class='toggle_button weapon_buy_number' style="position:absolute;left:638px; top: 70px">X</button>    
-        <button class='toggle_button weapon_buy_number' style="position:absolute;left:676px; top: 70px">C</button>    
-        <button class='toggle_button weapon_buy_number' style="position:absolute;left:714px; top: 70px">M</button>
+        <div class="buyer_grid_container"> 
+            <div style='margin-top:20px;' class = 'buyer_button_div'> Knife &nbsp<button class = 'buy_button buy_weapon' id='KnifeBuyButton'>Buy</button><div style=" float:left; margin-top: 2px;">(0)</div></div>
+            <div hidden class = 'buyer_button_div'> Dagger &nbsp<button class = 'buy_button buy_weapon' id='DaggerBuyButton'>Buy</button><div style=" float:left; margin-top: 2px;">(0)</div></div>
+            <div hidden class = 'buyer_button_div'> Longsword &nbsp<button class = 'buy_button buy_weapon' id='LongswordBuyButton'>Buy</button><div style=" float:left; margin-top: 2px;">(0)</div></div>
+        </div>
+        
+        <i><div id = 'BuyWeaponPageInfo' class = 'info_text'></div></i>
 
-        <div style='margin-top:20px;' class = 'buyer_button_div'> Knife &nbsp<button class = 'buy_button buy_weapon' id='KnifeBuyButton'>Buy</button><div style=" float:left; margin-top: 2px;">(0)</div></div>
-        <div hidden class = 'buyer_button_div'> Dagger &nbsp<button class = 'buy_button buy_weapon' id='DaggerBuyButton'>Buy</button><div style=" float:left; margin-top: 2px;">(0)</div></div>
-        <div hidden class = 'buyer_button_div'> Longsword &nbsp<button class = 'buy_button buy_weapon' id='LongswordBuyButton'>Buy</button><div style=" float:left; margin-top: 2px;">(0)</div></div>
+        <div class="toggle_button_container">
+            <button class='toggle_button weapon_buy_number' >I</button>    
+            <button class='toggle_button weapon_buy_number' >X</button>    
+            <button class='toggle_button weapon_buy_number' >C</button>    
+            <button class='toggle_button weapon_buy_number' >M</button>
+        </div>
     </div>
 
     <div id = "SettingsPageContainer">

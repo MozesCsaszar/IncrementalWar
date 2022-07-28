@@ -46,27 +46,27 @@ class PriceHandler {
     }
 }
 
-//elemental circle: fire -> nature -> water -> earth -> fire
+//elemental circle: fire -> nature -> water -> wind -> fire
 
 /*
-    A class which handles substats, containing values for physical, magic, fire, water, earth and nature.
+    A class which handles substats, containing values for physical, magic, fire, water, wind and nature.
     Public variables contain useable strings for creating string representation
 */
 
 class SubStats {
     static text_start = '<span style="color:';
-    static type_color = {'physical' : 'black">', 'magic' : 'purple">', 'fire' : 'red">', 'water' : 'blue">', 'earth' : 'brown">', 'nature' : 'green">'}
-    static type_end= {'physical' : '⬟</span>', 'magic' : '⬣</span>', 'fire' : '■</span>', 'water' :  '■</span>', 'earth' :  '■</span>', 'nature' :  '■</span>'}
+    static type_color = {'physical' : '#c06000">', 'magic' : '#b000b0">', 'fire' : '#FF0000">', 'water' : '#4848ff">', 'wind' : '#d0FFd0">', 'nature' : '#20d000">'}
+    static type_end= {'physical' : '⬟</span>', 'magic' : '⬣</span>', 'fire' : '■</span>', 'water' :  '■</span>', 'wind' :  '■</span>', 'nature' :  '■</span>'}
 
     /*
         Create a new SubStats object from decimal values.
     */
-    constructor(physical = new Decimal(0), magic = new Decimal(0), fire = new Decimal(0), water = new Decimal(0), earth = new Decimal(0), nature = new Decimal(0)) {
+    constructor(physical = new Decimal(0), magic = new Decimal(0), fire = new Decimal(0), water = new Decimal(0), wind = new Decimal(0), nature = new Decimal(0)) {
         this.physical = physical;
         this.magic = magic;
         this.fire = fire;
         this.water = water;
-        this.earth = earth;
+        this.wind = wind;
         this.nature = nature;
     }
 
@@ -591,26 +591,26 @@ class Stats {
 
         if(this[type_a].fire.gt(0)) {
             pow = pow.add(stats_b[type_b].nature.abs().min(this[type_a].fire).mul(new Decimal(0.5)));
-            if(stats_b[type_b].earth.gt(0)) {
-                pow = pow.sub(stats_b[type_b].earth.min(this[type_a].fire).mul(new Decimal(0.5)));
+            if(stats_b[type_b].wind.gt(0)) {
+                pow = pow.sub(stats_b[type_b].wind.min(this[type_a].fire).mul(new Decimal(0.5)));
             }
         }
         if(this[type_a].nature.gt(0)) {
             pow = pow.add(stats_b[type_b].water.abs().min(this[type_a].nature).mul(new Decimal(0.5)));
-            if(stats_b[type_b].earth.gt(0)) {
+            if(stats_b[type_b].wind.gt(0)) {
                 pow = pow.sub(stats_b[type_b].fire.min(this[type_a].nature).mul(new Decimal(0.5)));
             }
         }
         if(this[type_a].water.gt(0)) {
-            pow = pow.add(stats_b[type_b].earth.abs().min(this[type_a].water).mul(new Decimal(0.5)));
-            if(stats_b[type_b].earth.gt(0)) {
+            pow = pow.add(stats_b[type_b].wind.abs().min(this[type_a].water).mul(new Decimal(0.5)));
+            if(stats_b[type_b].wind.gt(0)) {
                 pow = pow.sub(stats_b[type_b].nature.min(this[type_a].water).mul(new Decimal(0.5)));
             }
         }
-        if(this[type_a].earth.gt(0)) {
-            pow = pow.add(stats_b[type_b].fire.abs().min(this[type_a].earth).mul(new Decimal(0.5)));
-            if(stats_b[type_b].earth.gt(0)) {
-                pow = pow.sub(stats_b[type_b].water.min(this[type_a].earth).mul(new Decimal(0.5)));
+        if(this[type_a].wind.gt(0)) {
+            pow = pow.add(stats_b[type_b].fire.abs().min(this[type_a].wind).mul(new Decimal(0.5)));
+            if(stats_b[type_b].wind.gt(0)) {
+                pow = pow.sub(stats_b[type_b].water.min(this[type_a].wind).mul(new Decimal(0.5)));
             }
         }
 

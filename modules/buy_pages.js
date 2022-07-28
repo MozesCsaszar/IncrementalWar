@@ -104,7 +104,7 @@ for(let i = 0; i < BuyCreaturePage.buyers.length; i++) {
         BuyCreaturePage.infoText.innerHTML = stuff['creatures'][BuyCreaturePage.buyers[i].name].get_text();
     });
     BuyCreaturePage.buyButtons[i].parentElement.addEventListener('mouseleave',  () => {
-        BuyCreaturePage.infoText.hidden = true;
+        BuyCreaturePage.infoText.innerHTML = '';
     });
 }
 //click functions for the buy creature number toggles
@@ -195,7 +195,7 @@ for(let i = 0; i < BuyWeaponPage.buyers.length; i++) {
         BuyWeaponPage.infoText.innerHTML = stuff['weapons'][BuyWeaponPage.buyers[i].name].get_text();
     });
     BuyWeaponPage.buyButtons[i].parentElement.addEventListener('mouseleave',  () => {
-        BuyWeaponPage.infoText.hidden = true;
+        BuyCreaturePage.infoText.innerHTML = '';
     });
 }
 //click functions for the buy creature number toggles
