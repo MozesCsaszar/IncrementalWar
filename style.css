@@ -7,35 +7,36 @@
 body {
     /*VARIABLES GO HERE*/
     --default-background-color:
-    rgb(14, 14, 15);
+    rgb(35, 7, 9);
     --default-color:
-    rgb(240, 248, 255);
+    rgb(168, 127, 52);
     --default-toggle-button-border-color:
-    rgb(255, 69, 0);
+    rgb(252, 25, 25);
     --selected-toggle-button-border-color:
-    rgb(64, 00, 255);
+    rgb(145, 76, 45);
     --default-button-border-color:
-    rgb(69,192,0);
+    rgb(252, 25, 25);
     --default-tower-floor-background-color:
-    rgb(255, 255, 0);
+    rgb(146, 0, 0);
     --hover-tower-floor-background-color:
-    rgb(214, 188, 40);
+    rgb(110, 0, 0);
     --selected-tower-floor-background-color:
-    rgb(194, 146, 24);
+    rgb(90, 9, 9);
     --hover-selected-tower-floor-background-color:
-    rgb(156, 116, 13);
+    rgb(73, 9, 9);
     --default-tower-floor-color:
-    rgb(0, 0, 0);
+    rgb(39, 1, 1);
     --default-tower-floor-border-color:
-    rgb(0, 0, 0);
+    rgb(41, 0, 0);
     --default-tower-level-background-color:
-    rgb(222, 184, 135); 
+    rgb(184, 21, 62); 
     --disabled-tower-level-background-color:
-    rgb(70, 66, 61);
-    background-color: rgb(14, 14, 15);
+    rgb(73, 27, 27);
     --default-selection-list-border-color:
     rgb(128, 0, 128);
+
     font-size: 16px;
+    background-color: var(--default-background-color);
     color:
     var(--default-color);
     display: flex;
@@ -392,16 +393,15 @@ div {
     flex-direction: column;
     width:350px;
     height:fit-content;
-    border-width: 5px;
-    border-color:red;
-    
 }
 
 .element_select_list > .element_select_list_item {
     position:relative;
     height: 30px;
+    border-style:solid;
     border-width: 2px;
     border-color: var(--default-selection-list-border-color);
+    margin:0px;
     
 }
 
