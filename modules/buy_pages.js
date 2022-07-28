@@ -36,35 +36,32 @@ class Buyer {
 const BuyCreaturePage = {
     pageButton : undefined,
     container : undefined,
-    buyButtons : [],
+    //Entry format: nr_available, name, buy_button
+    buyerRows : [],
     buyers : [new Buyer('creatures','Human')],
     buyNumberButtons : [],
     buyNumberValues : [new Decimal(1),new Decimal(10),new Decimal(100),new Decimal(1000)],
     currentBuyNumberButton : 0,
     infoText : undefined,
     displayOnLoad() {
-        BuyCreaturePage.buyNumberButtons[BuyCreaturePage.currentBuyNumberButton].style.borderColor = 'blue';
+        BuyCreaturePage.buyNumberButtons[BuyCreaturePage.currentBuyNumberButton].style.borderColor = 'var(--selected-toggle-button-border-color)';
     },
     display() {
         for(let j = 0; j < BuyCreaturePage.buyers.length; j++) {
-            if(!BuyCreaturePage.buyButtons[j].parentElement.hidden) {
-                BuyCreaturePage.buyButtons[j].innerHTML = 'Buy: ' + StylizeDecimals(BuyCreaturePage.buyers[j].get_price(BuyCreaturePage.buyNumberValues[BuyCreaturePage.currentBuyNumberButton]));
-            }
+            BuyCreaturePage.buyerRows[j][2].innerHTML = 'Buy: ' + StylizeDecimals(BuyCreaturePage.buyers[j].get_price(BuyCreaturePage.buyNumberValues[BuyCreaturePage.currentBuyNumberButton]));
         }
     },
     displayEveryTick() {
-        for(let i = 0; i < BuyCreaturePage.buyButtons.length; i++) {
-            if(!BuyCreaturePage.buyButtons[i].parentElement.hidden) {
-                let name = BuyCreaturePage.buyers[i].name;
-                BuyCreaturePage.buyButtons[i].nextElementSibling.innerHTML = (Player.inventory.creatures[name] ? '(' + StylizeDecimals(Player.inventory.creatures[name], true) + ')' : '(0)');
-            }
+        for(let i = 0; i < BuyCreaturePage.buyerRows.length; i++) {
+            let name = BuyCreaturePage.buyers[i].name;
+            BuyCreaturePage.buyerRows[i][0].innerHTML = (Player.inventory.creatures[name] ? '(' + StylizeDecimals(Player.inventory.creatures[name], true) + ')' : '(0)');
         }
         
     },
     save() {
-        let save_text = BuyCreaturePage.currentBuyNumberButton + '/*/' + BuyCreaturePage.buyButtons.length;
+        let save_text = BuyCreaturePage.currentBuyNumberButton + '/*/' + BuyCreaturePage.buyerRows.length;
 
-        for(let i = 0; i < BuyCreaturePage.buyButtons.length; i++) {
+        for(let i = 0; i < BuyCreaturePage.buyerRows.length; i++) {
             save_text += '/*/' + BuyCreaturePage.buyers[i].nr_bought;
         }
         return save_text;
@@ -86,24 +83,28 @@ const BuyCreaturePage = {
 
 BuyCreaturePage.pageButton = document.querySelector('#BuyCreaturePageButton');
 BuyCreaturePage.container = document.querySelector('#BuyCreaturePageContainer');
-BuyCreaturePage.buyButtons = document.querySelectorAll(".buy_creature");
+let buyer_rows1 = document.querySelectorAll("#BuyCreaturePageContainer > .buyer_grid_container > .nr_available_div");
+let buyer_rows2 = document.querySelectorAll("#BuyCreaturePageContainer > .buyer_grid_container > .buyer_name_div");
+let buyer_rows3 = document.querySelectorAll("#BuyCreaturePageContainer > .buyer_grid_container > .buy_button");
+for(let i = 0; i < buyer_rows1.length; i++) {
+    BuyCreaturePage.buyerRows[i] = [buyer_rows1[i], buyer_rows2[i], buyer_rows3[i]];
+}
 BuyCreaturePage.buyNumberButtons = document.querySelectorAll(".creature_buy_number");
 BuyCreaturePage.infoText = document.querySelector('#BuyCreaturePageInfo');
 //initialize creature buyer's mouse envents
-for(let i = 0; i < BuyCreaturePage.buyers.length; i++) {
-    BuyCreaturePage.buyButtons[i].addEventListener('click',  () => {
+for(let i = 0; i < BuyCreaturePage.buyerRows.length; i++) {
+    BuyCreaturePage.buyerRows[i][2].addEventListener('click',  () => {
         if(BuyCreaturePage.buyers[i].buy(BuyCreaturePage.buyNumberValues[BuyCreaturePage.currentBuyNumberButton])) {
             BuyCreaturePage.display();
         }
     });
 }
 //mouse events for the buy creature's buyer divs
-for(let i = 0; i < BuyCreaturePage.buyers.length; i++) {
-    BuyCreaturePage.buyButtons[i].parentElement.addEventListener('mouseenter',  () => {
-        BuyCreaturePage.infoText.hidden = false;
+for(let i = 0; i < BuyCreaturePage.buyerRows.length; i++) {
+    BuyCreaturePage.buyerRows[i][2].addEventListener('mouseenter',  () => {
         BuyCreaturePage.infoText.innerHTML = stuff['creatures'][BuyCreaturePage.buyers[i].name].get_text();
     });
-    BuyCreaturePage.buyButtons[i].parentElement.addEventListener('mouseleave',  () => {
+    BuyCreaturePage.buyerRows[i][2].addEventListener('mouseleave',  () => {
         BuyCreaturePage.infoText.innerHTML = '';
     });
 }
@@ -111,8 +112,8 @@ for(let i = 0; i < BuyCreaturePage.buyers.length; i++) {
 for(let i = 0; i < BuyCreaturePage.buyNumberButtons.length; i++) {
     BuyCreaturePage.buyNumberButtons[i].addEventListener('click',  () => {
         if(BuyCreaturePage.currentBuyNumberButton != i) {
-            BuyCreaturePage.buyNumberButtons[i].style.borderColor = 'blue';
-            BuyCreaturePage.buyNumberButtons[BuyCreaturePage.currentBuyNumberButton].style.borderColor = 'orangered';
+            BuyCreaturePage.buyNumberButtons[i].style.borderColor = 'var(--selected-toggle-button-border-color)';
+            BuyCreaturePage.buyNumberButtons[BuyCreaturePage.currentBuyNumberButton].style.borderColor = 'var(--default-toggle-button-border-color)';
             BuyCreaturePage.currentBuyNumberButton = i;
             BuyCreaturePage.display();
         }
@@ -127,34 +128,30 @@ for(let i = 0; i < BuyCreaturePage.buyNumberButtons.length; i++) {
 const BuyWeaponPage = {
     pageButton : undefined,
     container : undefined,
-    buyButtons : [],
+    buyerRows : [],
     buyers : [new Buyer('weapons','Knife'), new Buyer('weapons','Dagger'),new Buyer('weapons','Longsword')],
     buyNumberButtons : [],
     buyNumberValues : [new Decimal(1),new Decimal(10),new Decimal(100),new Decimal(1000)],
     currentBuyNumberButton : 0,
     infoText : undefined,
     displayOnLoad() {
-        BuyWeaponPage.buyNumberButtons[BuyWeaponPage.currentBuyNumberButton].style.borderColor = 'blue';
+        BuyWeaponPage.buyNumberButtons[BuyWeaponPage.currentBuyNumberButton].style.borderColor = 'var(--selected-toggle-button-border-color)';
     },
     display() {
-        for(let j = 0; j < BuyWeaponPage.buyers.length; j++) {
-            if(!BuyWeaponPage.buyButtons[j].parentElement.hidden) {
-                BuyWeaponPage.buyButtons[j].innerHTML = 'Buy: ' + StylizeDecimals(BuyWeaponPage.buyers[j].get_price(BuyWeaponPage.buyNumberValues[BuyWeaponPage.currentBuyNumberButton]));
-            }
+        for(let j = 0; j < BuyWeaponPage.buyerRows.length; j++) {
+            BuyWeaponPage.buyerRows[j][2].innerHTML = 'Buy: ' + StylizeDecimals(BuyWeaponPage.buyers[j].get_price(BuyWeaponPage.buyNumberValues[BuyWeaponPage.currentBuyNumberButton]));
         }
     },
     displayEveryTick() {
-        for(let i = 0; i < BuyWeaponPage.buyButtons.length; i++) {
-            if(!BuyWeaponPage.buyButtons[i].parentElement.hidden) {
-                let name = BuyWeaponPage.buyers[i].name;
-                BuyWeaponPage.buyButtons[i].nextElementSibling.innerHTML = (Player.inventory.weapons[name] ? '(' + StylizeDecimals(Player.inventory.weapons[name], true) + ')' : '(0)');
-            }
+        for(let i = 0; i < BuyWeaponPage.buyerRows.length; i++) {
+            let name = BuyWeaponPage.buyers[i].name;
+            BuyWeaponPage.buyerRows[i][0].innerHTML = (Player.inventory.weapons[name] ? '(' + StylizeDecimals(Player.inventory.weapons[name], true) + ')' : '(0)');
         }
     },
     save() {
-        let save_text = BuyWeaponPage.currentBuyNumberButton + '/*/' + BuyWeaponPage.buyButtons.length;
+        let save_text = BuyWeaponPage.currentBuyNumberButton + '/*/' + BuyWeaponPage.buyerRows.length;
 
-        for(let i = 0; i < BuyWeaponPage.buyButtons.length; i++) {
+        for(let i = 0; i < BuyWeaponPage.buyerRows.length; i++) {
             save_text += '/*/' + BuyWeaponPage.buyers[i].nr_bought;
         }
         return save_text;
@@ -176,12 +173,17 @@ const BuyWeaponPage = {
 
 BuyWeaponPage.pageButton = document.querySelector('#BuyWeaponPageButton');
 BuyWeaponPage.container = document.querySelector('#BuyWeaponPageContainer');
-BuyWeaponPage.buyButtons = document.querySelectorAll(".buy_weapon");
+buyer_rows1 = document.querySelectorAll("#BuyWeaponPageContainer > .buyer_grid_container > .nr_available_div");
+buyer_rows2 = document.querySelectorAll("#BuyWeaponPageContainer > .buyer_grid_container > .buyer_name_div");
+buyer_rows3 = document.querySelectorAll("#BuyWeaponPageContainer > .buyer_grid_container > .buy_button");
+for(let i = 0; i < buyer_rows1.length; i++) {
+    BuyWeaponPage.buyerRows[i] = [buyer_rows1[i], buyer_rows2[i], buyer_rows3[i]];
+}
 BuyWeaponPage.buyNumberButtons = document.querySelectorAll(".weapon_buy_number");
 BuyWeaponPage.infoText = document.querySelector('#BuyWeaponPageInfo');
 //initialize weapon buyer mouse envets
-for(let i = 0; i < BuyWeaponPage.buyers.length; i++) {
-    BuyWeaponPage.buyButtons[i].addEventListener('click',  () => {
+for(let i = 0; i < BuyWeaponPage.buyerRows.length; i++) {
+    BuyWeaponPage.buyerRows[i][2].addEventListener('click',  () => {
         //if make a succeful purchase
         if(BuyWeaponPage.buyers[i].buy(BuyWeaponPage.buyNumberValues[BuyWeaponPage.currentBuyNumberButton])) {
             BuyWeaponPage.display();
@@ -189,21 +191,20 @@ for(let i = 0; i < BuyWeaponPage.buyers.length; i++) {
     });
 }
 //mouse events for the buy weapon's buyer divs
-for(let i = 0; i < BuyWeaponPage.buyers.length; i++) {
-    BuyWeaponPage.buyButtons[i].parentElement.addEventListener('mouseenter',  () => {
-        BuyWeaponPage.infoText.hidden = false;
+for(let i = 0; i < BuyWeaponPage.buyerRows.length; i++) {
+    BuyWeaponPage.buyerRows[i][2].addEventListener('mouseenter',  () => {
         BuyWeaponPage.infoText.innerHTML = stuff['weapons'][BuyWeaponPage.buyers[i].name].get_text();
     });
-    BuyWeaponPage.buyButtons[i].parentElement.addEventListener('mouseleave',  () => {
-        BuyCreaturePage.infoText.innerHTML = '';
+    BuyWeaponPage.buyerRows[i][2].addEventListener('mouseleave',  () => {
+        BuyWeaponPage.infoText.innerHTML = '';
     });
 }
 //click functions for the buy creature number toggles
 for(let i = 0; i < BuyWeaponPage.buyNumberButtons.length; i++) {
     BuyWeaponPage.buyNumberButtons[i].addEventListener('click',  () => {
         if(BuyWeaponPage.currentBuyNumberButton != i) {
-            BuyWeaponPage.buyNumberButtons[i].style.borderColor = 'blue';
-            BuyWeaponPage.buyNumberButtons[BuyWeaponPage.currentBuyNumberButton].style.borderColor = 'orangered';
+            BuyWeaponPage.buyNumberButtons[i].style.borderColor = 'var(--selected-toggle-button-border-color)';
+            BuyWeaponPage.buyNumberButtons[BuyWeaponPage.currentBuyNumberButton].style.borderColor = 'var(--default-toggle-button-border-color)';
             BuyWeaponPage.currentBuyNumberButton = i;
             BuyWeaponPage.display();
         }

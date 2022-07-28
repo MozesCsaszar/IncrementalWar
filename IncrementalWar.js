@@ -75,12 +75,12 @@ const UtilityFunctions = {
                 return 'green';
             }
             else {
-                return 'black';
+                return 'var(--default-color)';
             }
         }
         else {
             if(value1 == value2) {
-                return 'black';
+                return 'var(--default-color)';
             }
             if(value1 > value2) {
                 return 'red';
@@ -200,6 +200,7 @@ const SettingsPage = {
     container : undefined,
     saveGameButton : undefined,
     loadGameButton : undefined,
+    changeThemeButton : undefined,
     display() {
 
     },
@@ -222,6 +223,30 @@ SettingsPage.pageButton = document.getElementById('SettingsPageButton');
 SettingsPage.container = document.getElementById('SettingsPageContainer');
 SettingsPage.saveGameButton = document.getElementById('SaveGameButton');
 SettingsPage.loadGameButton = document.getElementById('LoadGameButton');
+
+/*
+//Theme button
+SettingsPage.changeThemeButton = document.getElementById('ChangeTheme');
+SettingsPage.changeThemeButton.addEventListener('click', function() {
+    //Change to white
+    if(SettingsPage.changeThemeButton.innerHTML == 'Black Theme') {
+        SettingsPage.changeThemeButton.innerHTML = 'White Theme';
+        document.body.style.setProperty('--default-color', 'rgb(14, 14, 15)');
+        document.body.style.setProperty('--default-background-color', 'rgb(240, 248, 255)');
+        document.body.style.backgroundColor = 'rgb(240, 248, 255)';
+        document.body.style.color = 'rgb(14, 14, 15)';
+    }
+    //Change to black
+    else if(SettingsPage.changeThemeButton.innerHTML == 'White Theme') {
+        SettingsPage.changeThemeButton.innerHTML = 'Black Theme';
+        document.body.style.setProperty('--default-color', 'rgb(240, 248, 255)');
+        document.body.style.setProperty('--default-background-color', 'rgb(14, 14, 15)');
+        document.body.style.backgroundColor = 'rgb(14, 14, 15)';
+        document.body.style.color = 'rgb(240, 248, 255)'; 
+    }
+});
+*/
+
 
 //Save your game to file
 SettingsPage.saveGameButton.addEventListener('click', () => {
@@ -263,11 +288,12 @@ SettingsPage.loadGameButton.addEventListener('input', () => {
 
 //          UNLOCKS
 
+//CHANGE so that weapon buy unlocks come back
 UnlockedStuff = {
     pages : {
         tower_page : [TowerPage.pageButton],
         army_page : [ArmyPage.pageButton, ArmyPage.levelUpButton],
-        buy_weapon_page : [BuyWeaponPage.pageButton, BuyWeaponPage.buyButtons[1].parentElement, BuyWeaponPage.buyButtons[2].parentElement],
+        buy_weapon_page : [BuyWeaponPage.pageButton],
     },
 }
 

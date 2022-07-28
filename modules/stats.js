@@ -71,7 +71,7 @@ class SubStats {
     }
 
     get type() {
-        return 'SubStats'
+        return 'SubStats';
     }
     
 
@@ -256,7 +256,7 @@ class Stats {
     }
 
     get type() {
-        return 'Stats'
+        return 'Stats';
     }
 
     eq(other) {
@@ -538,7 +538,7 @@ class Stats {
                 else {
                     t += ss + ':&nbsp';
                     if(this[ss].type == 'SubStats') {
-                        t += this[ss].get_text() + ' → ';
+                        t += this[ss].get_text() + ' → 0';
                     }
                     else {
                         t += StylizeDecimals(this[ss]) + ' → 0';

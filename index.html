@@ -16,17 +16,17 @@
     <br>
     <!--   BUTTONS FOR PAGES-->
     <div id = "PageButtonsContainer">
-        <button class='page_button' id = "TowerPageButton" hidden>Tower</button>
-        <button class='page_button' id = "ArmyPageButton" hidden>Army</button>
-        <button class='page_button' id = "BuyCreaturePageButton">Creature</button>
-        <button class='page_button' id = "BuyWeaponPageButton" hidden>Weapon</button>
-        <button class='page_button' id = "SettingsPageButton">Settings</button>
+        <div id="AllPageButtons">
+            <button class='page_button' id = "TowerPageButton" hidden>Tower</button>
+            <button class='page_button' id = "ArmyPageButton" hidden>Army</button>
+            <button class='page_button' id = "BuyCreaturePageButton">Creature</button>
+            <button class='page_button' id = "BuyWeaponPageButton" hidden>Weapon</button>
+            <button class='page_button' id = "SettingsPageButton">Settings</button>
+        </div>
+        <hr style="position: relative;height:3px; border:none; top:-10px; background-color:limegreen;width:100%;">
         <!--   A LINE TO BE UNDER THE BUTTONS-->
-        
     </div>
 
-    <hr style="height:3px; border:none; margin-top:-5px; background-color:limegreen;width:100%;">
-    
     <div id="OfflinePageContainer">
         <div id="OfflineGreeting">Welcome back, Captain!</div>
         <div id="OfflineInfoText"></div>
@@ -277,9 +277,20 @@
                     &nbsp Weapon VIII: <button class='weapon_select'>None</button>&nbsp <div class = 'weapon_available_number' style=" float:left;">(∞)</div>
                 </div>
             </div>
-            <div id = 'ArmyPageInfo' class = 'info_text' style='left:300px; top:135px; '>ERROR</div>
+            <div class="element_select_list">
+                <div class="element_select_list_item"></div>
+                <div class="element_select_list_item"></div>
+                <div class="element_select_list_item"></div>
+                <div class="element_select_list_item"></div>
+                <div class="element_select_list_item"></div>
+                <div class="element_select_list_item"></div>
+                <div class="element_select_list_item"></div>
+                <div class="element_select_list_item"></div>
+            </div>
+            <div id = 'ArmyPagePartInfo' class = 'info_text' ></div>
+            <div id = 'ArmyPageInfo' class = 'info_text'></div>
             
-            <div id = 'ArmyPagePartInfo' class = 'info_text' style='left:560; top:185px; ' hidden>ERROR</div>
+            
 
         </div>
 
@@ -294,7 +305,7 @@
 
     <div id = "BuyCreaturePageContainer"> 
         <div class="buyer_grid_container">
-            <div class = 'buyer_button_div'>  &nbsp Human &nbsp<button class = 'buy_button buy_creature' id='HumanBuyButton'>Buy</button>&nbsp<div style=" float:left; margin-top: 2px;">(0)</div></div>
+            <div class="nr_available_div">(0)</div> <div class = 'buyer_name_div'>Human</div> <button class = 'buy_button'>Buy</button>
         </div>
         
         <i><div id = 'BuyCreaturePageInfo' class = 'info_text' ></div></i> 
@@ -309,9 +320,9 @@
 
     <div id = "BuyWeaponPageContainer">
         <div class="buyer_grid_container"> 
-            <div style='margin-top:20px;' class = 'buyer_button_div'> Knife &nbsp<button class = 'buy_button buy_weapon' id='KnifeBuyButton'>Buy</button><div style=" float:left; margin-top: 2px;">(0)</div></div>
-            <div hidden class = 'buyer_button_div'> Dagger &nbsp<button class = 'buy_button buy_weapon' id='DaggerBuyButton'>Buy</button><div style=" float:left; margin-top: 2px;">(0)</div></div>
-            <div hidden class = 'buyer_button_div'> Longsword &nbsp<button class = 'buy_button buy_weapon' id='LongswordBuyButton'>Buy</button><div style=" float:left; margin-top: 2px;">(0)</div></div>
+            <div class="nr_available_div">(0)</div> <div class = 'buyer_name_div'> Knife  </div> <button class = 'buy_button' >Buy</button>
+            <div class="nr_available_div">(0)</div> <div class = 'buyer_name_div'> Dagger  </div> <button class = 'buy_button' >Buy</button>
+            <div class="nr_available_div">(0)</div> <div class = 'buyer_name_div'> Longsword  </div> <button class = 'buy_button' >Buy</button>
         </div>
         
         <i><div id = 'BuyWeaponPageInfo' class = 'info_text'></div></i>
@@ -328,6 +339,8 @@
         <button id = "SaveGameButton" style='margin-top: 20px;'>Save game</button>
         <br>
         <input type='file' accept=".txt" id="LoadGameButton">
+        <br>
+        <!-- <button id = "ChangeTheme">Black Theme</button> -->
     </div>
     
     <script src="break_infinity.js"></script>

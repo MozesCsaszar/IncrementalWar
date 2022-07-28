@@ -81,10 +81,10 @@ class TowerLevel extends ParentTowerLevel {
         let def_power = this.stats.get_power(Player.armies[TowerPage.currentArmy].stats,'Defense','Attack');
         let atk_power = Player.armies[TowerPage.currentArmy].stats.get_power(this.stats, 'Attack', 'Defense');
         if(atk_power.lt(def_power)) {
-            return 'black';
+            return 'var(--disabled-tower-level-background-color)';
         }
         else {
-            return 'burlywood';
+            return 'var(--default-tower-level-background-color)';
         }
     }
 
@@ -215,10 +215,10 @@ class BossFightLevel extends ParentTowerLevel {
         let def_power = stuff.bosses[this.boss].stats.get_power(Player.armies[TowerPage.currentArmy].stats,'Defense','Attack');
         let atk_power = Player.armies[TowerPage.currentArmy].stats.get_power(stuff.bosses[this.boss].stats, 'Attack', 'Defense');
         if(atk_power.lt(def_power)) {
-            return 'black';
+            return 'var(--disabled-tower-level-background-color)';;
         }
         else {
-            return 'burlywood';
+            return 'var(--default-tower-level-background-color)';
         }
     }
 
@@ -238,6 +238,7 @@ class BossFightLevel extends ParentTowerLevel {
 
     raid(level_nr, ) {
         document.querySelector("#PageButtonsContainer").hidden = true;
+        document.querySelector('#PageTopResourcesContainer').hidden = true;
         BossArmySelectionPage.fight = new Fight([this.boss], 1, false)
         HidePages(5);
 
@@ -261,8 +262,8 @@ const TowerPage = {
         currentFloor : 0,
     },
     displayOnLoad() {
-        TowerPage.towerFloors[TowerPage.Tower.currentFloor].style.background = 'goldenrod';
-        TowerPage.changeArmyButtons[TowerPage.currentArmy].style.borderColor = 'blue';
+        TowerPage.towerFloors[TowerPage.Tower.currentFloor].style.backgroundColor = 'var(--selected-tower-floor-background-color)';
+        TowerPage.changeArmyButtons[TowerPage.currentArmy].style.borderColor = 'var(--selected-toggle-button-border-color)';
         TowerPage.changeArmy(TowerPage.currentArmy);
         TowerPage.Tower.floors[TowerPage.Tower.currentFloor].display(TowerPage.Tower.currentFloor);
         //set the context text to the value you need on levels raided
@@ -345,9 +346,9 @@ while(i < j) {
 //initialize tower page change army buttons
 for(let i = 0; i < TowerPage.changeArmyButtons.length; i++) {
     TowerPage.changeArmyButtons[i].addEventListener('click', () => {
-        TowerPage.changeArmyButtons[TowerPage.currentArmy].style.borderColor = 'orangered';
+        TowerPage.changeArmyButtons[TowerPage.currentArmy].style.borderColor = 'var(--default-toggle-button-border-color)';
         TowerPage.changeArmy(i);
-        TowerPage.changeArmyButtons[TowerPage.currentArmy].style.borderColor = 'blue';
+        TowerPage.changeArmyButtons[TowerPage.currentArmy].style.borderColor = 'var(--selected-toggle-button-border-color)';
     })
 };
 
@@ -361,16 +362,23 @@ for(let i = 0; i < TowerPage.towerFloors.length; i++) {
         }
         else {
             TowerPage.Tower.floors[i].display(i);
-            if(TowerPage.towerFloors[i].style.background != 'goldenrod') {
-                TowerPage.towerFloors[i].style.background = 'gold';
+            //if the current floor is not selected
+            if(i != TowerPage.Tower.currentFloor) {
+                TowerPage.towerFloors[i].style.backgroundColor = 'var(--hover-tower-floor-background-color)';
+            }
+            else {
+                TowerPage.towerFloors[i].style.backgroundColor = 'var(--hover-selected-tower-floor-background-color)';
             }
         }
     });
     //on mouseleave, revert to current floor
     TowerPage.towerFloors[i].addEventListener('mouseleave', () => {
         TowerPage.Tower.floors[TowerPage.Tower.currentFloor].display(TowerPage.Tower.currentFloor);
-        if(TowerPage.towerFloors[i].style.background != 'goldenrod') {
-            TowerPage.towerFloors[i].style.background = 'yellow';
+        if(i != TowerPage.Tower.currentFloor) {
+            TowerPage.towerFloors[i].style.backgroundColor = 'var(--default-tower-floor-background-color)';
+        }
+        else {
+            TowerPage.towerFloors[i].style.backgroundColor = 'var(--selected-tower-floor-background-color)';
         }
         
     });
@@ -379,9 +387,9 @@ for(let i = 0; i < TowerPage.towerFloors.length; i++) {
         if(i >= TowerPage.Tower.floors.length) {
             return;
         }
-        TowerPage.towerFloors[TowerPage.Tower.currentFloor].style.background = 'yellow';
+        TowerPage.towerFloors[TowerPage.Tower.currentFloor].style.background = 'var(--default-tower-floor-background-color)';
         TowerPage.Tower.currentFloor = i;
-        TowerPage.towerFloors[i].style.background = 'goldenrod';
+        TowerPage.towerFloors[i].style.background = 'var(--selected-tower-floor-background-color)';
     });
 };
 

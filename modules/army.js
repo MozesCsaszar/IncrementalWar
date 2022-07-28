@@ -73,8 +73,8 @@ class Army {
         if(this.level >= Army.level_bonuses.length) {
             return 'Max level reached, cannot upgrade further, sorry. :)';
         }
-        return 'Power multiplier: ' + StylizeDecimals(this.level_bonus) + ' → <span style="color:' + 
-        UtilityFunctions.get_compare_color(this.level_bonus, this.level_bonus.mul(Army.level_bonuses[this.level + 1])) + '">' +
+        return 'Power multiplier: ' + StylizeDecimals(this.level_bonus) + '<span style="color:' + 
+        UtilityFunctions.get_compare_color(this.level_bonus, this.level_bonus.mul(Army.level_bonuses[this.level + 1])) + '">' +  ' → ' + 
         StylizeDecimals(this.level_bonus.mul(Army.level_bonuses[this.level + 1])) + '</span>';
     }
     //helper function to change from one item's stats to the other
@@ -254,14 +254,14 @@ class Army {
                 case 'creatures':
                     this.change_stats(type, change_to, change_index);
                     this.creature = change_to;
-                    new_army = [this.size,this.stats, this.body_parts]
+                    new_army = [this.size.min(Player.inventory[type][change_to]),this.stats, this.body_parts];
                     this.change_stats(type, changed, change_index);
                     this.creature = changed;
                     break;
                 case 'weapons':
                     this.change_stats(type, change_to, change_index);
                     this[type][change_index] = change_to;
-                    new_army = [this.size,this.stats, this.body_parts]
+                    new_army = [this.size.min(Player.inventory[type][change_to]),this.stats, this.body_parts];
                     this.change_stats(type, changed, change_index);
                     this[type][change_index] = changed;
                     break;
@@ -275,7 +275,8 @@ class Army {
         if(!Array.isArray(new_army)) {
             new_army = [new_army.size,new_army.stats, new_army.body_parts];
         }
-        let text = 'Size: ' + StylizeDecimals(this.size, true) + ' → <span style="color:' + UtilityFunctions.get_compare_color(this.size,new_army[0]) + ';">' + StylizeDecimals(new_army[0],true) + '</span><br>';
+        let text = 'Size: ' + StylizeDecimals(this.size, true) + '<span style="color:' + UtilityFunctions.get_compare_color(this.size,new_army[0]) + ';">' +
+        ' → ' +  StylizeDecimals(new_army[0],true) + '</span><br>';
         text += this.stats.get_compare_text(new_army[1]) + '<br>';
         text += this.body_parts.get_compare_text(new_army[2]);
         return text;
@@ -389,7 +390,7 @@ const ArmyPage = {
     levelUpButton : undefined,
     levelUpCost : undefined,
     displayOnLoad() {
-        ArmyPage.changeArmyButtons[ArmyPage.currentArmy].style.borderColor = 'blue';
+        ArmyPage.changeArmyButtons[ArmyPage.currentArmy].style.borderColor = 'var(--selected-toggle-button-border-color)';
         ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
         ArmyPage.armySizeInput.value = StylizeDecimals(Player.armies[ArmyPage.currentArmy].size,true);
     },
@@ -467,7 +468,7 @@ const ArmyPage = {
         save_text = save_text.split('/*/');
         let i = 0;
         //reset color before doing anything else
-        ArmyPage.changeArmyButtons[ArmyPage.currentArmy].style.borderColor = 'orangered';
+        ArmyPage.changeArmyButtons[ArmyPage.currentArmy].style.borderColor = 'var(--selected-toggle-button-border-color)';
         ArmyPage.currentArmy = Number(save_text[i]);
         i++;
         let type, j;
@@ -505,9 +506,9 @@ ArmyPage.levelUpCost = document.querySelector('#ArmyLevelUpCost');
 //initialize changeArmyButton's click function
 for(let i = 0; i < ArmyPage.changeArmyButtons.length; i++) {
     ArmyPage.changeArmyButtons[i].addEventListener('click', () => {
-        ArmyPage.changeArmyButtons[ArmyPage.currentArmy].style.borderColor = 'orangered';
+        ArmyPage.changeArmyButtons[ArmyPage.currentArmy].style.borderColor = 'var(--default-toggle-button-border-color)';
         ArmyPage.changeArmy(i);
-        ArmyPage.changeArmyButtons[ArmyPage.currentArmy].style.borderColor = 'blue';
+        ArmyPage.changeArmyButtons[ArmyPage.currentArmy].style.borderColor = 'var(--selected-toggle-button-border-color)';
     });
 }
 
@@ -528,11 +529,10 @@ for(let type in ArmyPage.selects) {
         });
         //selects' parent mouseenter and mouseleave
         ArmyPage.selects.creatures[0].parentElement.addEventListener('mouseenter', function() {
-            ArmyPage.partInfo.hidden = false;
             ArmyPage.partInfo.innerHTML = stuff.creatures[Player.armies[ArmyPage.currentArmy].creature].get_text();
         });
         ArmyPage.selects.creatures[0].parentElement.addEventListener('mouseleave', function() {
-            ArmyPage.partInfo.hidden = true;
+            ArmyPage.partInfo.innerHTML = '';
         });
         //selectButton click, mouseenter and mouseleave
         for(let i = 0; i < ArmyPage.selectButtons.creatures.length; i++) {
@@ -577,13 +577,12 @@ for(let type in ArmyPage.selects) {
             ArmyPage.selectButtons.creatures[i].addEventListener('mouseenter', function(event) {
                 ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_change_text('creatures',ArmyPage.selectButtons.creatures[i].innerHTML, false);
                 //show info text for the changed part
-                ArmyPage.partInfo.hidden = false;
                 ArmyPage.partInfo.innerHTML = stuff.creatures[Player.armies[ArmyPage.currentArmy].creature].get_compare_text(stuff.creatures[ArmyPage.selectButtons.creatures[i].innerHTML]);
             });
             ArmyPage.selectButtons.creatures[i].addEventListener('mouseleave', function() {
                 ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
                 //hide info text of the changing part
-                ArmyPage.partInfo.hidden = true;
+                ArmyPage.partInfo.innerHTML = '';
             });
         }
     }
@@ -619,11 +618,10 @@ for(let type in ArmyPage.selects) {
             });
             //selects' parent mouseenter and mouseleave
             ArmyPage.selects[type][i].parentElement.addEventListener('mouseenter', function() {
-                ArmyPage.partInfo.hidden = false;
                 ArmyPage.partInfo.innerHTML = stuff[type][Player.armies[ArmyPage.currentArmy][type][i]].get_text();
             });
             ArmyPage.selects[type][i].parentElement.addEventListener('mouseleave', function() {
-                ArmyPage.partInfo.hidden = true;
+                ArmyPage.partInfo.innerHTML = '';
             });
         }
         //selectButton click, mouseenter and mouseleave
@@ -671,13 +669,12 @@ for(let type in ArmyPage.selects) {
             ArmyPage.selectButtons[type][i].addEventListener('mouseenter', function() {
                 ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_change_text(type,ArmyPage.selectButtons[type][i].innerHTML, ArmyPage.currentSelecting[type]);
                 //show info text for the changed part
-                ArmyPage.partInfo.hidden = false;
                 ArmyPage.partInfo.innerHTML = stuff[type][Player.armies[ArmyPage.currentArmy][type][ArmyPage.currentSelecting[type]]].get_compare_text(stuff[type][ArmyPage.selectButtons[type][i].innerHTML]);
             });
             ArmyPage.selectButtons[type][i].addEventListener('mouseleave', function() {
                 ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
                 //hide info text of the changing part
-                ArmyPage.partInfo.hidden = true;
+                ArmyPage.partInfo.innerHTML = '';
             });
         
         };
@@ -695,16 +692,17 @@ ArmyPage.maxArmySizeButton.addEventListener('click', () => {
 ArmyPage.levelUpButton.addEventListener('mouseenter', function() {
     if(Player.armies[ArmyPage.currentArmy].level < Army.level_prices.length) {
         ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_level_up_text();
-    ArmyPage.partInfo.hidden = false;
     ArmyPage.partInfo.innerHTML = Player.armies[ArmyPage.currentArmy].get_compare_level_text();
-    ArmyPage.levelText.innerHTML = 'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1) + ' → <span style="color:' + UtilityFunctions.get_compare_color(Player.armies[ArmyPage.currentArmy].level, Player.armies[ArmyPage.currentArmy].level + 1, false) + '">' +(Player.armies[ArmyPage.currentArmy].level + 2) + '</span><br>';
+    ArmyPage.levelText.innerHTML = 'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1) + 
+    '<span style="color:' + UtilityFunctions.get_compare_color(Player.armies[ArmyPage.currentArmy].level, Player.armies[ArmyPage.currentArmy].level + 1, false)  + '">' + ' → ' +
+     (Player.armies[ArmyPage.currentArmy].level + 2) + '</span><br>';
     }
 });
 
 ArmyPage.levelUpButton.addEventListener('mouseleave', function() {
     ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
     ArmyPage.levelText.innerHTML = 'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1);
-    ArmyPage.partInfo.hidden = true;
+    ArmyPage.partInfo.innerHTML = '';
 });
 
 ArmyPage.levelUpButton.addEventListener('click', function() {

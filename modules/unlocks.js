@@ -144,8 +144,6 @@ class Unlock {
 Unlockables = {
     buyer : {
         'Human' : [new Unlock('quantity', new Decimal(1), true, ['pages','army_page',0]), ],
-        'Knife' : [new Unlock('quantity', new Decimal(2), true, ['pages','buy_weapon_page',1]), new Unlock('quantity', new Decimal(3), true, ['pages','buy_weapon_page',2])],
-        'Dagger' : [new Unlock('quantity', new Decimal(1), true, ['pages','buy_weapon_page',2])]
     },
     army : {
         'power' : [new Unlock('quantity', new Decimal(1), [true, true], ['pages','buy_weapon_page',0,'pages','tower_page',0])],
@@ -166,8 +164,6 @@ Unlockables = {
     unlockNow : {
         buyer : {
             'Human' : 0,
-            'Knife' : 0,
-            'Dagger' : 0,
         },
         army : {
             'power' : 0,

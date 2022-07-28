@@ -64,6 +64,7 @@ BossArmySelectionPage.startFightButton.addEventListener('click', function() {
 document.querySelector("#BackFromBossArmySelectionPage").addEventListener('click', function() {
     //get page buttons back
     document.querySelector("#PageButtonsContainer").hidden = false;
+    document.querySelector('#PageTopResourcesContainer').hidden = false;
     //return to tower page
     HidePages(0);
 });
@@ -657,7 +658,7 @@ const BossFightingResultPage = {
         let t;
         if(BossFightPage.fightingArmiesNr == 0) {
             t = 'You lost!<br>';
-            if(fight.lose_soldiers) {
+            if(BossFightPage.fight.lose_soldiers) {
                 t += 'With your loss, you lost all your soldiers as well!';
             }
             else {
@@ -667,7 +668,7 @@ const BossFightingResultPage = {
         }
         else {
             t = 'You won!<br>';
-            if(fight.lose_soldiers) {
+            if(BossFightPage.fight.lose_soldiers) {
                 t += "Though you lost part of your army.";
             }
             else {
@@ -679,6 +680,7 @@ const BossFightingResultPage = {
     displayOnLoad() {
     },
     display() {
+        console.log('Here');
         BossFightingResultPage.resultInfo.innerHTML = BossFightingResultPage.generate_message();
     },
     displayEveryTick() {
@@ -692,8 +694,9 @@ BossFightingResultPage.resultInfo = document.querySelector("#AfterFightMessage")
 
 //Back to tower page button
 document.querySelector("#BackButtonFromResults").addEventListener('click', function() {
-    //get page buttons back
+    //get resource bar and page buttons back
     document.querySelector("#PageButtonsContainer").hidden = false;
+    document.querySelector('#PageTopResourcesContainer').hidden = false;
     //return to tower page
     HidePages(0);
 });

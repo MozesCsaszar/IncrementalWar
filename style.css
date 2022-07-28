@@ -5,16 +5,50 @@
 }
 
 body {
+    /*VARIABLES GO HERE*/
+    --default-background-color:
+    rgb(14, 14, 15);
+    --default-color:
+    rgb(240, 248, 255);
+    --default-toggle-button-border-color:
+    rgb(255, 69, 0);
+    --selected-toggle-button-border-color:
+    rgb(64, 00, 255);
+    --default-button-border-color:
+    rgb(69,192,0);
+    --default-tower-floor-background-color:
+    rgb(255, 255, 0);
+    --hover-tower-floor-background-color:
+    rgb(214, 188, 40);
+    --selected-tower-floor-background-color:
+    rgb(194, 146, 24);
+    --hover-selected-tower-floor-background-color:
+    rgb(156, 116, 13);
+    --default-tower-floor-color:
+    rgb(0, 0, 0);
+    --default-tower-floor-border-color:
+    rgb(0, 0, 0);
+    --default-tower-level-background-color:
+    rgb(222, 184, 135); 
+    --disabled-tower-level-background-color:
+    rgb(70, 66, 61);
     background-color: rgb(14, 14, 15);
+    --default-selection-list-border-color:
+    rgb(128, 0, 128);
     font-size: 16px;
-    color:aliceblue;
-
-     /*VARIABLES GO HERE*/
+    color:
+    var(--default-color);
+    display: flex;
+    flex-direction: column;
 }
 
 button {
     font-size: 14px;
     text-align: center;
+    color:var(--default-color);
+    background-color: var(--default-background-color);
+    border-color: var(--default-button-border-color);
+    border-width: 2px;
 }
 
 div {
@@ -49,15 +83,21 @@ div {
 
 #PageButtonsContainer {
     display:flex;
-    width: 100%;
+    flex-direction: column;
     justify-content: center;
+    margin-bottom: 0px;
 }
 
-#PageButtonsContainer > button {
+#PageButtonsContainer > #AllPageButtons {
+    display:flex;
+    justify-content: center;
+    margin-bottom: 0px;
+}
+
+#AllPageButtons > button {
     width: 85px;
     height: 30px;
     background-color:limegreen;
-    border-color: auto;
     border-radius: 10px;
     border-color:rgb(202, 226, 247);
     border-style: solid;
@@ -67,6 +107,7 @@ div {
 
     font-weight: bold;
     margin-left: 10px;
+    
     outline: none;
 }
 
@@ -76,7 +117,7 @@ div {
     position: absolute;
     font-size:medium;
     background-color: #00000070;
-    color:aliceblue;
+    color:var(--default-color);
     width:250px;
     height: auto;
     border-width: 25px;
@@ -93,8 +134,9 @@ div {
     margin-left: 8px;
     width: 30px;
     height: 30px;
-    background-color:orchid;
-    border-color: auto;
+    background-color: var(--default-background-color);
+    color:var(--default-color);
+    border-color: var(--default-toggle-button-border-color);
     border-radius: 6px;
 }
 
@@ -104,13 +146,12 @@ div {
 
 /*      Offline Page*/
 #OfflinePageContainer {
+    position:absolute;
     display:flex;
     flex-direction: column;
+    width:1000px;
+    align-self: center;
     align-items: center;
-}
-
-#OfflinePageContainer > div {
-    width: 500px;
 }
     
 #OfflineGreeting {
@@ -136,6 +177,11 @@ div {
 
 /*      Tower Page                  */
 
+#TowerPageContainer{
+    width:fit-content;
+    align-self: center;
+}
+
 .tower_page_container{
     display:flex;
 }
@@ -147,19 +193,19 @@ div {
 
 .tower > div {
     position: relative;
-    background-color: yellow;
-    color: black;
+    background-color: var(--default-tower-floor-background-color);
+    color: var(--default-tower-floor-color);
     /*TROUBLES here*/
     height: 20px;
     /*TILL HERE*/
     margin: -1px 0px -1px 0px;
-    border-bottom: 2px solid black;
-    border-top: 2px solid black;
+    border-bottom: 2px solid var(--default-tower-floor-border-color);
+    border-top: 2px solid var(--default-tower-floor-border-color);
     text-align: center;
 }
 .tower > div::after{
     content: "";
-    border: 2px solid black;
+    border: 2px solid var(--default-tower-floor-border-color);
     z-index: 1;
     height: inherit;
     background-color: inherit;
@@ -168,7 +214,7 @@ div {
 .tower > div::before {
     content: "";
     position: absolute;
-    border: 2px solid black;
+    border: 2px solid var(--default-tower-floor-border-color);
     background-color: inherit;
     height: inherit;
     z-index: 1;
@@ -234,7 +280,7 @@ div {
     top: 7px;
     left: 39px;
     border:none;
-    border-top: 2px solid black;
+    border-top: 2px solid var(--default-tower-floor-border-color);
     transform: skew(-30deg, 33deg);
 }
 .tower > .tower_top3::before {
@@ -243,19 +289,20 @@ div {
     top: 7px;
     right: 39px;
     border:none;
-    border-top: 2px solid black;
+    border-top: 2px solid var(--default-tower-floor-border-color);
     transform: skew(30deg, -33deg);
 }
 
 #TowerLevelsContainer{
     position:relative;
     margin-left: 10px;
+    width:500px;
 }
 
 .tower_level {
     position: absolute;
-    background-color: burlywood;
-    border: 2px solid black;
+    background-color: var(--default-tower-level-background-color);
+    border: 2px solid var(--default-tower-floor-border-color);
     text-align: center;
     font-size: 20px;
     font-weight: bolder;
@@ -274,6 +321,11 @@ div {
 }
 
 /*      Army Page                                   */
+
+#ArmyPageContainer {
+    width:fit-content;
+    align-self: center;
+}
 
 .select_army_button_container {
     display:flex;
@@ -322,7 +374,7 @@ div {
     border-width: 2px;
     border-color:mediumvioletred;
     background-color: inherit;
-    color:aliceblue;
+    color:var(--default-color);
 }
 
 .army_info_container {
@@ -332,13 +384,59 @@ div {
 .army_management_container {
     display: flex;
     flex-direction: column;
+    width:350px;
 }
 
+.element_select_list {
+    display: flex;
+    flex-direction: column;
+    width:350px;
+    height:fit-content;
+    border-width: 5px;
+    border-color:red;
+    
+}
+
+.element_select_list > .element_select_list_item {
+    position:relative;
+    height: 30px;
+    border-width: 2px;
+    border-color: var(--default-selection-list-border-color);
+    
+}
+
+#ArmyPagePartInfo {
+    width:300px;
+}
+
+#ArmyPageInfo {
+    width:300px;
+}
+
+/*      Buy Pages in General                                */
+
+
+.buy_button {
+    font-size: 15px;
+}
+
+.buyer_grid_container {
+    display: grid;
+    grid-template-columns: 100px 200px 140px;
+    grid-template-rows: 30px;
+    height: fit-content;
+}
+
+.buyer_grid_container > .nr_available_div {
+    text-align: center;
+}
 
 /*      Buy Creature Page                                   */
 
-#BuyCreaturePageContainer{
+#BuyCreaturePageContainer {
     display:flex;
+    width:fit-content;
+    align-self: center;
 }
 
 
@@ -347,6 +445,8 @@ div {
 
 #BuyWeaponPageContainer {
     display: flex;
+    width:fit-content;
+    align-self: center;
 }
 
 
@@ -425,7 +525,7 @@ div {
     width:inherit;
     height: inherit;
     text-align: center;
-    color:aliceblue;
+    color:var(--default-color);
 }
 
 .army_in_boss_fight_units_background {
@@ -445,7 +545,7 @@ div {
     width:inherit;
     height: inherit;
     text-align: center;
-    color:aliceblue;
+    color:var(--default-color);
 }
 
 .army_in_boss_fight_attack_background {
@@ -491,7 +591,7 @@ div {
     width:inherit;
     height: inherit;
     text-align: center;
-    color:aliceblue;
+    color:var(--default-color);
     z-index: 2;
 }
 
@@ -513,7 +613,7 @@ div {
     width:inherit;
     height: inherit;
     text-align: center;
-    color:aliceblue;
+    color:var(--default-color);
     z-index: 2;
 }
 
@@ -552,8 +652,10 @@ div {
 #BossFightingResultPageContainer {
     display: flex;
     flex-direction: column;
+    width:fit-content;
+    align-self: center;
     align-items: center;
-    width: 500px;
+    width:600px;
 }
 
 #BossFightingResultPageContainer > button {
@@ -564,16 +666,6 @@ div {
     width: 100px;
     margin-top: 10px;
     margin-bottom: 10px;
-}
-
-
-.buyer_button_div {
-    width: 300px;
-}
-
-.buy_button {
-    width: 120px;
-    font-size: 15px;
 }
 
 
