@@ -56,7 +56,7 @@ class PriceHandler {
 class SubStats {
     static text_start = '<span style="color:';
     static type_color = {'physical' : '#c06000">', 'magic' : '#b000b0">', 'fire' : '#FF0000">', 'water' : '#4848ff">', 'wind' : '#d0FFd0">', 'nature' : '#20d000">'}
-    static type_end= {'physical' : '⬟</span>', 'magic' : '⬣</span>', 'fire' : '■</span>', 'water' :  '■</span>', 'wind' :  '■</span>', 'nature' :  '■</span>'}
+    static type_end= {'physical' : '&#x2BC0;</span>', 'magic' : '&#x2BC1;</span>', 'fire' : '&#x2BC5;</span>', 'water' :  '&#x2BC6;</span>', 'wind' :  '&#x2BC7;</span>', 'nature' :  '&#x2BC8;</span>'}
 
     /*
         Create a new SubStats object from decimal values.
@@ -523,10 +523,10 @@ class Stats {
                 else  {
                     t += ss + ':&nbsp';
                     if(other[ss].type == 'SubStats') {
-                        t += '0 → ' + other[ss].get_text();
+                        t += '0 &rightarrow; ' + other[ss].get_text();
                     }
                     else {
-                        t += '0 → ' + StylizeDecimals(other[ss]);
+                        t += '0 &rightarrow; ' + StylizeDecimals(other[ss]);
                     }
                 }
             }
@@ -538,10 +538,10 @@ class Stats {
                 else {
                     t += ss + ':&nbsp';
                     if(this[ss].type == 'SubStats') {
-                        t += this[ss].get_text() + ' → 0';
+                        t += this[ss].get_text() + ' &rightarrow; 0';
                     }
                     else {
-                        t += StylizeDecimals(this[ss]) + ' → 0';
+                        t += StylizeDecimals(this[ss]) + ' &rightarrow; 0';
                     }
                 }
                 
@@ -554,10 +554,10 @@ class Stats {
                 else {
                     t += ss + ':&nbsp';
                     if(other[ss].type == 'SubStats') {
-                        t += this[ss].get_text() + ' → ' + other[ss].get_text();
+                        t += this[ss].get_text() + ' &rightarrow; ' + other[ss].get_text();
                     }
                     else {
-                        t += StylizeDecimals(this[ss]) + ' → ' + StylizeDecimals(other[ss]);
+                        t += StylizeDecimals(this[ss]) + ' &rightarrow; ' + StylizeDecimals(other[ss]);
                     }
                 }
                 

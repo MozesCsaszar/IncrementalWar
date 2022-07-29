@@ -175,7 +175,7 @@ const Player = {
         i++;
         k = 0;
         while(j > 0) {
-             i = this.armies[k].load(save_text,i);
+             i = this.armies[k].load(save_text,i, k);
              k++;
              j--;
         }
@@ -203,21 +203,21 @@ const SettingsPage = {
     changeThemeButton : undefined,
     colorThemes: {
         'Black Theme': [
-                ['--default-background-color', 'rgb(14, 14, 15)'],
-                ['--default-color', 'rgb(240, 248, 255)'],
-                ['--default-toggle-button-border-color', 'rgb(255, 69, 0)'],
-                ['--selected-toggle-button-border-color', 'rgb(64, 00, 255)'],
-                ['--default-button-border-color', 'rgb(69,192,0)'],
-                ['--default-tower-floor-background-color', 'rgb(255, 255, 0)'],
-                ['--hover-tower-floor-background-color', 'rgb(214, 188, 40)'],
-                ['--selected-tower-floor-background-color', 'rgb(194, 146, 24)'],
-                ['--hover-selected-tower-floor-background-color', 'rgb(156, 116, 13)'],
-                ['--default-tower-floor-color', 'rgb(0, 0, 0)'],
-                ['--default-tower-floor-border-color', 'rgb(0, 0, 0)'],
-                ['--default-tower-level-background-color', 'rgb(222, 184, 135)'], 
-                ['--disabled-tower-level-background-color', 'rgb(70, 66, 61)'],
-                ['--default-selection-list-border-color', 'rgb(128, 0, 128)'],
-            ],
+            ['--default-background-color', 'rgb(14, 14, 15)'],
+            ['--default-color', 'rgb(240, 248, 255)'],
+            ['--default-toggle-button-border-color', 'rgb(255, 69, 0)'],
+            ['--selected-toggle-button-border-color', 'rgb(64, 00, 255)'],
+            ['--default-button-border-color', 'rgb(69,192,0)'],
+            ['--default-tower-floor-background-color', 'rgb(255, 255, 0)'],
+            ['--hover-tower-floor-background-color', 'rgb(214, 188, 40)'],
+            ['--selected-tower-floor-background-color', 'rgb(194, 146, 24)'],
+            ['--hover-selected-tower-floor-background-color', 'rgb(156, 116, 13)'],
+            ['--default-tower-floor-color', 'rgb(0, 0, 0)'],
+            ['--default-tower-floor-border-color', 'rgb(0, 0, 0)'],
+            ['--default-tower-level-background-color', 'rgb(222, 184, 135)'], 
+            ['--disabled-tower-level-background-color', 'rgb(70, 66, 61)'],
+            ['--default-selection-list-border-color', 'rgb(128, 0, 128)'],
+        ],
         'Grey Theme' : [
             ['--default-background-color', 'rgb(60, 60, 67)'],
             ['--default-color', 'rgb(255, 255, 255)'],

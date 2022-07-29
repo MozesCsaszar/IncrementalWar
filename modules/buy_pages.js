@@ -83,9 +83,9 @@ const BuyCreaturePage = {
 
 BuyCreaturePage.pageButton = document.querySelector('#BuyCreaturePageButton');
 BuyCreaturePage.container = document.querySelector('#BuyCreaturePageContainer');
-let buyer_rows1 = document.querySelectorAll("#BuyCreaturePageContainer > .buyer_grid_container > .nr_available_div");
-let buyer_rows2 = document.querySelectorAll("#BuyCreaturePageContainer > .buyer_grid_container > .buyer_name_div");
-let buyer_rows3 = document.querySelectorAll("#BuyCreaturePageContainer > .buyer_grid_container > .buy_button");
+let buyer_rows1 = document.querySelectorAll("#BuyCreaturePageContainer > .nr_name_button_flex_container > .nr_name_button_container > .nr_available_div");
+let buyer_rows2 = document.querySelectorAll("#BuyCreaturePageContainer > .nr_name_button_flex_container > .nr_name_button_container > .element_name_div");
+let buyer_rows3 = document.querySelectorAll("#BuyCreaturePageContainer > .nr_name_button_flex_container > .nr_name_button_container > .complementary_button");
 for(let i = 0; i < buyer_rows1.length; i++) {
     BuyCreaturePage.buyerRows[i] = [buyer_rows1[i], buyer_rows2[i], buyer_rows3[i]];
 }
@@ -173,9 +173,9 @@ const BuyWeaponPage = {
 
 BuyWeaponPage.pageButton = document.querySelector('#BuyWeaponPageButton');
 BuyWeaponPage.container = document.querySelector('#BuyWeaponPageContainer');
-buyer_rows1 = document.querySelectorAll("#BuyWeaponPageContainer > .buyer_grid_container > .nr_available_div");
-buyer_rows2 = document.querySelectorAll("#BuyWeaponPageContainer > .buyer_grid_container > .buyer_name_div");
-buyer_rows3 = document.querySelectorAll("#BuyWeaponPageContainer > .buyer_grid_container > .buy_button");
+buyer_rows1 = document.querySelectorAll("#BuyWeaponPageContainer > .nr_name_button_flex_container > .nr_name_button_container > .nr_available_div");
+buyer_rows2 = document.querySelectorAll("#BuyWeaponPageContainer > .nr_name_button_flex_container > .nr_name_button_container > .element_name_div");
+buyer_rows3 = document.querySelectorAll("#BuyWeaponPageContainer > .nr_name_button_flex_container > .nr_name_button_container > .complementary_button");
 for(let i = 0; i < buyer_rows1.length; i++) {
     BuyWeaponPage.buyerRows[i] = [buyer_rows1[i], buyer_rows2[i], buyer_rows3[i]];
 }

@@ -52,11 +52,37 @@ button {
     border-width: 2px;
 }
 
+button:hover {
+    cursor:pointer;
+}
+
 div {
     margin:5px;
 }
 
-/*    Place for the resource display                      */
+div:hover {
+    cursor:default;
+}
+
+/*      General Stuff                                       */
+
+.nr_name_button_container {
+    display:flex;
+}
+
+.nr_name_button_container > .nr_available_div {
+    width:100px;
+}
+
+.nr_name_button_container > .element_name_div {
+    width:200px;
+}
+
+.nr_name_button_container > .complementary_button {
+    width:140px;
+}
+
+/*      Place for the resource display                      */
 
 #PageTopResourcesContainer {
     height: auto;
@@ -80,7 +106,7 @@ div {
     margin-left:-2px;
 }
 
-/*    Overhead fo the things that are over your head      */
+/*      Overhead fo the things that are over your head      */
 
 #PageButtonsContainer {
     display:flex;
@@ -343,41 +369,6 @@ div {
     
 }
 
-.creature_available_number {
-    position:relative;
-    top:-5px;
-    width: 40px;
-}
-
-.weapon_available_number {
-    position:relative;
-    top:-5px;
-    width: 40px;
-}
-
-.army_stuff_container{
-    width: 350px;
-    justify-content: center;
-}
-
-.army_stuff_container > button {
-    position:relative;
-    width:100px;
-    right:-25px;
-}
-
-.stuff_select_button {
-    width : 120px;
-    height: 20px;
-    margin-left : 5px;
-    margin-right: 5px;
-    margin-top: 3px;
-    border-width: 2px;
-    border-color:mediumvioletred;
-    background-color: inherit;
-    color:var(--default-color);
-}
-
 .army_info_container {
     display:flex;
 }
@@ -385,7 +376,11 @@ div {
 .army_management_container {
     display: flex;
     flex-direction: column;
-    width:350px;
+    width:fit-content;
+}
+
+.army_management_container > .nr_name_button_flex_container > .nr_name_button_container > .element_name_div {
+    width:100px;
 }
 
 .element_select_list {
@@ -402,7 +397,17 @@ div {
     border-width: 2px;
     border-color: var(--default-selection-list-border-color);
     margin:0px;
-    
+    text-align: center;
+}
+
+.element_select_list > .element_select_list_back_button {
+    width:60px;
+    align-self: center;
+    vertical-align: middle;
+    text-align: center;
+    border-style: solid;
+    border-color: var(--default-selection-list-border-color);
+    border-width: 2px;
 }
 
 #ArmyPagePartInfo {
@@ -420,15 +425,14 @@ div {
     font-size: 15px;
 }
 
-.buyer_grid_container {
-    display: grid;
-    grid-template-columns: 100px 200px 140px;
-    grid-template-rows: 30px;
-    height: fit-content;
+.nr_name_button_flex_container {
+    display:flex;
+    width:fit-content;
+    flex-direction: column;
 }
 
-.buyer_grid_container > .nr_available_div {
-    text-align: center;
+.nr_name_button_flex_container > .nr_name_button_container {
+    margin:2px;
 }
 
 /*      Buy Creature Page                                   */
