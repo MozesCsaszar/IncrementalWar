@@ -1,7 +1,7 @@
 //regular save divider = '/*/'
 class Army {
-    static level_bonuses = [new Decimal(1), new Decimal(1.1), new Decimal(1.2), new Decimal(1.3), new Decimal(1.5), new Decimal(2)];
-    static level_prices = [new Decimal(1000), new Decimal(10000), new Decimal(150000), new Decimal('2.3e6'), new Decimal('3e7')];
+    static level_bonuses = [new Decimal(1), new Decimal(1.1), new Decimal(1.2), new Decimal(1.3), new Decimal(1.5), new Decimal(1.7), new Decimal(2)];
+    static level_prices = [new Decimal(1000), new Decimal(6000), new Decimal(15000), new Decimal(50000), new Decimal(175000), new Decimal('1e6')];
 
     constructor(creature = 'None', weapons = ['None','None','None','None','None','None','None','None'], stats = new Stats(), body_parts = new Stats(), size = new Decimal(0), raiding = -1) {
         this.creature = creature;
@@ -130,11 +130,9 @@ class Army {
                 ArmyPage.equipElementByArmy(type, change_to, army_nr);
                 break;
             case 'weapons':
-                if(change_to == this.weapons[change_index]) {
-                    return false;
-                }
 
                 if(!this.change_element_helper('weapons',change_to,change_index, unlock_stuff, army_nr)) {
+                    console.log('here');
                     return false;
                 }
                 break;
@@ -155,7 +153,6 @@ class Army {
             let temp_s = undefined;
             let temp_b = undefined;
             if(this[type][index] != 'None') {
-                console.log(type, index, );
                 this._stats = this._stats.sub(stuff[type][this[type][index]].stats);
                 this._body_parts = this._body_parts.sub(stuff[type][this[type][index]].body_parts);
                 temp_s = this.stats;
@@ -385,7 +382,7 @@ const ArmyPage = {
     //store equipped state by a bitwise method ( 2 ** army_nr shows if that army equipped the element or not)
     elementEquipState: {
         creatures: {'None' : 0, 'Human' : 0,},
-        weapons: {'None' : 0, 'Knife': 0},
+        weapons: {'None' : 0},
     },
     info : undefined,
     partInfo : undefined,
@@ -394,15 +391,6 @@ const ArmyPage = {
     changeArmyButtons : [],
     maxArmySizeButton : undefined,
     elementSelectList:undefined,
-    //a collection to help you get the number of some select button faster
-    nameToButtonNumber : {
-        creatures : {
-            'None': 0, 'Human' : 1,
-        },
-        weapons : {
-            'None' : 0, 'Knife' : 1, 'Dagger' : 2, 'Longsword' : 3,
-        },
-    },
     currentSelecting : {
         weapons : -1,
     },
@@ -410,6 +398,9 @@ const ArmyPage = {
     levelUpButton : undefined,
     levelUpCost : undefined,
     displayOnLoad() {
+        for(let i = 0; i < ArmyPage.changeArmyButtons.length; i++) {
+            ArmyPage.changeArmyButtons[i].style.borderColor = 'var(--default-toggle-button-border-color)';
+        }
         ArmyPage.changeArmyButtons[ArmyPage.currentArmy].style.borderColor = 'var(--selected-toggle-button-border-color)';
         ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
         ArmyPage.armySizeInput.value = StylizeDecimals(Player.armies[ArmyPage.currentArmy].size,true);
@@ -580,20 +571,39 @@ class ItemList {
                 ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
             });
             this.items[i].addEventListener('click', function() {
-                if(!Player.armies[ArmyPage.currentArmy].change_element(type, current_obj.items[i].innerHTML, current_obj.change_index, true, ArmyPage.currentArmy)) {
+                if(!Player.armies[ArmyPage.currentArmy].change_element(current_obj.type, current_obj.items[i].innerHTML, current_obj.change_index, true, ArmyPage.currentArmy)) {
                     return;
                 }
                 ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
-                ArmyPage.selectRows[type][0][1].innerHTML = current_obj.items[i].innerHTML;
-                //hide select rows for weapons and the like
-                for(let j = Player.armies[ArmyPage.currentArmy].weapons.length - 1; j > -1; j--) {
-                    ArmyPage.selectRows.weapons[j][0].parentElement.hidden = true;
-                    ArmyPage.selectRows.weapons[j][1].innerHTML = 'None';
+                ArmyPage.selectRows[current_obj.type][current_obj.change_index][1].innerHTML = current_obj.items[i].innerHTML;
+                if(current_obj.type == 'creatures') {
+                    //hide select rows for weapons and the like
+                    for(let j = Player.armies[ArmyPage.currentArmy].weapons.length - 1; j > -1; j--) {
+                        ArmyPage.selectRows.weapons[j][0].parentElement.hidden = true;
+                        ArmyPage.selectRows.weapons[j][1].innerHTML = 'None';
+                    }
+                    //show first weapon selection row and the like if the creature is not None
+                    if(ArmyPage.selectRows.creatures[0][1].innerHTML != 'None') {
+                        ArmyPage.selectRows.weapons[0][0].parentElement.hidden = false;
+                    }
                 }
-                //show first weapon selection row and the like if the creature is not None
-                if(ArmyPage.selectRows.creatures[0][1].innerHTML != 'None') {
-                    ArmyPage.selectRows.weapons[0][0].parentElement.hidden = false;
+                else if(current_obj.type == 'weapons') {
+                    let found = false;
+                    //hide select rows for weapons and the like
+                    for(let j = 0; j < Player.armies[ArmyPage.currentArmy].weapons.length; j++) {
+                        if(Player.armies[ArmyPage.currentArmy].weapons[j] == 'None') {
+                            if(found) {
+                                ArmyPage.selectRows.weapons[j][0].parentElement.hidden = true;
+                            }
+                            else {
+                                found = true;
+                                ArmyPage.selectRows.weapons[j][0].parentElement.hidden = false;
+                            }
+                        }
+                        ArmyPage.selectRows.weapons[j][1].innerHTML = Player.armies[ArmyPage.currentArmy].weapons[j];
+                    }
                 }
+                
                 //hide selection list
                 current_obj.container.hidden = true;
                 //show management item
@@ -667,6 +677,7 @@ for(let type in ArmyPage.selectRows) {
             if(ArmyPage.elementSelectList.hidden) {
                 ArmyPage.elementSelectList.change_type(type);
                 ArmyPage.elementSelectList.change_item_list(ArmyPage.generateItemList(type, ArmyPage.currentArmy));
+                ArmyPage.elementSelectList.change_index = 0;
                 ArmyPage.elementSelectList.show();
             }
             else {
@@ -743,6 +754,7 @@ for(let type in ArmyPage.selectRows) {
                     ArmyPage.elementSelectList.change_type(type);
                     ArmyPage.elementSelectList.change_item_list(ArmyPage.generateItemList(type, ArmyPage.currentArmy));
                     ArmyPage.elementSelectList.change_index = i;
+                    
                     ArmyPage.elementSelectList.show();
                 }
                 else {

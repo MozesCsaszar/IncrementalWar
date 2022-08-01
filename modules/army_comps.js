@@ -23,10 +23,20 @@ class ArmyComponent {
         (this.requires.isNull() ? '' : '<br>' + 'Requires:<br>'+this.requires.get_compare_text(other.requires));
     }
 
+    get_full_text() {
+        return '<b>Name: ' + this.name + '</b><br>' +
+        this.stats.get_text() +
+        '<br>' +
+        (this._body_parts.isNull() ? '' : 'Parts:<br>'+this.body_parts.get_text()) +
+        (this.requires.isNull() ? '' : 'Requires:<br>'+this.requires.get_text()) +
+        '<br><i>' + this.desc + '</i>';
+    }
+
     get_text() {
         return '<b>Name: ' + this.name + '</b><br>' +
         this.stats.get_text() +
         '<br>' +
+        (this._body_parts.isNull() ? '' : 'Parts:<br>'+this.body_parts.get_text()) + '<br>' +
         (this.requires.isNull() ? '' : 'Requires:<br>'+this.requires.get_text()) +
         '<br><i>' + this.desc + '</i>';
     }

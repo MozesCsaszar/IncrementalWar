@@ -16,8 +16,9 @@ class Buyer {
         let price = stuff[this.type][this.name].get_price(this.nr_bought, buy_nr);
         if(Player[this.currency].gte(price)) {
             Player[this.currency] = Player[this.currency].sub(price);
+            //when adding a new element
             if(!Player.inventory[this.type][this.name]) {
-                ArmyPage.selectButtons[this.type][ArmyPage.nameToButtonNumber[this.type][this.name]].hidden = false;
+                ArmyPage.elementEquipState[this.type][this.name] = 0;
                 Player.inventory[this.type][this.name] = new Decimal(0);
             }
             Player.inventory[this.type][this.name] = Player.inventory[this.type][this.name].add(buy_nr);

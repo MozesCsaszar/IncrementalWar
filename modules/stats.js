@@ -588,6 +588,9 @@ class Stats {
         if(!stats_b[type_b]) {
             return pow;
         }
+        else {
+            pow = pow.sub(stats_b[type_b].physical);
+        }
 
         if(this[type_a].fire.gt(0)) {
             pow = pow.add(stats_b[type_b].nature.abs().min(this[type_a].fire).mul(new Decimal(0.5)));

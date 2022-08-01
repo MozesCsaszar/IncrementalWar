@@ -16,15 +16,15 @@ stuff = {
         'Knife' : new ArmyComponent('Knife', 'A thrustworthy knife, even if it is not the best for your needs. Simple to use and reliable.', 
                         new Stats(['Attack'], [new SubStats(new Decimal(1))]), new Stats(['Hands'], [new Decimal(-1)]),
                         new Stats([],[]), 'Weapon', 
-                        new PriceHandler([new Decimal(100),new Decimal(1000), new Decimal(10000)],['ar','ar','ar','ar'],[new Decimal(0.07), new Decimal(1),new Decimal(15),new Decimal(220)],new Decimal(15) ) ),
+                        new PriceHandler([new Decimal(100),new Decimal(200), new Decimal(1000)],['ar','ar','ar','ge'],[new Decimal(1), new Decimal(10),new Decimal(250),new Decimal(1.05)],new Decimal(25) ) ),
         'Dagger' : new ArmyComponent('Dagger','A bit better than a knife, but pricier too.', 
                         new Stats(['Attack'], [new SubStats(new Decimal(1.2))]), new Stats(['Hands'], [new Decimal(-1)]),
                         new Stats([],[]), 'Weapon', 
-                        new PriceHandler([new Decimal(100),new Decimal(300), new Decimal(600), new Decimal(1000)],['ar','ar','ar','ar', 'ar'],[new Decimal(0.5), new Decimal(2),new Decimal(7), new Decimal(16),new Decimal(225)],new Decimal(500)) ),
+                        new PriceHandler([new Decimal(100),new Decimal(300), new Decimal(1000)],['ar','ar','ar','ge'],[new Decimal(2), new Decimal(15),new Decimal(450), new Decimal(1.07)],new Decimal(150)) ),
         'Longsword' : new ArmyComponent('Longsword','A twohanded sword, strong against unarmored opponents', 
                         new Stats(['Attack'], [new SubStats(new Decimal(2.5))]), new Stats(['Hands'], [new Decimal(-2)]),
                         new Stats(['Attack'],[new SubStats(new Decimal(1.1))]), 'Weapon', 
-                        new PriceHandler([new Decimal(30),new Decimal(300), new Decimal(3000)],['ar','ar','ge','ge'],[new Decimal(30), new Decimal(300),new Decimal(1.03), new Decimal(1.1)], new Decimal(25)) ),
+                        new PriceHandler([new Decimal(90),new Decimal(270), new Decimal(900)],['ar','ar','ar','ge'],[new Decimal(5), new Decimal(25),new Decimal(1000), new Decimal(1.1)], new Decimal(500)) ),
     },
     //Here are all the creatures useable in the game
     creatures : {
@@ -32,36 +32,39 @@ stuff = {
         'Human' : new ArmyComponent('Human','A cheap and reliable worker. Not too efficient, but this is the best you will get for your money.', 
                         new Stats(['Health','Attack'], [new Decimal(10), new SubStats(new Decimal(1))]),  new Stats(['Hands'], [new Decimal(2)]),
                         new Stats([],[]), 'Creature',
-                        new PriceHandler([new Decimal(100),new Decimal(1000), new Decimal(10000)],['ar','ar','ar','ar'],[new Decimal(0.03), new Decimal(0.5),new Decimal(10),new Decimal(100)],new Decimal(5) ))
+                        new PriceHandler([new Decimal(4),new Decimal(100), new Decimal(500)],['ar','ar','ar','ar'],[new Decimal(0), new Decimal(1),new Decimal(10),new Decimal(100)],new Decimal(5) ))
     },
     bosses : {
         'Slime' : new Boss( 'Slime', 'A giant slime with a giant ego. He is the guardian of the exit of the first floor.', 
-                        new Stats(['Attack', 'Defense', 'Health'],[new SubStats(new Decimal(27)), new SubStats(new Decimal(15)), new Decimal(10000)]),
+                        new Stats(['Attack', 'Defense', 'Health'],[new SubStats(new Decimal(90)), new SubStats(new Decimal(25)), new Decimal(10000)]),
                         'Mini', new Decimal(0), new Moveset([
-                            [new AttackMove('Basic Attack', 'A normal attack from a normal enemy.',[new Decimal(1)],['mul']),
-                             new AttackMove('Basic Triple Attack', 'A normal attack from a normal enemy targeting three beings at once.',[new Decimal(1)],['mul'], new Decimal(3))],
-                            [new DefenseMove('Defend', 'The enemy takes a defensive stance, increasing defenses.', [new Decimal(3)], ['mul']),
-                            new CombinedMove('Attack and Defend', 'The enemy takes a stance where defending and attacking is easier.', [new AttackMove('','',[new Decimal(2)], ['mul'], new Decimal(2)), new DefenseMove('','',[new Decimal(2)], ['mul'])])],
-                            [new AttackMove('Fife-Fold Attack', 'The slime empowers itself, then attacks five enemies at once with slightly increased prowess.', [new Decimal(1.5), ['mul'], new Decimal(5)])]
+                            [new AttackMove('Basic Attack', 'A normal attack from a normal enemy.(Attack x1, , Targets: 1)',[new Decimal(1)],['mul']),
+                             new AttackMove('Basic Double Attack', 'A normal attack from a normal enemy targeting two beings at once.(Attack x1, , Targets: 2)',[new Decimal(1)],['mul'], new Decimal(2))],
+                            [new AttackMove('Triple Attack', 'A normal attack from a normal enemy targeting three beings at once.(Attack x1, , Targets: 3)',[new Decimal(1)],['mul'], new Decimal(3)),
+                            new CombinedMove('Attack and Defend', 'The enemy takes a stance where defending and attacking is easier.(Attack and Defense x2, Targets: 2)', [new AttackMove('','',[new Decimal(2)], ['mul'], new Decimal(2)), new DefenseMove('','',[new Decimal(2)], ['mul'])])],
+                            [new AttackMove('Fife-Fold Attack', 'The slime empowers itself, then attacks five enemies at once with slightly increased prowess (Attack x1.5, Targets: 5).', [new Decimal(1.5)], ['mul'], new Decimal(5))]
                             ])),
     }
 }
 
 //A popup window for your inspection needs
-const PopupWindow = {
+let PopupWindow = {
     container: document.querySelector('#PopupWindowContainer'),
+    left:undefined,
+    top:undefined,
     show(left, top, content) {
-        this.container.hidden = false;
-        this.container.innerHTML = content;
-        this.container.style.left = left + 5;
-        this.container.style.top = top + 5;
+        PopupWindow.container.hidden = false;
+        PopupWindow.container.innerHTML = content;
+        PopupWindow.move(left, top);
     },
     move(left, top) {
-        this.container.style.left = left + 5;
-        this.container.style.top = top + 5;
+        PopupWindow.container.style.left = left + 5;
+        PopupWindow.container.style.top = top + 5;
+        PopupWindow.left = left;
+        PopupWindow.top = top;
     },
     hide() {
-        this.container.hidden = true;
+        PopupWindow.container.hidden = true;
     },
 };
 
@@ -113,7 +116,7 @@ function StylizeDecimals(decimal, floor = false) {
 }
 
 const Player = {
-    gold : new Decimal(1000),
+    gold : new Decimal(25),
     armies : [new Army(), new Army(), new Army()],
     inventory: {
         creatures : {
@@ -340,7 +343,7 @@ UnlockedStuff = {
     pages : {
         tower_page : [TowerPage.pageButton],
         army_page : [ArmyPage.pageButton, ArmyPage.levelUpButton],
-        buy_weapon_page : [BuyWeaponPage.pageButton],
+        buy_weapon_page : [BuyWeaponPage.pageButton, BuyWeaponPage.buyerRows[1][0].parentElement, BuyWeaponPage.buyerRows[2][0].parentElement],
     },
 }
 
@@ -453,6 +456,7 @@ function OpenGame() {
         HidePages(2);
         pages[currentPage].displayOnLoad();
         SaveToLocalStorage();
+        SettingsPage.changeTheme();
     }
 }
 

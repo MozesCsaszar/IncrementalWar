@@ -22,12 +22,14 @@ class TowerFloor {
         //color by availability and set position
         j = 0;
         while(j < TowerPage.Tower.floors[nr_floor].levels.length) {
+            TowerPage.towerLevels[j].setAttribute('contenttext',TowerPage.Tower.floors[nr_floor].levels[j].raiding_army == -1 ? ' ' : String(TowerPage.Tower.floors[nr_floor].levels[j].raiding_army + 1));
+            TowerPage.towerLevels[j].innerHTML = TowerPage.Tower.floors[nr_floor].levels[j].raiding_army == -1 ? ' ' : String(TowerPage.Tower.floors[nr_floor].levels[j].raiding_army + 1);
             TowerPage.towerLevels[j].style.background = TowerPage.Tower.floors[nr_floor].levels[j].get_color();
             TowerPage.towerLevels[j].style.width = TowerPage.Tower.floors[nr_floor].levels[j].width;
             TowerPage.towerLevels[j].style.height = TowerPage.Tower.floors[nr_floor].levels[j].height;
             TowerPage.towerLevels[j].style.top = TowerPage.Tower.floors[nr_floor].levels[j].top;
             TowerPage.towerLevels[j].style.left = TowerPage.Tower.floors[nr_floor].levels[j].left;
-            TowerPage.towerLevels[j].style.zIndex = TowerPage.Tower.floors[nr_floor].levels[j].z_index;
+            TowerPage.towerLevels[j].style.zIndex = TowerPage.Tower.floors[nr_floor].levels[j].z_index;            
             j++;
         }
         //display floor info
@@ -74,7 +76,7 @@ class TowerLevel extends ParentTowerLevel {
     }
 
     get goldPerSecond() {
-        return (Player.armies[this.raiding_army].size.min(this.capacity)).mul(this.gold_per_power).mul(Player.armies[this.raiding_army].power);
+        return (Player.armies[this.raiding_army].size.min(this.capacity)).mul(this.gold_per_power).mul(Player.armies[this.raiding_army].stats.get_power(this.stats, 'Attack', 'Defense')).max(new Decimal(0));
     }
 
     get_color() {
@@ -99,7 +101,8 @@ class TowerLevel extends ParentTowerLevel {
             'Defense: ' + this.stats.Defense.get_text() + '<br>' +
             'Capacity: ' + StylizeDecimals(this.capacity,true) + 
             '<br>' + 'Gold per power: ' + StylizeDecimals(this.gold_per_power) + '<br>' +
-            '</br><i>' + this.desc + '</i>';
+            'Current gold per second: ' + ( this.raiding_army == -1 ? 'None' : StylizeDecimals(this.goldPerSecond) ) + '<br>' +
+            '<br><i>' + this.desc + '</i>';
     }
 
     raid(level_nr, ) {
@@ -313,17 +316,17 @@ const TowerPage = {
         TowerPage.displayOnLoad();
     },
 };
-                                                                    //730 = -630
-TowerPage.Tower.floors[0] = new TowerFloor([new TowerLevel(100,50,500,100, 0, new Stats(['Defense'],[new SubStats(new Decimal(1))]), new Decimal(500), new Decimal(0.2), [[0, 1], [0, 2]], 'Sewers 1', 'Stinky and bad. The first level of the sewers.'),
-                                            new TowerLevel(100,50,449,49, 3, new Stats(['Defense'],[new SubStats(new Decimal(2))]), new Decimal(250), new Decimal(0.3), [[0, 3], [0, 4]], 'Sewers 2', 'Stinky and bad. The first level of the sewers.'),
-                                            new TowerLevel(100,50,449,151, 3, new Stats(['Defense'],[new SubStats(new Decimal(2))]), new Decimal(250), new Decimal(0.3), [[0, 3], [0, 5]], 'Sewers 3', 'Stinky and bad. The first level of the sewers.'),
-                                            new TowerLevel(120,50,423,115, 2,new Stats(['Defense'],[new SubStats(new Decimal(3.4))]), new Decimal(450), new Decimal(3), [[0, 6]], 'Sewers 4', 'Stinky and bad. The first level of the sewers.'),
-                                            new TowerLevel(30,50,385,75, 3, new Stats(['Defense'],[new SubStats(new Decimal(2.5))]), new Decimal(600), new Decimal(1),[[1, 0]], 'Sewers 5', 'Stinky and bad. The first level of the sewers.'),
-                                            new TowerLevel(30,50,385,229, 3, new Stats(['Defense'],[new SubStats(new Decimal(2.5))]), new Decimal(600), new Decimal(1),[[1, 0]], 'Sewers 6', 'Stinky and bad. The first level of the sewers.'),
-                                            new TowerLevel(80,50,397,162, 1,new Stats(['Defense'],[new SubStats(new Decimal(7.5))]), new Decimal(900), new Decimal(12),[[0,7]], 'Sewers 7', 'Stinky and bad. The first level of the sewers.'),
-                                            new TowerLevel(30,70,300,220, 0,new Stats(['Defense'],[new SubStats(new Decimal(15))]), new Decimal(1200), new Decimal(40),[[0,8]], 'Sewers 8', 'Stinky and bad. The first level of the sewers.'),
-                                            new BossFightLevel(30,70,230,220, 0,'Slime', new Decimal(1200), new Decimal(40),[], 'Sewer\'s Top', 'The topmost level of the sewers. It is lit with candles. You don\'t want to find out what lurks in the shadows, but will have to do so eventually...'),],
-                                        'Sewers', 'Stinky and bad and it gets worse the higher you go.');
+                                                                    
+TowerPage.Tower.floors[0] = new TowerFloor([new TowerLevel(100,50,500,100, 0, new Stats(['Defense'],[new SubStats(new Decimal(0.5))]), new Decimal(500), new Decimal(1), [[0, 1], [0, 2]], 'Sewers 1', 'Still laughing, you go inside the building only to realize that the stink is even worse than what you thought it would be. Now you start to feel sorry for the guy who tried to organize a date here. <br> Going one step further, you find yourselves in knee-high dirty water hoping that the situation will change for the better in the next few minutes.'),
+                                            new TowerLevel(100,50,449,49, 3, new Stats(['Defense'],[new SubStats(new Decimal(1))]), new Decimal(250), new Decimal(2), [[0, 3], [0, 4]], 'Sewers 2', 'You took the trapdoor on the left side of the first level. The stench is no better, but at least some new strange moss is inhabiting the left wall.'),
+                                            new TowerLevel(100,50,449,151, 3, new Stats(['Defense'],[new SubStats(new Decimal(1))]), new Decimal(250), new Decimal(2), [[0, 3], [0, 5]], 'Sewers 3', 'You took the trapdoor on the right side of the first level. The stench is no better, but at least some new strange moss is inhabiting the right wall.'),
+                                            new TowerLevel(120,50,423,115, 2,new Stats(['Defense'],[new SubStats(new Decimal(3.4))]), new Decimal(450), new Decimal(15), [[0, 6]], 'Sewers 4', 'After taking one door to the back, you find yourself in a moss-filled place. Instead of the wetness of water, you are greeted with the slimeiness of... well, of slime.'),
+                                            new TowerLevel(30,50,385,75, 3, new Stats(['Defense'],[new SubStats(new Decimal(2))]), new Decimal(600), new Decimal(5),[[1, 0]], 'Sewers 5', 'Another trapdoor in the left portion of the ceiling, who would\'ve guessed? At least the place is not wet anymore and... well, it\'s way hotter and the stink is worse... You got comfort for your legs, but at what price?'),
+                                            new TowerLevel(30,50,385,229, 3, new Stats(['Defense'],[new SubStats(new Decimal(2))]), new Decimal(600), new Decimal(5),[[1, 0]], 'Sewers 6', 'Another trapdoor in the right portion of the ceiling, who would\'ve guessed? At least the place is not wet anymore and... well, it\'s way hotter and the stink is worse... You got comfort for your legs, but at what price?'),
+                                            new TowerLevel(80,50,397,162, 1,new Stats(['Defense'],[new SubStats(new Decimal(5.5))]), new Decimal(900), new Decimal(37),[[0,7]], 'Sewers 7', 'The slime coating becomes more consistent, sticky and concentrated. Surprising no one, this is even more unconfortable than it was.'),
+                                            new TowerLevel(30,70,300,220, 0,new Stats(['Defense'],[new SubStats(new Decimal(9.5))]), new Decimal(1200), new Decimal(87),[[0,8]], 'Sewers 8', 'The stink intensifies to an unheard-of level when you enter the room. The slime pools on the ground, knee-high in places, ankle high in others. It is dripping from the ceiling as well, along from the edges of the spiral staircase leading ever upwards. Some railing would come in handy, but you can\'t get everything in life...'),
+                                            new BossFightLevel(30,70,230,220, 0,'Slime', new Decimal(1200), new Decimal(40),[], 'Sewer\'s Top', 'The topmost level of the sewers. It is lit with candles. Due to the slight topwards incline and the slight upwards arc of the floor, the slime is only running in two rivers next to the walls.  You don\'t want to find out what lurks in the shadows, but will have to do so eventually...'),],
+                                        'Sewers', 'Wet and stinky and the odor gets worse the higher you go. Before the entrance stands a lone sign: \'EXTREME DANGER OF DEATH (also not an ideal place for a date, trust me)\'');
 TowerPage.Tower.floors[1] = new TowerFloor([new TowerLevel(100,50,300,100, 0, new Stats(['Defense'],[new SubStats(new Decimal(5))]),new Decimal(300),new Decimal(2),[],'The Slums','When you venture beyond the sewers, the place looks like a big slum, full of giant rats.')],'Rat-haven','A place where the rats thrive.')
 
 TowerPage.towerFloors = Array.from(document.querySelectorAll('.tower_part'));
@@ -334,7 +337,7 @@ TowerPage.changeArmyButtons = document.querySelectorAll('.change_army_button');
 TowerPage.armyInfo = document.querySelector('#TowerPageArmyInfo');
 TowerPage.towerInfo = document.querySelector('#TowerPageTowerInfo');
 
-//reverse tower levels
+//reverse tower floors
 let i = 0;
 let j = 27;
 while(i < j) {
@@ -405,8 +408,6 @@ for(let i = 0; i < TowerPage.towerLevels.length; i++) {
     });
     //on click, change army that is raiding it
     TowerPage.towerLevels[i].addEventListener('click', () => {
-        //let def_power = TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].stats.get_power(Player.armies[TowerPage.currentArmy].stats,'Defense','Attack');
-        //let atk_power = Player.armies[TowerPage.currentArmy].stats.get_power(TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].stats, 'Attack', 'Defense');
         let last_one = TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].raid(i);
         if(!(last_one === false)) {
             if(TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].raiding_army == -1) {
@@ -422,7 +423,8 @@ for(let i = 0; i < TowerPage.towerLevels.length; i++) {
                 TowerPage.towerLevels[last_one].setAttribute('contenttext','');
                 TowerPage.towerLevels[last_one].innerHTML = '';
             }
-            /*
+            TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].display(TowerPage.Tower.floors[TowerPage.Tower.currentFloor].name);
+            /*      ARCHIVED
             //if it is the same army raiding it then to which you are trying to set it, then remove that army
             if(TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].raiding_army == TowerPage.currentArmy) {
                 TowerPage.towerLevels[i].setAttribute('contenttext','');
@@ -447,7 +449,6 @@ for(let i = 0; i < TowerPage.towerLevels.length; i++) {
                 TowerPage.towerLevels[i].innerHTML = contenttext;
             }
             //*/
-            //unlock new levels
             /*
             if(!TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].unlocked_next_levels) {
                 for(let j = 0; j < TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].unlocks.length; j++) {
