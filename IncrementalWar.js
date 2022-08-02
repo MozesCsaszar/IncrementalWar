@@ -42,7 +42,7 @@ stuff = {
                              new AttackMove('Basic Double Attack', 'A normal attack from a normal enemy targeting two beings at once.(Attack x1, , Targets: 2)',[new Decimal(1)],['mul'], new Decimal(2))],
                             [new AttackMove('Triple Attack', 'A normal attack from a normal enemy targeting three beings at once.(Attack x1, , Targets: 3)',[new Decimal(1)],['mul'], new Decimal(3)),
                             new CombinedMove('Attack and Defend', 'The enemy takes a stance where defending and attacking is easier.(Attack and Defense x2, Targets: 2)', [new AttackMove('','',[new Decimal(2)], ['mul'], new Decimal(2)), new DefenseMove('','',[new Decimal(2)], ['mul'])])],
-                            [new AttackMove('Fife-Fold Attack', 'The slime empowers itself, then attacks five enemies at once with slightly increased prowess (Attack x1.5, Targets: 5).', [new Decimal(1.5)], ['mul'], new Decimal(5))]
+                            [new AttackMove('Fife-Fold Attack', 'The slime empowers itself, then attacks five enemies at once with slightly increased prowess (Attack x1, Targets: 5).', [new Decimal(1)], ['mul'], new Decimal(5))]
                             ])),
     }
 }
@@ -256,6 +256,7 @@ const SettingsPage = {
     },
     themeOrder: ['Black Theme', 'Grey Theme', 'Dark Red Theme'],
     currentTheme: -1,
+    tutorialButton: undefined,
     changeTheme() {
         SettingsPage.currentTheme++;
         if(SettingsPage.currentTheme == SettingsPage.themeOrder.length) {
@@ -336,6 +337,72 @@ SettingsPage.loadGameButton.addEventListener('input', () => {
     }
 });
 
+//tutorial button
+SettingsPage.tutorialButton = document.querySelector('#SettingsPageTutorialButton');
+SettingsPage.tutorialButton.addEventListener('click', function() {
+    TutorialPage.setUpTutorial('None', false, 4);
+    HidePages(8);
+});
+
+class TutorialItem {
+    constructor(name, nr_pages) {
+        this.name = name;
+        this.nr_pages = nr_pages;
+    }
+};
+
+const TutorialPage = {
+    container : document.querySelector('#TutorialPageContainer'),
+    mandatory: false,
+    tutorialName: '',
+    lastPage: undefined,
+    selectionList: document.querySelector('.element_select_list.page_tutorial'),
+    image: document.querySelector('.tutorial_image.page_tutorial'),
+    previousButton: document.querySelector('.tutorial_previous_button.page_tutorial'),
+    nextButton: document.querySelector('.tutorial_next_button.page_tutorial'),
+    backButton: document.querySelector('.element_select_list_back_button.page_tutorial'),
+    tutorials: {
+        'ArmyPage': new TutorialItem('ArmyPage', 1),
+    },
+    defaultTutorialPath: '/images/tutorial/',
+    display() {
+
+    },
+    displayEveryTick() {
+
+    },
+    displayOnLoad() {
+
+    },
+    save() {
+
+    },
+    load(save_text) {
+    },
+    setUpTutorial(tutorial_name, is_mandatory, last_page) {
+        TutorialPage.mandatory = is_mandatory;
+        TutorialPage.tutorialName = tutorial_name;
+        TutorialPage.lastPage = last_page;
+    },
+    startTutorial(tutorial_name, is_mandatory, last_page) {
+        this.setUpTutorial(tutorial_name, is_mandatory, last_page);
+        HidePages(8);
+        if(is_mandatory) {
+            document.querySelector('#PageButtonsContainer').hidden = true;
+        }
+    },
+    exitTutorial() {
+        if(TutorialPage.is_mandatory) {
+            document.querySelector('#PageButtonsContainer').hidden = false;
+        }
+        HidePages(TutorialPage.lastPage);
+    },
+}
+
+TutorialPage.backButton.addEventListener('click', function() {
+    TutorialPage.exitTutorial();
+});
+
 //          UNLOCKS
 
 //CHANGE so that weapon buy unlocks come back
@@ -352,7 +419,7 @@ UnlockedStuff = {
 
 const body = document.getElementById('body');
 
-const pages = [TowerPage,ArmyPage, BuyCreaturePage, BuyWeaponPage, SettingsPage, BossArmySelectionPage, BossFightPage, BossFightingResultPage];
+const pages = [TowerPage,ArmyPage, BuyCreaturePage, BuyWeaponPage, SettingsPage, BossArmySelectionPage, BossFightPage, BossFightingResultPage, TutorialPage];
 const page_names = ['TowerPage', 'ArmyPage', 'BuyCreaturePage', 'BuyWeaponPage', 'SettingsPage'];
 
 //Hide all unnecessary pages at startup

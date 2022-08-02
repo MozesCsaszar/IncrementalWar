@@ -839,16 +839,16 @@ ArmyPage.maxArmySizeButton.addEventListener('click', () => {
 ArmyPage.levelUpButton.addEventListener('mouseenter', function() {
     if(Player.armies[ArmyPage.currentArmy].level < Army.level_prices.length) {
         ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_level_up_text();
-    ArmyPage.partInfo.innerHTML = Player.armies[ArmyPage.currentArmy].get_compare_level_text();
-    ArmyPage.levelText.innerHTML = 'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1) + 
-    '<span style="color:' + UtilityFunctions.get_compare_color(Player.armies[ArmyPage.currentArmy].level, Player.armies[ArmyPage.currentArmy].level + 1, false)  + '">' + ' &rightarrow; ' +
-     (Player.armies[ArmyPage.currentArmy].level + 2) + '</span><br>';
+        ArmyPage.partInfo.innerHTML = Player.armies[ArmyPage.currentArmy].get_compare_level_text();
+        ArmyPage.levelText.innerHTML = 'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1) + 
+                                        '<span style="color:' + UtilityFunctions.get_compare_color(Player.armies[ArmyPage.currentArmy].level, Player.armies[ArmyPage.currentArmy].level + 1, false)
+                                        + '">' + ' &rightarrow; ' + (Player.armies[ArmyPage.currentArmy].level + 2) + '</span><br>';
     }
 });
 
 ArmyPage.levelUpButton.addEventListener('mouseleave', function() {
     ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
-    ArmyPage.levelText.innerHTML = 'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1);
+    ArmyPage.levelText.innerHTML = 'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1) + (Player.armies[ArmyPage.currentArmy].level >= Army.level_prices.length ? ' (Max)' : '');
     ArmyPage.partInfo.innerHTML = '';
 });
 
@@ -856,12 +856,17 @@ ArmyPage.levelUpButton.addEventListener('click', function() {
     Player.armies[ArmyPage.currentArmy].level_up();
     ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
     
-    ArmyPage.partInfo.innerHTML = '';
     ArmyPage.levelText.innerHTML = 'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1);
     if(Player.armies[ArmyPage.currentArmy].level < Army.level_prices.length) {
+        ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_level_up_text();
+        ArmyPage.partInfo.innerHTML = Player.armies[ArmyPage.currentArmy].get_compare_level_text();
+        ArmyPage.levelText.innerHTML = 'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1) + 
+                                        '<span style="color:' + UtilityFunctions.get_compare_color(Player.armies[ArmyPage.currentArmy].level, Player.armies[ArmyPage.currentArmy].level + 1, false)
+                                        + '">' + ' &rightarrow; ' + (Player.armies[ArmyPage.currentArmy].level + 2) + '</span><br>';
         ArmyPage.levelUpCost.innerHTML = 'Cost: ' +  StylizeDecimals(Army.level_prices[Player.armies[ArmyPage.currentArmy].level]);
     }
     else {
+        ArmyPage.partInfo.innerHTML = '';
         ArmyPage.levelText.innerHTML = 'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1) + ' (Max)';
         ArmyPage.levelUpButton.hidden = true;
         document.getElementById('ArmyLevelUpCost').hidden = true;

@@ -518,6 +518,12 @@ div:hover {
     text-align: center;
 }
 
+.army_in_boss_fight {
+    display:flex;
+    flex-direction: column;
+    width: 300px;;
+}
+
 
 
 .army_in_boss_fight_health_background {
@@ -580,7 +586,14 @@ div:hover {
     color:rgb(42, 48, 53);
 }
 
+.boss_in_boss_fight {
+    display:flex;
+    flex-direction: column;
+    width: 300px;;
+}
+
 .army_in_boss_fight_name {
+    width: 300px;
     text-align: center;
     font-size: 30;
 }
@@ -652,6 +665,7 @@ div:hover {
 }
 
 .boss_in_boss_fight_name {
+    width: 300px;
     left:100px;
     text-align: center;
     font-size: 30;
@@ -678,4 +692,31 @@ div:hover {
     width: 100px;
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+/*      Tutorial Page                                                       */
+
+#TutorialPageContainer {
+    display: flex;
+    align-self: center;
+}
+
+.image_previous_next_container {
+    display:grid;
+    grid-template-rows: 700px 30px;
+    grid-template-columns: 600px 600px;
+}
+
+.element_select_list.page_tutorial {
+    padding-top:190px;
+}
+
+.tutorial_previous_button {
+    width:150px;
+    justify-self: left;
+}
+
+.tutorial_next_button {
+    width:150px;
+    justify-self: right;
 }
