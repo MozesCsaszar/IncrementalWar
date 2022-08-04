@@ -44,13 +44,20 @@ const BuyCreaturePage = {
     buyNumberValues : [new Decimal(1),new Decimal(10),new Decimal(100),new Decimal(1000)],
     currentBuyNumberButton : 0,
     infoText : undefined,
+    timesVisited:0,
     displayOnLoad() {
         BuyCreaturePage.buyNumberButtons[BuyCreaturePage.currentBuyNumberButton].style.borderColor = 'var(--selected-toggle-button-border-color)';
     },
     display() {
+        BuyCreaturePage.buyNumberButtons[BuyCreaturePage.currentBuyNumberButton].style.borderColor = 'var(--selected-toggle-button-border-color)';
         for(let j = 0; j < BuyCreaturePage.buyers.length; j++) {
             BuyCreaturePage.buyerRows[j][2].innerHTML = 'Buy: ' + StylizeDecimals(BuyCreaturePage.buyers[j].get_price(BuyCreaturePage.buyNumberValues[BuyCreaturePage.currentBuyNumberButton]));
         }
+        if(BuyCreaturePage.timesVisited == 0) {
+            TutorialPage.unlockTutorial('Buy Creature Page');
+            TutorialPage.startTutorial('Buy Creature Page', true, 2);
+        }
+        this.timesVisited++;
     },
     displayEveryTick() {
         for(let i = 0; i < BuyCreaturePage.buyerRows.length; i++) {
@@ -65,6 +72,7 @@ const BuyCreaturePage = {
         for(let i = 0; i < BuyCreaturePage.buyerRows.length; i++) {
             save_text += '/*/' + BuyCreaturePage.buyers[i].nr_bought;
         }
+        save_text += '/*/' + BuyCreaturePage.timesVisited;
         return save_text;
     },
     load(save_text) {
@@ -78,6 +86,8 @@ const BuyCreaturePage = {
             BuyCreaturePage.buyers[j].nr_bought = new Decimal(save_text[i]);
             i++;
         }
+        BuyCreaturePage.timesVisited = Number(save_text[i]);
+        i++;
         BuyCreaturePage.displayOnLoad();
     },
 }
@@ -135,13 +145,20 @@ const BuyWeaponPage = {
     buyNumberValues : [new Decimal(1),new Decimal(10),new Decimal(100),new Decimal(1000)],
     currentBuyNumberButton : 0,
     infoText : undefined,
+    timesVisited: 0,
     displayOnLoad() {
         BuyWeaponPage.buyNumberButtons[BuyWeaponPage.currentBuyNumberButton].style.borderColor = 'var(--selected-toggle-button-border-color)';
     },
     display() {
+        BuyWeaponPage.buyNumberButtons[BuyWeaponPage.currentBuyNumberButton].style.borderColor = 'var(--selected-toggle-button-border-color)';
         for(let j = 0; j < BuyWeaponPage.buyerRows.length; j++) {
             BuyWeaponPage.buyerRows[j][2].innerHTML = 'Buy: ' + StylizeDecimals(BuyWeaponPage.buyers[j].get_price(BuyWeaponPage.buyNumberValues[BuyWeaponPage.currentBuyNumberButton]));
         }
+        if(this.timesVisited == 0) {
+            TutorialPage.unlockTutorial('Buy Weapon Page');
+            TutorialPage.startTutorial('Buy Weapon Page', true, 3);
+        }
+        this.timesVisited++;
     },
     displayEveryTick() {
         for(let i = 0; i < BuyWeaponPage.buyerRows.length; i++) {
@@ -155,6 +172,7 @@ const BuyWeaponPage = {
         for(let i = 0; i < BuyWeaponPage.buyerRows.length; i++) {
             save_text += '/*/' + BuyWeaponPage.buyers[i].nr_bought;
         }
+        save_text +=  '/*/' + String(BuyWeaponPage.timesVisited);
         return save_text;
     },
     load(save_text) {
@@ -168,6 +186,8 @@ const BuyWeaponPage = {
             BuyWeaponPage.buyers[j].nr_bought = new Decimal(save_text[i]);
             i++;
         }
+        BuyWeaponPage.timesVisited = Number(save_text[i]);
+        i++;
         BuyWeaponPage.displayOnLoad();
     },
 }

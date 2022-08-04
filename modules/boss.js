@@ -8,6 +8,7 @@ const BossArmySelectionPage = {
     nrArmies: 3,
     nrArmySelects: 3,
     startFightButton: undefined,
+    timesVisited: 0,
     displayOnLoad() {
     },
     display() {
@@ -20,6 +21,11 @@ const BossArmySelectionPage = {
             BossArmySelectionPage.armySelects[i][0].parentElement.parentElement.hidden = true;
         }
         BossArmySelectionPage.bossInfo.innerHTML = stuff['bosses'][BossArmySelectionPage.fight.bosses[0]].get_text();
+        if(this.timesVisited == 0) {
+            TutorialPage.unlockTutorial('Boss Fighting Army Selection Page');
+            TutorialPage.startTutorial('Boss Fighting Army Selection Page', true, 5);
+        }
+        this.timesVisited++;
     },
     displayEveryTick() {
     },
@@ -39,8 +45,12 @@ const BossArmySelectionPage = {
             BossArmySelectionPage.armyInfos[i].innerHTML = "No army to be seen here.";
         }
     },
-    save() {},
-    load() {},
+    save() {
+        return String(this.timesVisited);
+    },
+    load(save_text) {
+        this.timesVisited = Number(save_text);
+    },
 };
 
 BossArmySelectionPage.container = document.querySelector('#BossArmySelectionPageContainer');
@@ -221,8 +231,8 @@ class CombinedMove extends CombatMove {
 */
 class Moveset {
     static name_text_start = '<span style="color:';
-    static move_rarities = {0:'Common', 1: 'Uncommon', 2: 'Rare', 3:'Super', 4:'Ultra'}
-    static rarity_colors = {0: 'aliceblue', 1: '#20d000', 2: '#4848ff', 3: '#b000b0', 4: '#FF0000'}
+    static move_rarities = {0:'Common', 1: 'Uncommon', 2: 'Rare', 3:'Special', 4:'Super', 5:'Ultra'}
+    static rarity_colors = {0: 'aliceblue', 1: '#20d000', 2: '#4848ff', 3: '#b000b0', 4: '#FF0000', 5: '#FF0000'}
     static color_span_end = '">';
     static name_text_end = '</span>'
 
@@ -529,27 +539,40 @@ const BossFightPage = {
     armiesRemovedFrom: [],
     feedElements: [],
     feedMoves: [],
+    timesVisited: 0,
     displayOnLoad() {
     },
     display() {
-        for(let i = 0; i < BossFightPage.fight.max_selectible_armies; i++) {
-            BossFightPage.armyStatusBars[i][0].parentElement.parentElement.hidden = false;
-            //create actually fighting armies
-            BossFightPage.fightingArmies.push(new FightingArmy(Player.armies[BossFightPage.fight.selected_armies[i]]));
-            BossFightPage.fightingArmyStatuses.push(1);
+        //if not yet visited, show tutorial
+        if(this.timesVisited == 0) {
+            TutorialPage.unlockTutorial('Boss Fighting Page');
+            TutorialPage.startTutorial('Boss Fighting Page', true, 6);
         }
-        BossFightPage.fightingArmiesNr = BossFightPage.fight.max_selectible_armies;
-
-        for(let i = BossFightPage.fight.max_selectible_armies; i < BossFightPage.nrArmyStatusBars; i++) {
-            BossFightPage.armyStatusBars[i][0].parentElement.parentElement.hidden = true;
-            BossFightPage.fightingBossStatuses.push(1);
+        //else set up the fight
+        else {
+            for(let i = 0; i < BossFightPage.fight.max_selectible_armies; i++) {
+                BossFightPage.armyStatusBars[i][0].parentElement.parentElement.hidden = false;
+                //create actually fighting armies
+                BossFightPage.fightingArmies.push(new FightingArmy(Player.armies[BossFightPage.fight.selected_armies[i]]));
+                BossFightPage.fightingArmyStatuses.push(1);
+            }
+            BossFightPage.fightingArmiesNr = BossFightPage.fight.max_selectible_armies;
+    
+            for(let i = BossFightPage.fight.max_selectible_armies; i < BossFightPage.nrArmyStatusBars; i++) {
+                BossFightPage.armyStatusBars[i][0].parentElement.parentElement.hidden = true;
+                BossFightPage.fightingBossStatuses.push(1);
+            }
+            BossFightPage.fightingBossesNr = 1;
+    
+            //create actually fighting boss
+            BossFightPage.fightingBosses.push(new FightingBoss(stuff['bosses'][BossFightPage.fight.bosses[0]]));
+            BossFightPage.deploy_armies();
+            document.querySelector('.boss_in_boss_fight_name').innerHTML = BossFightPage.fight.bosses[0];
         }
-        BossFightPage.fightingBossesNr = 1;
+        
 
-        //create actually fighting boss
-        BossFightPage.fightingBosses.push(new FightingBoss(stuff['bosses'][BossFightPage.fight.bosses[0]]));
-        BossFightPage.deploy_armies();
-        document.querySelector('.boss_in_boss_fight_name').innerHTML = BossFightPage.fight.bosses[0];
+        
+        this.timesVisited++;
     },
     deploy_armies() {
         for(let i = 0; i < BossFightPage.fightingArmies.length; i++) {
@@ -662,8 +685,12 @@ const BossFightPage = {
         BossFightPage.feedMoves = [];
         BossFightPage.update_feed();
     },
-    save() {},
-    load() {},
+    save() {
+        return String(this.timesVisited)
+    },
+    load(save_text) {
+        this.timesVisited = Number(save_text);
+    },
     
 }
 BossFightPage.container = document.querySelector('#BossFightPageContainer');
@@ -729,7 +756,8 @@ const BossFightingResultPage = {
                 t += "Though you lost part of your army.";
             }
             else {
-                t += 'Don\'t worry, you didn\'t lose anyone, the magic of the Tower kept them all alive.';
+                t += 'Thank you for playing the game! <br> If you have a minute, I would really appreciate it if ' + 
+                'you could give me some feedback through <a href="https://forms.gle/rMwKTcsQJGxfFLDN8">a survey here</a> or in private.<br> Thank you for your time again!';
             }
         }
         return t;

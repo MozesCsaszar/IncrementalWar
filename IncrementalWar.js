@@ -254,7 +254,7 @@ const SettingsPage = {
             ['--default-selection-list-border-color', 'rgb(128, 0, 128)'],
         ],
     },
-    themeOrder: ['Black Theme', 'Grey Theme', 'Dark Red Theme'],
+    themeOrder: ['Black Theme', 'Dark Red Theme'],
     currentTheme: -1,
     tutorialButton: undefined,
     changeTheme() {
@@ -340,7 +340,7 @@ SettingsPage.loadGameButton.addEventListener('input', () => {
 //tutorial button
 SettingsPage.tutorialButton = document.querySelector('#SettingsPageTutorialButton');
 SettingsPage.tutorialButton.addEventListener('click', function() {
-    TutorialPage.setUpTutorial('None', false, 4);
+    TutorialPage.startTutorial('None', false, 4);
     HidePages(8);
 });
 
@@ -353,18 +353,27 @@ class TutorialItem {
 
 const TutorialPage = {
     container : document.querySelector('#TutorialPageContainer'),
-    mandatory: false,
+    isMandatory: false,
     tutorialName: '',
     lastPage: undefined,
+    currentEntry: 0,
     selectionList: document.querySelector('.element_select_list.page_tutorial'),
+    selectionListItems: document.querySelectorAll('.element_select_list.page_tutorial > .element_select_list_item'),
     image: document.querySelector('.tutorial_image.page_tutorial'),
     previousButton: document.querySelector('.tutorial_previous_button.page_tutorial'),
     nextButton: document.querySelector('.tutorial_next_button.page_tutorial'),
     backButton: document.querySelector('.element_select_list_back_button.page_tutorial'),
     tutorials: {
-        'ArmyPage': new TutorialItem('ArmyPage', 1),
+        'Army Page': new TutorialItem('Army Page', 3),
+        'Buy Creature Page': new TutorialItem('Buy Creature Page',2),
+        'Buy Weapon Page': new TutorialItem('Buy Weapon Page',1),
+        'Tower Page': new TutorialItem('Tower Page', 3),
+        'Boss Fighting Army Selection Page': new TutorialItem('Boss Fighting Army Selection Page', 1),
+        'Boss Fighting Page': new TutorialItem('Boss Fighting Page', 1),
     },
-    defaultTutorialPath: '/images/tutorial/',
+    unlockedTutorials : new Set(),
+    defaultTutorialPath: './images/tutorial/',
+    pageButtonsVisibility: false,
     display() {
 
     },
@@ -375,33 +384,137 @@ const TutorialPage = {
 
     },
     save() {
-
+        let save_text = String(this.unlockedTutorials.size);
+        for(let elem of this.unlockedTutorials) {
+            save_text += '/*/' + elem;
+        }
     },
     load(save_text) {
+        save_text = save_text.split('/*/');
+        let i = 0, j = 0;
+        let len = Number(save_text[i]);
+        i++;
+        while(j < len) {
+            this.unlockedTutorials.push(save_text[i]);
+            i++; j++;
+        }
+    },
+    unlockTutorial(name) {
+        this.unlockedTutorials.add(name);
+    },
+    getTutorialImageName() {
+        return this.defaultTutorialPath + this.tutorialName + String(this.currentEntry) + '.png';
+    }, 
+    setUpSelectionList() {
+        let i =0;
+        for(let value of this.unlockedTutorials.keys()) {
+            this.selectionListItems[i].innerHTML = value;
+            i++;
+        }
+        for(i; i < this.selectionListItems.length; i++) {
+            this.selectionListItems[i].innerHTML = '';
+        }
+    },
+    setTutorialButtons() {
+        if(this.currentEntry == 0) {
+            this.previousButton.hidden = true;
+        }
+        else {
+            this.previousButton.hidden = false;
+        }
+        if(this.currentEntry == this.tutorials[this.tutorialName].nr_pages - 1) {
+            if(this.isMandatory) {
+                this.nextButton.innerHTML = 'Finish';
+            }
+            else {
+                this.nextButton.hidden = true;
+            }
+        }
+        else {
+            this.nextButton.hidden = false;
+            this.nextButton.innerHTML = 'Next';
+        }
     },
     setUpTutorial(tutorial_name, is_mandatory, last_page) {
-        TutorialPage.mandatory = is_mandatory;
-        TutorialPage.tutorialName = tutorial_name;
-        TutorialPage.lastPage = last_page;
+        this.lastPage = last_page;
+        this.isMandatory = is_mandatory;
+        this.tutorialName = tutorial_name;
+        //if the thing is mandatory, hide selection list
+        if(is_mandatory) {
+            this.selectionList.hidden = true;
+        }
+        //if it is not mandatory, set up and show selection list
+        else {
+            this.selectionList.hidden = false;
+            this.setUpSelectionList();
+        }
+        if(tutorial_name == 'None') {
+            this.selectionList.hidden = false;
+            this.image.parentElement.hidden = true;
+            return;
+        }
+        else {
+            this.image.parentElement.hidden = false;
+        }
+        this.currentEntry = 0;
+        this.image.setAttribute('src', this.getTutorialImageName());
+        this.setTutorialButtons();
     },
     startTutorial(tutorial_name, is_mandatory, last_page) {
+        this.pageButtonsVisibility = document.querySelector("#PageButtonsContainer").hidden;
         this.setUpTutorial(tutorial_name, is_mandatory, last_page);
-        HidePages(8);
+        document.querySelector('#PageButtonsContainer').hidden = true;
         if(is_mandatory) {
-            document.querySelector('#PageButtonsContainer').hidden = true;
+            HidePages(8);
+        }
+        else {
+            this.pageButtonsVisibility = false;
         }
     },
+    showPreviousEntry() {
+        this.currentEntry--;
+        this.image.setAttribute('src', this.getTutorialImageName());
+        this.setTutorialButtons();
+    },
+    showNextEntry() {
+        this.currentEntry++;
+        this.image.setAttribute('src', this.getTutorialImageName());
+        this.setTutorialButtons();
+    },
     exitTutorial() {
-        if(TutorialPage.is_mandatory) {
-            document.querySelector('#PageButtonsContainer').hidden = false;
+        document.querySelector('#PageButtonsContainer').hidden = this.pageButtonsVisibility;
+        if(this.isMandatory) {
+            this.selectionList.hidden = false;
         }
-        HidePages(TutorialPage.lastPage);
+        HidePages(this.lastPage);
     },
 }
 
 TutorialPage.backButton.addEventListener('click', function() {
     TutorialPage.exitTutorial();
 });
+
+TutorialPage.previousButton.addEventListener('click', function() {
+    TutorialPage.showPreviousEntry();
+});
+
+TutorialPage.nextButton.addEventListener('click', function() {
+    if(TutorialPage.nextButton.innerHTML == 'Finish') {
+        TutorialPage.exitTutorial();
+    }
+    else {
+        TutorialPage.showNextEntry();
+    }
+});
+
+//tutorial selecion list item click values
+for(let i = 0; i < TutorialPage.selectionListItems.length; i++) {
+    TutorialPage.selectionListItems[i].addEventListener('click', function() {
+        if(TutorialPage.selectionListItems[i].innerHTML != '') {
+            TutorialPage.startTutorial(TutorialPage.selectionListItems[i].innerHTML, false, 4);
+        }
+    })
+}
 
 //          UNLOCKS
 
@@ -420,7 +533,7 @@ UnlockedStuff = {
 const body = document.getElementById('body');
 
 const pages = [TowerPage,ArmyPage, BuyCreaturePage, BuyWeaponPage, SettingsPage, BossArmySelectionPage, BossFightPage, BossFightingResultPage, TutorialPage];
-const page_names = ['TowerPage', 'ArmyPage', 'BuyCreaturePage', 'BuyWeaponPage', 'SettingsPage'];
+const page_names = ['TowerPage', 'ArmyPage', 'BuyCreaturePage', 'BuyWeaponPage', 'SettingsPage', 'BossArmySelectionPage', 'BossFightPage'];
 
 //Hide all unnecessary pages at startup
 for(let i = 0; i < pages.length ; i++) {
@@ -520,7 +633,7 @@ function OpenGame() {
     else {
         document.getElementById("OfflinePageContainer").hidden = true;
         //UNCOMMENT THIS
-        HidePages(2);
+        HidePages(4);
         pages[currentPage].displayOnLoad();
         SaveToLocalStorage();
         SettingsPage.changeTheme();

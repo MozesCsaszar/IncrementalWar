@@ -512,6 +512,9 @@ class Stats {
         Get HTML string which represents the result of the comparison to current object.
     */
     get_compare_text(other) {
+
+        /*'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1) + 
+         + (Player.armies[ArmyPage.currentArmy].level + 2) + '<br>';*/
         let a = this.add(other);
         let t = '';
         for(let ss in a) {
@@ -553,11 +556,13 @@ class Stats {
                 }
                 else {
                     t += ss + ':&nbsp';
+                    let colored_arrow = '<span style="color:' + UtilityFunctions.get_compare_color(this[ss], other[ss], false)
+                    + '">  &rightarrow; </span>';
                     if(other[ss].type == 'SubStats') {
-                        t += this[ss].get_text() + ' &rightarrow; ' + other[ss].get_text();
+                        t += this[ss].get_text() + colored_arrow + other[ss].get_text();
                     }
                     else {
-                        t += StylizeDecimals(this[ss]) + ' &rightarrow; ' + StylizeDecimals(other[ss]);
+                        t += StylizeDecimals(this[ss]) + colored_arrow + StylizeDecimals(other[ss]);
                     }
                 }
                 

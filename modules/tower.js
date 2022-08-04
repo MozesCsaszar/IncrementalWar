@@ -264,6 +264,7 @@ const TowerPage = {
         raidedFloors : [],
         currentFloor : 0,
     },
+    timesVisited: 0,
     displayOnLoad() {
         TowerPage.towerFloors[TowerPage.Tower.currentFloor].style.backgroundColor = 'var(--selected-tower-floor-background-color)';
         TowerPage.changeArmyButtons[TowerPage.currentArmy].style.borderColor = 'var(--selected-toggle-button-border-color)';
@@ -276,7 +277,14 @@ const TowerPage = {
         }
     },
     display() {
+        TowerPage.towerFloors[TowerPage.Tower.currentFloor].style.backgroundColor = 'var(--selected-tower-floor-background-color)';
+        TowerPage.changeArmyButtons[TowerPage.currentArmy].style.borderColor = 'var(--selected-toggle-button-border-color)';
         TowerPage.changeArmy(TowerPage.currentArmy);
+        if(this.timesVisited == 0) {
+            TutorialPage.unlockTutorial('Tower Page');
+            TutorialPage.startTutorial('Tower Page', true, 0);
+        }
+        this.timesVisited++;
     },
     displayEveryTick() {
 
@@ -294,7 +302,8 @@ const TowerPage = {
         for(let i = 0; i < TowerPage.Tower.raidedFloors.length; i++) {
             save_text += '/*/' + TowerPage.Tower.raidedFloors[i][0] + '/*/' + TowerPage.Tower.raidedFloors[i][1] + '/*/' + TowerPage.Tower.floors[TowerPage.Tower.raidedFloors[i][0]].levels[TowerPage.Tower.raidedFloors[i][1]].raiding_army;
         }
-        return save_text
+        save_text += '/*/' + this.timesVisited;
+        return save_text;
     },
     load(save_text) {
         save_text = save_text.split('/*/');
@@ -312,6 +321,8 @@ const TowerPage = {
             TowerPage.towerLevels[TowerPage.Tower.raidedFloors[j][1]].innerHTML = Number(save_text[i+2])+1;
             i+=3;
         }
+        this.timesVisited = Number(save_text[i]);
+        i++;
         //display changes with on load function
         TowerPage.displayOnLoad();
     },

@@ -64,6 +64,10 @@ div:hover {
     cursor:default;
 }
 
+a {
+    color:aqua;
+}
+
 /*      General Stuff                                       */
 
 .nr_name_button_container {
@@ -408,7 +412,7 @@ div:hover {
 }
 
 .element_select_list > .element_select_list_back_button {
-    width:60px;
+    width:120px;
     align-self: center;
     vertical-align: middle;
     text-align: center;
@@ -697,26 +701,37 @@ div:hover {
 /*      Tutorial Page                                                       */
 
 #TutorialPageContainer {
-    display: flex;
-    align-self: center;
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1200px;
+    justify-content: center;
 }
 
 .image_previous_next_container {
     display:grid;
     grid-template-rows: 700px 30px;
     grid-template-columns: 600px 600px;
+    justify-self: center;
+    align-self: center;
+    grid-column: 2;
 }
 
 .element_select_list.page_tutorial {
-    padding-top:190px;
+    padding-top: 190px;
+    justify-self: left;
+    grid-column: 1;
 }
 
 .tutorial_previous_button {
     width:150px;
     justify-self: left;
+    grid-row:2;
+    grid-column: 1;
 }
 
 .tutorial_next_button {
     width:150px;
     justify-self: right;
+    grid-row: 2;
+    grid-column: 2;
 }
