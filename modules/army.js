@@ -397,6 +397,7 @@ const ArmyPage = {
     levelText : undefined,
     levelUpButton : undefined,
     levelUpCost : undefined,
+    timesVisited: 0,
     displayOnLoad() {
         for(let i = 0; i < ArmyPage.changeArmyButtons.length; i++) {
             ArmyPage.changeArmyButtons[i].style.borderColor = 'var(--default-toggle-button-border-color)';
@@ -407,6 +408,11 @@ const ArmyPage = {
     },
     display() {
         ArmyPage.changeArmy(ArmyPage.currentArmy);
+        if(this.timesVisited == 0) {
+            TutorialPage.unlockTutorial('Army Page');
+            TutorialPage.startTutorial('Army Page', true, 1);
+        }
+        this.timesVisited++;
     },
     displayEveryTick() {
         ArmyPage.selectRows.creatures[0][0].innerHTML = (Player.armies[ArmyPage.currentArmy].creature == 'None'  ? '(&infin;)' : '(' + StylizeDecimals(Player.inventory.creatures[Player.armies[ArmyPage.currentArmy].creature],true) + ')');
@@ -473,7 +479,8 @@ const ArmyPage = {
     save() {
         let save_text;
         //save current army
-        save_text = ArmyPage.currentArmy+ '/*/';
+        save_text = ArmyPage.currentArmy + '/*/';
+        save_text += this.timesVisited;
         return save_text;
     },
     equipElementByArmy(type, element, army_nr) {
@@ -510,6 +517,8 @@ const ArmyPage = {
         //reset color before doing anything else
         ArmyPage.changeArmyButtons[ArmyPage.currentArmy].style.borderColor = 'var(--selected-toggle-button-border-color)';
         ArmyPage.currentArmy = Number(save_text[i]);
+        i++;
+        this.timesVisited = Number(save_text[i]);
         i++;
         ArmyPage.displayOnLoad();
     },

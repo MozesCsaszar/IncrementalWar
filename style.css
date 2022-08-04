@@ -699,6 +699,7 @@ div:hover {
 #TutorialPageContainer {
     display: flex;
     align-self: center;
+    width: 1550px;
 }
 
 .image_previous_next_container {
@@ -714,9 +715,13 @@ div:hover {
 .tutorial_previous_button {
     width:150px;
     justify-self: left;
+    grid-row:2;
+    grid-column: 1;
 }
 
 .tutorial_next_button {
     width:150px;
     justify-self: right;
+    grid-row: 2;
+    grid-column: 2;
 }
