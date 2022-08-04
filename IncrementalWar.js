@@ -642,17 +642,17 @@ function OpenGame() {
 }
 
 function CloseGame() {
-    //SaveToLocalStorage();
+    SaveToLocalStorage();
 }
 
 //load the game on each session when starting up
 window.addEventListener('load', () => {OpenGame()});
 //save game whenever you switch tabs in browser (close, refresh, go to new/other tab)
-//document.addEventListener('visibilitychange', SaveToLocalStorage);
+document.addEventListener('visibilitychange', SaveToLocalStorage);
 //save the game before closing
 window.addEventListener('beforeunload', () => {CloseGame()});
 
-//setInterval(SaveToLocalStorage,1000);
+setInterval(SaveToLocalStorage,1000);
 
 function tick() {
     goldText.innerHTML = StylizeDecimals(Player.gold);
@@ -662,11 +662,3 @@ function tick() {
 }
 
 setInterval(tick,50);
-
-
-//REMOVE THIS
-/*
-for(let i = 0; i < pages.length ; i++) {
-    pages[i].container.hidden = true;
-}
-*/
