@@ -49,7 +49,6 @@ const BuyCreaturePage = {
         BuyCreaturePage.buyNumberButtons[BuyCreaturePage.currentBuyNumberButton].style.borderColor = 'var(--selected-toggle-button-border-color)';
     },
     display() {
-        BuyCreaturePage.buyNumberButtons[BuyCreaturePage.currentBuyNumberButton].style.borderColor = 'var(--selected-toggle-button-border-color)';
         for(let j = 0; j < BuyCreaturePage.buyers.length; j++) {
             BuyCreaturePage.buyerRows[j][2].innerHTML = 'Buy: ' + StylizeDecimals(BuyCreaturePage.buyers[j].get_price(BuyCreaturePage.buyNumberValues[BuyCreaturePage.currentBuyNumberButton]));
         }
@@ -150,7 +149,6 @@ const BuyWeaponPage = {
         BuyWeaponPage.buyNumberButtons[BuyWeaponPage.currentBuyNumberButton].style.borderColor = 'var(--selected-toggle-button-border-color)';
     },
     display() {
-        BuyWeaponPage.buyNumberButtons[BuyWeaponPage.currentBuyNumberButton].style.borderColor = 'var(--selected-toggle-button-border-color)';
         for(let j = 0; j < BuyWeaponPage.buyerRows.length; j++) {
             BuyWeaponPage.buyerRows[j][2].innerHTML = 'Buy: ' + StylizeDecimals(BuyWeaponPage.buyers[j].get_price(BuyWeaponPage.buyNumberValues[BuyWeaponPage.currentBuyNumberButton]));
         }
