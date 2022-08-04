@@ -96,6 +96,7 @@ const UtilityFunctions = {
 }
 
 
+
 //a function to adjust the appearance of decimal numbers (e form and trying to avoid inconsistent numbers messing up the interface, like 48.0000001 instead of 48)
 function StylizeDecimals(decimal, floor = false) {
     if(decimal.exponent >= 6) {

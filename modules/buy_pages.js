@@ -34,6 +34,7 @@ class Buyer {
     }
 }
 
+
 const BuyCreaturePage = {
     pageButton : undefined,
     container : undefined,

@@ -571,6 +571,7 @@ class Stats {
         }
         return t;
     }
+    
 
     //get the elemental attributly unmodified power of attack or defense
     get_plain_power(type = 'Attack||Defense') {

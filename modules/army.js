@@ -291,6 +291,7 @@ class Army {
         text += this.body_parts.get_compare_text(new_army[2]);
         return text;
     }
+    
     get_text(with_size = false) {
         if(this.creature == 'None') {
             return 'An army without a creature is nothing. You can\'t fight with it, nor do anything with it. Just sayin\'. So please buy some creatures and make an army with them before anything else.';
@@ -303,7 +304,6 @@ class Army {
             text += '<br>';
         }
         text += this.get_stats_text() + '<br>';
-        
         return text;
     }
     get_fighting_stats_text() {

@@ -773,6 +773,7 @@ const BossFightingResultPage = {
     load() {},
 };
 
+
 BossFightingResultPage.container = document.querySelector('#BossFightingResultPageContainer');
 BossFightingResultPage.resultInfo = document.querySelector("#AfterFightMessage");
 
