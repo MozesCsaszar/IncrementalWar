@@ -365,12 +365,15 @@ const TutorialPage = {
     backButton: document.querySelector('.element_select_list_back_button.page_tutorial'),
     tutorials: {
         'Army Page': new TutorialItem('Army Page', 3),
-        'Buy Creature Page': new TutorialItem('Buy Creature Page',1),
+        'Buy Creature Page': new TutorialItem('Buy Creature Page',2),
         'Buy Weapon Page': new TutorialItem('Buy Weapon Page',1),
         'Tower Page': new TutorialItem('Tower Page', 3),
+        'Boss Fighting Army Selection Page': new TutorialItem('Boss Fighting Army Selection Page', 1),
+        'Boss Fighting Page': new TutorialItem('Boss Fighting Page', 1),
     },
     unlockedTutorials : new Set(),
     defaultTutorialPath: './images/tutorial/',
+    pageButtonsVisibility: false,
     display() {
 
     },
@@ -458,10 +461,14 @@ const TutorialPage = {
         this.setTutorialButtons();
     },
     startTutorial(tutorial_name, is_mandatory, last_page) {
+        this.pageButtonsVisibility = document.querySelector("#PageButtonsContainer").hidden;
         this.setUpTutorial(tutorial_name, is_mandatory, last_page);
         document.querySelector('#PageButtonsContainer').hidden = true;
         if(is_mandatory) {
             HidePages(8);
+        }
+        else {
+            this.pageButtonsVisibility = false;
         }
     },
     showPreviousEntry() {
@@ -475,7 +482,7 @@ const TutorialPage = {
         this.setTutorialButtons();
     },
     exitTutorial() {
-        document.querySelector('#PageButtonsContainer').hidden = false;
+        document.querySelector('#PageButtonsContainer').hidden = this.pageButtonsVisibility;
         if(this.isMandatory) {
             this.selectionList.hidden = false;
         }
@@ -526,7 +533,7 @@ UnlockedStuff = {
 const body = document.getElementById('body');
 
 const pages = [TowerPage,ArmyPage, BuyCreaturePage, BuyWeaponPage, SettingsPage, BossArmySelectionPage, BossFightPage, BossFightingResultPage, TutorialPage];
-const page_names = ['TowerPage', 'ArmyPage', 'BuyCreaturePage', 'BuyWeaponPage', 'SettingsPage'];
+const page_names = ['TowerPage', 'ArmyPage', 'BuyCreaturePage', 'BuyWeaponPage', 'SettingsPage', 'BossArmySelectionPage', 'BossFightPage'];
 
 //Hide all unnecessary pages at startup
 for(let i = 0; i < pages.length ; i++) {
