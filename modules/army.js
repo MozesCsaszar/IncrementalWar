@@ -303,6 +303,7 @@ class Army {
             text += '<br>';
         }
         text += this.get_stats_text() + '<br>';
+        
         return text;
     }
     get_fighting_stats_text() {
