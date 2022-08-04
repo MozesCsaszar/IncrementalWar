@@ -42,6 +42,7 @@ class ArmyComponent {
     }
 }
 
+
 /*
 class Creature extends ArmyComponent {
     constructor(name = 'None', desc = 'None', stats = new Stats(), requires = new Stats(), price_handeler = new PriceHandler()) {
