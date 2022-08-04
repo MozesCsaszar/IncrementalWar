@@ -277,8 +277,6 @@ const TowerPage = {
         }
     },
     display() {
-        TowerPage.towerFloors[TowerPage.Tower.currentFloor].style.backgroundColor = 'var(--selected-tower-floor-background-color)';
-        TowerPage.changeArmyButtons[TowerPage.currentArmy].style.borderColor = 'var(--selected-toggle-button-border-color)';
         TowerPage.changeArmy(TowerPage.currentArmy);
         if(this.timesVisited == 0) {
             TutorialPage.unlockTutorial('Tower Page');
