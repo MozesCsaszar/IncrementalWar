@@ -582,20 +582,21 @@ function LoadOfflineProgress(nr_miliseconds = 0, current_page) {
     let total_gold = gold_per_second.mul(nr_seconds);
     load_text += '&nbsp&nbsp&nbsp&nbsp<span style="color:gold">Gold: ' + StylizeDecimals(total_gold) + '</span>';
     Player.gold = Player.gold.add(total_gold);
-
     //display offline load text
     document.getElementById('OfflineInfoText').innerHTML = load_text;
-    //click event for the continue from offline button
-    document.getElementById('ContinueFromOfflineProgress').addEventListener('click', function() {
-        //change current page to be able to use HidePages
-        currentPage = current_page ? 0 : 1;
-        document.getElementById('OfflinePageContainer').hidden = true;
-        document.getElementById('PageButtonsContainer').hidden = false;
-        goldText.parentElement.hidden = false;
-        //UNCOMMENT THIS
-        HidePages(current_page);
-    });
 }
+
+
+//click event for the continue from offline button
+document.getElementById('ContinueFromOfflineProgress').addEventListener('click', function() {
+    //change current page to be able to use HidePages
+    currentPage = Number(window.localStorage.getItem('currentPage')) ? 0 : 1;
+    document.getElementById('OfflinePageContainer').hidden = true;
+    document.getElementById('PageButtonsContainer').hidden = false;
+    goldText.parentElement.hidden = false;
+    //UNCOMMENT THIS
+    HidePages(currentPage);
+});
 
 //a function to save game to local storage
 function SaveToLocalStorage() {
@@ -645,14 +646,28 @@ function CloseGame() {
     SaveToLocalStorage();
 }
 
+let save_interval;
+
 //load the game on each session when starting up
-window.addEventListener('load', () => {OpenGame()});
+window.addEventListener('load', () => {
+    OpenGame();
+    save_interval = setInterval(SaveToLocalStorage,1000);
+});
 //save game whenever you switch tabs in browser (close, refresh, go to new/other tab)
-document.addEventListener('visibilitychange', SaveToLocalStorage);
+document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') {
+        let a = Number(window.localStorage.getItem('currentPage'));
+        LoadOfflineProgress(Date.now() - Number(window.localStorage.getItem('lastSavedTime')), a);
+        save_interval = setInterval(SaveToLocalStorage,1000);
+    } else {
+        SaveToLocalStorage();
+        clearInterval(save_interval);
+    }
+});
 //save the game before closing
 window.addEventListener('beforeunload', () => {CloseGame()});
 
-setInterval(SaveToLocalStorage,1000);
+
 
 function tick() {
     goldText.innerHTML = StylizeDecimals(Player.gold);
