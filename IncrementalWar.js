@@ -582,15 +582,21 @@ function LoadOfflineProgress(nr_miliseconds = 0, current_page) {
     let total_gold = gold_per_second.mul(nr_seconds);
     load_text += '&nbsp&nbsp&nbsp&nbsp<span style="color:gold">Gold: ' + StylizeDecimals(total_gold) + '</span>';
     Player.gold = Player.gold.add(total_gold);
-        
     //display offline load text
     document.getElementById('OfflineInfoText').innerHTML = load_text;
-
 }
 
-    
 
-
+//click event for the continue from offline button
+document.getElementById('ContinueFromOfflineProgress').addEventListener('click', function() {
+    //change current page to be able to use HidePages
+    currentPage = Number(window.localStorage.getItem('currentPage')) ? 0 : 1;
+    document.getElementById('OfflinePageContainer').hidden = true;
+    document.getElementById('PageButtonsContainer').hidden = false;
+    goldText.parentElement.hidden = false;
+    //UNCOMMENT THIS
+    HidePages(currentPage);
+});
 
 //a function to save game to local storage
 function SaveToLocalStorage() {
@@ -616,9 +622,10 @@ function LoadFromLocalStorage() {
     }
     //load offline progress
     let a = Number(local_storage.getItem('currentPage'));
+    //hide stuff to show a proper offline load page
+    document.getElementById('PageButtonsContainer').hidden = true;
+    goldText.parentElement.hidden = true;
     LoadOfflineProgress(Date.now() - Number(local_storage.getItem('lastSavedTime')), a);
-    HidePages(Number(window.localStorage.getItem('currentPage')));
-    return true;
 }
 
 function OpenGame() {
