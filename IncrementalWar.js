@@ -647,7 +647,9 @@ function LoadFromLocalStorage() {
 function OpenGame() {
     if(window.localStorage.length != 0) {
         LoadFromLocalStorage();
-        HidePages(window.localStorage.getItem('currentPage');
+        document.getElementById('PageButtonsContainer').hidden = false;
+        goldText.parentElement.hidden = false;
+        HidePages(window.localStorage.getItem('currentPage'));
     }
     else {
         console.log('here');
