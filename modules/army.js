@@ -349,8 +349,7 @@ class Army {
         while(j > 0) {
             this.change_stats('weapons', save_text[i], k);
             this.weapons[k] = save_text[i];
-            ArmyPage.equipElementByArmy('weapons', save_text[i], k);
-            //ARCHIVED this.change_element('weapons',save_text[i], k, false)
+
             j--;
             i++;
             k++;
@@ -483,6 +482,14 @@ const ArmyPage = {
         //save current army
         save_text = ArmyPage.currentArmy + '/*/';
         save_text += this.timesVisited;
+        //save equip state
+        save_text += '/*/' + Object.keys(this.elementEquipState).length;
+        for(let [tipe, type] of Object.entries(this.elementEquipState)) {
+            save_text += '/*/' + Object.keys(type).length + '/*/' + tipe;
+            for(let [key, value] of Object.entries(type)) {
+                save_text += '/*/' + key + '/*/' + value;
+            }
+        }
         return save_text;
     },
     equipElementByArmy(type, element, army_nr) {
@@ -522,6 +529,18 @@ const ArmyPage = {
         i++;
         this.timesVisited = Number(save_text[i]);
         i++;
+        let len_type, len_kv;
+        len_type = Number(save_text[i]);
+        i++;
+        for(let ii = 0; ii < len_type; ii++) {
+            len_kv = Number(save_text[i]);
+            i++;
+            let type = save_text[i]; i++;
+            for(let iii = 0; iii < len_kv; iii++) {
+                this.elementEquipState[type][save_text[i]] = Number(save_text[i+1]);
+                i+=2;
+            }
+        }
         ArmyPage.displayOnLoad();
     },
 }

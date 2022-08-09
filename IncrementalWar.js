@@ -258,6 +258,7 @@ const SettingsPage = {
     themeOrder: ['Black Theme', 'Dark Red Theme'],
     currentTheme: -1,
     tutorialButton: undefined,
+    timesVisited: 0,
     changeTheme() {
         SettingsPage.currentTheme++;
         if(SettingsPage.currentTheme == SettingsPage.themeOrder.length) {
@@ -269,7 +270,10 @@ const SettingsPage = {
         }
     },
     display() {
-
+        if(this.timesVisited == 0) {
+            TutorialPage.startTutorial('Settings Page', true, 4);
+        }
+        this.timesVisited++;
     },
     displayEveryTick() {
 
@@ -278,9 +282,12 @@ const SettingsPage = {
 
     },
     save() {
-
+        return String(SettingsPage.currentTheme) + '/*/' + String(SettingsPage.timesVisited);
     },
     load(save_text) {
+        save_text = save_text.split('/*/');
+        this.currentTheme = Number(save_text[0]) == -1 ? -1 : Number(save_text[0]) - 1;
+        this.timesVisited = Number(save_text[1]);
         SettingsPage.changeTheme();
     },
     
@@ -345,6 +352,16 @@ SettingsPage.tutorialButton.addEventListener('click', function() {
     HidePages(8);
 });
 
+//reset button
+document.getElementById('ResetButton').addEventListener('click', function() {
+    clearInterval(save_interval);
+
+    window.localStorage.clear();
+    location.reload();
+
+    save_interval = setInterval(SaveToLocalStorage,1000);
+});
+
 class TutorialItem {
     constructor(name, nr_pages) {
         this.name = name;
@@ -365,6 +382,7 @@ const TutorialPage = {
     nextButton: document.querySelector('.tutorial_next_button.page_tutorial'),
     backButton: document.querySelector('.element_select_list_back_button.page_tutorial'),
     tutorials: {
+        'Settings Page': new TutorialItem('Settings Page', 1),
         'Army Page': new TutorialItem('Army Page', 3),
         'Buy Creature Page': new TutorialItem('Buy Creature Page',2),
         'Buy Weapon Page': new TutorialItem('Buy Weapon Page',1),
@@ -375,9 +393,7 @@ const TutorialPage = {
     unlockedTutorials : new Set(),
     defaultTutorialPath: './images/tutorial/',
     pageButtonsVisibility: false,
-    display() {
-
-    },
+    display() {},
     displayEveryTick() {
 
     },
@@ -633,6 +649,7 @@ function OpenGame() {
         LoadFromLocalStorage();
     }
     else {
+        console.log('here');
         document.getElementById("OfflinePageContainer").hidden = true;
         //UNCOMMENT THIS
         HidePages(4);
@@ -643,7 +660,10 @@ function OpenGame() {
 }
 
 function CloseGame() {
-    SaveToLocalStorage();
+    if(window.localStorage.length != 0) {
+        SaveToLocalStorage();
+    }
+    
 }
 
 let save_interval;
@@ -660,7 +680,10 @@ document.addEventListener('visibilitychange', function() {
         LoadOfflineProgress(Date.now() - Number(window.localStorage.getItem('lastSavedTime')), a);
         save_interval = setInterval(SaveToLocalStorage,1000);
     } else {
-        SaveToLocalStorage();
+        if(window.localStorage.length != 0) {
+            SaveToLocalStorage();
+        }
+        
         clearInterval(save_interval);
     }
 });
