@@ -338,7 +338,6 @@ function HidePages(toShow) {
 //          THE INTERPAGE STUFF         \\
 const goldText = document.querySelector('#GoldText');
 
-
 function tick() {
     goldText.innerHTML = StylizeDecimals(Player.gold);
     for(i = 0; i < TowerPage.Tower.raidedFloors.length; i++) {
