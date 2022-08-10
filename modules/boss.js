@@ -1,132 +1,3 @@
-const BossArmySelectionPage = {
-    container : undefined,
-    armySelects: [[],[],[]],
-    armyInfos: [],
-    bossInfo: undefined,
-    difficultyGauge : undefined,
-    fight : undefined,
-    nrArmies: 3,
-    nrArmySelects: 3,
-    startFightButton: undefined,
-    timesVisited: 0,
-    displayOnLoad() {
-    },
-    display() {
-        //show necessary army selects
-        for(let i = 0; i < BossArmySelectionPage.fight.max_selectible_armies; i++) {
-            BossArmySelectionPage.armySelects[i][0].parentElement.parentElement.hidden = false;
-        }
-        //hide ones that are not useable in current fight
-        for(let i = BossArmySelectionPage.fight.max_selectible_armies; i < BossArmySelectionPage.nrArmySelects; i++) {
-            BossArmySelectionPage.armySelects[i][0].parentElement.parentElement.hidden = true;
-        }
-        BossArmySelectionPage.bossInfo.innerHTML = stuff['bosses'][BossArmySelectionPage.fight.bosses[0]].get_text();
-        if(this.timesVisited == 0) {
-            TutorialPage.unlockTutorial('Boss Fighting Army Selection Page');
-            TutorialPage.startTutorial('Boss Fighting Army Selection Page', true, 5);
-        }
-        this.timesVisited++;
-    },
-    displayEveryTick() {
-    },
-    showHideFightButton() {
-        for(let i in BossArmySelectionPage.fight.selected_armies) {
-            if(BossArmySelectionPage.fight.selected_armies[i] != -1 && Player.armies[BossArmySelectionPage.fight.selected_armies[i]].creature != 'None') {
-                BossArmySelectionPage.startFightButton.hidden = false;
-                return;
-            }
-        }
-        BossArmySelectionPage.startFightButton.hidden = true;
-    },
-    reset() {
-        BossArmySelectionPage.startFightButton.hidden = true;
-        for(let i = 0; i < BossArmySelectionPage.fight.max_selectible_armies; i++) {
-            BossArmySelectionPage.armySelects[i][BossArmySelectionPage.fight.selected_armies[i]].style.borderColor='var(--default-toggle-button-border-color)';
-            BossArmySelectionPage.armyInfos[i].innerHTML = "No army to be seen here.";
-        }
-    },
-    save() {
-        return String(this.timesVisited);
-    },
-    load(save_text) {
-        this.timesVisited = Number(save_text);
-    },
-};
-
-BossArmySelectionPage.container = document.querySelector('#BossArmySelectionPageContainer');
-BossArmySelectionPage.armyInfos = document.querySelectorAll('.select_boss_army_info');
-//build armySelects component
-let selects = document.querySelectorAll('.select_boss_army_button');
-for(let i = 0; i < BossArmySelectionPage.nrArmies; i++) {
-    for(let j = 0; j < BossArmySelectionPage.nrArmySelects; j++) {
-        BossArmySelectionPage.armySelects[i].push(selects[i*3 + j]);
-    }
-}
-BossArmySelectionPage.bossInfo = document.querySelector('#BossInfo');
-BossArmySelectionPage.difficultyGauge = document.querySelector('#BossFightDifficultyGauge');
-//start fight button
-BossArmySelectionPage.startFightButton = document.querySelector('#StartBossFightButton');
-BossArmySelectionPage.startFightButton.addEventListener('click', function() {
-    //reset boss fight page
-    BossFightPage.reset();
-    BossFightPage.fight = BossArmySelectionPage.fight;
-    for(let i = 0; i < BossArmySelectionPage.fight.max_selectible_armies; i++) {
-        for(let j = 0; j < TowerPage.Tower.raidedFloors.length; j++) {
-            if(TowerPage.Tower.raidedFloors[j][0] == BossArmySelectionPage.fight.selected_armies[i]) {
-                
-                BossFightPage.armiesRemovedFrom.push(TowerPage.Tower.raidedFloors.splice(j,1)[0]);
-                break;
-            }
-        }
-    }
-    BossArmySelectionPage.reset();
-    HidePages(6);
-});
-//Back to tower page button
-document.querySelector("#BackFromBossArmySelectionPage").addEventListener('click', function() {
-    //get page buttons back
-    document.querySelector("#PageButtonsContainer").hidden = false;
-    document.querySelector('#PageTopResourcesContainer').hidden = false;
-    //return to tower page
-    HidePages(0);
-});
-
-//click events for army selection buttons
-//i represents the position where an army is selected
-for(let i = 0; i < BossArmySelectionPage.nrArmies; i++) {
-    //j represents the army that was selected
-    for(let j = 0; j < BossArmySelectionPage.nrArmySelects; j++) {
-        BossArmySelectionPage.armySelects[i][j].addEventListener('click', function() {
-            //reset old armies
-            if(BossArmySelectionPage.fight.selected_armies[i] != -1) {
-                BossArmySelectionPage.armySelects[i][BossArmySelectionPage.fight.selected_armies[i]].style.borderColor = 'var(--default-toggle-button-border-color)';
-                for(let k = 0; k < BossArmySelectionPage.nrArmySelects; k++) {
-                    if(i != k) {
-                        BossArmySelectionPage.armySelects[k][BossArmySelectionPage.fight.selected_armies[i]].hidden = false;
-                    }
-                }
-            }
-            //if you select the same army again
-            if(j == BossArmySelectionPage.fight.selected_armies[i]) {
-                BossArmySelectionPage.fight.selected_armies[i] = -1;
-                BossArmySelectionPage.armyInfos[i].innerHTML = "No army to be seen here.";
-            }
-            //if you selected a new army
-            else {
-                BossArmySelectionPage.fight.selected_armies[i] = j;
-                BossArmySelectionPage.armyInfos[i].innerHTML = Player.armies[j].get_fighting_stats_text();
-                BossArmySelectionPage.armySelects[i][j].style.borderColor = 'var(--selected-toggle-button-border-color)';
-                for(let k = 0; k < BossArmySelectionPage.nrArmySelects; k++) {
-                    if(k != i) {
-                        BossArmySelectionPage.armySelects[k][j].hidden = true;
-                    }
-                }
-            }
-            BossArmySelectionPage.showHideFightButton();
-        });
-    }
-}
-
 class CombatMove {
     constructor(name, desc ) {
         this.name = name;
@@ -457,12 +328,12 @@ class FightingBoss {
         }
 
         //move feed, maybe move it somewhere else?
-        BossFightPage.feedMoves.push([this, this.moveset.current_move_place]);
-        if(BossFightPage.feedMoves.length > BossFightPage.feedElements.length) {
-            BossFightPage.feedMoves.shift();
+        BossFightingPage.feedMoves.push([this, this.moveset.current_move_place]);
+        if(BossFightingPage.feedMoves.length > BossFightingPage.feedElements.length) {
+            BossFightingPage.feedMoves.shift();
         }
 
-        BossFightPage.update_feed();
+        BossFightingPage.update_feed();
         //choose move
         this.choose_move();
         this.current_stats = this.move.modify_stats(this.stats);
@@ -520,78 +391,330 @@ class FightingBoss {
     }
 };
 
-const BossFightPage = {
-    container : undefined,
-    fight : undefined,
-    armyStatusBars : [],
-    nrArmyStatusBars: 3,
-    barElementsPerArmy: 6,
-    bossStatusBars : [],
-    nrBossStatusBats: 1,
-    barElementsPerBoss: 6,
-    barWidth: 300,
-    fightingArmies: [],
-    fightingBosses: [],
-    fightingArmyStatuses: [],
-    fightingBossStatuses: [],
-    fightingArmiesNr: 0,
-    fightingBossesNr: 0,
-    armiesRemovedFrom: [],
-    feedElements: [],
-    feedMoves: [],
-    timesVisited: 0,
+class BossSelectArmyButtonsClass extends ButtonGroupClass {
+    constructor(container_idetifier, button_identifier, selected_style, default_style, number) {
+        container_idetifier += ".n" + String(number);
+        super(container_idetifier, button_identifier, selected_style, default_style);
+
+        this.number = number;
+        this.selected = -1;
+    }
+    showButton(button_nr) {
+        super.showButton(button_nr);
+        this.buttons[button_nr].hidden = false;
+    }
+    hideButton(button_nr) {
+        super.hideButton(button_nr);
+        this.buttons[button_nr].hidden = true;
+    }
+    deselect() {
+        if(this.selected != -1) {
+            for(let [key, value] of Object.entries(this.defaultStyle)) {
+                this.buttons[this.selected].style[key] = value;
+            }
+            this.selected = -1;
+        }
+    }
+
+    buttonClick(button_nr) {
+        //reset old armies
+        if(BossArmySelectionPage.fight.selected_armies[this.number] != -1) {
+            for(let k = 0; k < BossArmySelectionPage.nrArmySelects; k++) {
+                if(this.number != k) {
+                    BossArmySelectionPage.armySelects[k].showButton(button_nr);
+                }
+            }
+        }
+        //if you select the same army again
+        if(button_nr == this.selected) {
+            BossArmySelectionPage.fight.selected_armies[this.number] = -1;
+            BossArmySelectionPage.armyInfos[this.number].innerHTML = "No army to be seen here.";
+        }
+        //if you selected a new army
+        else {
+            BossArmySelectionPage.fight.selected_armies[this.number] = button_nr;
+            BossArmySelectionPage.armyInfos[this.number].innerHTML = Player.armies[button_nr].get_fighting_stats_text();
+            for(let k = 0; k < BossArmySelectionPage.nrArmySelects; k++) {
+                if(k != this.number) {
+                    BossArmySelectionPage.armySelects[k].hideButton(button_nr);
+                }
+            }
+        }
+
+        //do button group things
+        if(this.selected == button_nr) {
+            this.deselect();
+        }
+        else {
+            if(this.selected != -1) {
+                for(let [key, value] of Object.entries(this.defaultStyle)) {
+                    this.buttons[this.selected].style[key] = value;
+                }
+            }
+            this.selectButton(button_nr);
+        }
+        BossArmySelectionPage.showHideFightButton();
+    }
+}
+
+class BossArmySelectionPageClass extends PageClass {
+    constructor(name) {
+        super(name);
+
+        this.nrArmies= 3;
+        this.nrArmySelects= 3;
+        //build armySelects component
+        this.armySelects= [];
+        for(let i = 0; i < this.nrArmies; i++) {
+            this.armySelects.push(new BossSelectArmyButtonsClass('.toggle_button_container.page_boss_select_army', '.toggle_button', {'borderColor': 'var(--selected-toggle-button-border-color)'}, {'borderColor': 'var(--default-toggle-button-border-color)'}, i));
+        }
+        this.armyInfos= document.querySelectorAll('.select_boss_army_info');
+        this.bossInfo= document.querySelector('#BossInfo');
+        this.difficultyGauge = document.querySelector('#BossFightDifficultyGauge');
+        this.fight = undefined;
+        this.backButton = document.querySelector("#BackFromBossArmySelectionPage");
+        this.startFightButton= document.querySelector('#StartBossFightButton');
+
+        this.initializeEventListeners();
+    }
+    initializeEventListeners() {
+        let c_obj = this;
+        //start fight button
+        this.startFightButton.addEventListener('click', function() {
+            //reset boss fight page
+            BossFightingPage.reset();
+            BossFightingPage.fight = c_obj.fight;
+            for(let i = 0; i < c_obj.fight.max_selectible_armies; i++) {
+                for(let j = 0; j < TowerPage.Tower.raidedFloors.length; j++) {
+                    if(TowerPage.Tower.raidedFloors[j][0] == BossFightingPage.fight.selected_armies[i]) {
+                        BossFightingPage.armiesRemovedFrom.push(TowerPage.Tower.raidedFloors.splice(j,1)[0]);
+                        break;
+                    }
+                }
+            }
+            c_obj.reset();
+            HidePages('BossFightingPage');
+        });
+        //Back to tower page button
+        this.backButton.addEventListener('click', function() {
+            //get page buttons back
+            document.querySelector("#PageButtonsContainer").hidden = false;
+            document.querySelector('#PageTopResourcesContainer').hidden = false;
+            //return to tower page
+            HidePages('TowerPage');
+        });
+    }
+    displayOnLoad() {}
+    display() {
+        //show necessary army selects
+        for(let i = 0; i < this.fight.max_selectible_armies; i++) {
+            this.armySelects[i].container.parentElement.hidden = false;
+            this.armySelects[i].deselect();
+        }
+        //hide ones that are not useable in current fight
+        for(let i = this.fight.max_selectible_armies; i < this.nrArmySelects; i++) {
+            this.armySelects[i].container.parentElement.hidden = true;
+        }
+        this.bossInfo.innerHTML = stuff['bosses'][this.fight.bosses[0]].get_text();
+        if(this.timesVisited == 0) {
+            TutorialPage.unlockTutorial('Boss Fighting Army Selection Page');
+            TutorialPage.startTutorial('Boss Fighting Army Selection Page', true, 'BossArmySelectionPage');
+        }
+        this.timesVisited++;
+    }
+    displayEveryTick(c_obj) {}
+    save() {
+        let save_text = super.save();
+
+        return save_text;
+    }
+    load(save_text) {
+        save_text = save_text.split('/*/');
+        let i = super.load(save_text);
+    }
+    showHideFightButton() {
+        for(let i in this.fight.selected_armies) {
+            if(this.fight.selected_armies[i] != -1 && Player.armies[this.fight.selected_armies[i]].creature != 'None') {
+                this.startFightButton.hidden = false;
+                return;
+            }
+        }
+        this.startFightButton.hidden = true;
+    }
+    reset() {
+        this.startFightButton.hidden = true;
+        for(let i = 0; i < this.fight.max_selectible_armies; i++) {
+            this.armySelects[i].selectButton([this.fight.selected_armies[i]]);
+            this.armyInfos[i].innerHTML = "No army to be seen here.";
+        }
+    }
+};
+
+let BossArmySelectionPage = new BossArmySelectionPageClass('BossArmySelectionPage');
+
+class BossFightingPageClass extends PageClass {
+    constructor(name) {
+        super(name);
+
+        this.fight = undefined;
+
+        //applicable to all status bars
+        this.barWidth= 300;
+
+        //army status bars
+        this.nrArmyStatusBars= 3;
+        this.barElementsPerArmy= 6;
+        this.armyStatusBars = [];
+
+        let status_bars = document.querySelectorAll('.army_in_boss_fight_bar');
+        for(let i = 0; i < this.nrArmyStatusBars; i++) {
+            this.armyStatusBars.push([]);
+            for(let j = 0; j < this.barElementsPerArmy; j++) {
+                this.armyStatusBars[i].push(status_bars[i * this.barElementsPerArmy + j]);
+            }
+        }
+
+        //boss status bars
+        this.nrBossStatusBats= 1;
+        this.barElementsPerBoss= 6;
+        this.bossStatusBars = [];
+
+        status_bars = document.querySelectorAll('.boss_in_boss_fight_bar');
+        for(let i = 0; i < this.nrBossStatusBats; i++) {
+            this.bossStatusBars.push([]);
+            for(let j = 0; j < this.barElementsPerBoss; j++) {
+                this.bossStatusBars[i].push(status_bars[i * this.barElementsPerBoss+ j]);
+            }
+        }
+        
+        //feed
+        this.feedElements= [];
+        this.feedMoves= [];
+        this.feedElements = document.querySelectorAll('.boss_fight_move_feed_element');
+
+        this.fightingArmies= [];
+        this.fightingBosses= [];
+        this.fightingArmyStatuses= [];
+        this.fightingBossStatuses= [];
+        this.fightingArmiesNr= 0;
+        this.fightingBossesNr= 0;
+        this.armiesRemovedFrom= [];
+                
+        this.initializeEventListeners();
+    }
+    initializeEventListeners() {
+        let c_obj = this;
+
+        //feed elements
+        for(let i = 0; i < this.feedElements.length; i++) {
+            this.feedElements[i].addEventListener('mouseenter', function(event) {
+                if(c_obj.feedElements[i].innerHTML != '') {
+                    //display anew only if mouse was moved
+                    if(!(PopupWindow.left == event.clientX && PopupWindow.top == event.clientY)) {
+                        let feed_elem = c_obj.feedMoves[c_obj.feedMoves.length - 1 - i];
+                        PopupWindow.show(event.clientX, event.clientY, feed_elem[0].moveset.get_move_description(...feed_elem[1]));
+                    }
+                    
+                }
+            }); 
+            this.feedElements[i].addEventListener('mousemove', function(event) {
+                let feed_elem = c_obj.feedMoves[c_obj.feedMoves.length - 1 - i];
+                PopupWindow.show(event.clientX, event.clientY, feed_elem[0].moveset.get_move_description(...feed_elem[1]));
+            }); 
+            this.feedElements[i].addEventListener('mouseleave', function(event) {
+                PopupWindow.hide();
+            }); 
+        }
+    }
     displayOnLoad() {
-    },
+    }
     display() {
         //if not yet visited, show tutorial
         if(this.timesVisited == 0) {
             TutorialPage.unlockTutorial('Boss Fighting Page');
-            TutorialPage.startTutorial('Boss Fighting Page', true, 6);
+            TutorialPage.startTutorial('Boss Fighting Page', true, 'BossFightingPage');
         }
         //else set up the fight
         else {
-            for(let i = 0; i < BossFightPage.fight.max_selectible_armies; i++) {
-                BossFightPage.armyStatusBars[i][0].parentElement.parentElement.hidden = false;
+            for(let i = 0; i < this.fight.max_selectible_armies; i++) {
+                this.armyStatusBars[i][0].parentElement.parentElement.hidden = false;
                 //create actually fighting armies
-                BossFightPage.fightingArmies.push(new FightingArmy(Player.armies[BossFightPage.fight.selected_armies[i]]));
-                BossFightPage.fightingArmyStatuses.push(1);
+                this.fightingArmies.push(new FightingArmy(Player.armies[this.fight.selected_armies[i]]));
+                this.fightingArmyStatuses.push(1);
             }
-            BossFightPage.fightingArmiesNr = BossFightPage.fight.max_selectible_armies;
+            this.fightingArmiesNr = this.fight.max_selectible_armies;
     
-            for(let i = BossFightPage.fight.max_selectible_armies; i < BossFightPage.nrArmyStatusBars; i++) {
-                BossFightPage.armyStatusBars[i][0].parentElement.parentElement.hidden = true;
-                BossFightPage.fightingBossStatuses.push(1);
+            for(let i = this.fight.max_selectible_armies; i < this.nrArmyStatusBars; i++) {
+                this.armyStatusBars[i][0].parentElement.parentElement.hidden = true;
+                this.fightingBossStatuses.push(1);
             }
-            BossFightPage.fightingBossesNr = 1;
+            this.fightingBossesNr = 1;
     
             //create actually fighting boss
-            BossFightPage.fightingBosses.push(new FightingBoss(stuff['bosses'][BossFightPage.fight.bosses[0]]));
-            BossFightPage.deploy_armies();
-            document.querySelector('.boss_in_boss_fight_name').innerHTML = BossFightPage.fight.bosses[0];
+            this.fightingBosses.push(new FightingBoss(stuff['bosses'][this.fight.bosses[0]]));
+            this.deploy_armies();
+            document.querySelector('.boss_in_boss_fight_name').innerHTML = this.fight.bosses[0];
         }
-        
-
-        
         this.timesVisited++;
-    },
-    deploy_armies() {
-        for(let i = 0; i < BossFightPage.fightingArmies.length; i++) {
-            BossFightPage.fightingArmies[i].deploy_around_boss(BossFightPage.fightingBosses[0]);
+    }
+    displayEveryTick(c_obj) {
+        //fill in sliders
+        for(let i = 0; i < c_obj.fightingArmies.length; i++) {
+            //health foreground
+            c_obj.armyStatusBars[i][0].style.width = c_obj.get_width(c_obj.fightingArmies[i].total_health, c_obj.fightingArmies[i].max_total_health) ;
+            c_obj.armyStatusBars[i][1].innerHTML = StylizeDecimals(c_obj.fightingArmies[i].total_health) + '/' + StylizeDecimals(c_obj.fightingArmies[i].max_total_health);
+            //unit nr foreground
+            c_obj.armyStatusBars[i][2].style.width = c_obj.get_width(c_obj.fightingArmies[i].units, c_obj.fightingArmies[i].max_units) ;
+            c_obj.armyStatusBars[i][3].innerHTML = StylizeDecimals(c_obj.fightingArmies[i].units, true) + '/' + StylizeDecimals(c_obj.fightingArmies[i].max_units, true) +
+                                                            ' (' + StylizeDecimals(c_obj.fightingArmies[i].deployed, true) + ')';
+            //attack status foreground
+            c_obj.armyStatusBars[i][4].style.width = c_obj.get_width(c_obj.fightingArmies[i].attack_counter, c_obj.fightingArmies[i].attack_time);
+            c_obj.armyStatusBars[i][5].innerHTML = StylizeDecimals(c_obj.fightingArmies[i].get_total_attack(c_obj.fightingBosses[0]) );
         }
-        BossFightPage.fightingBosses[0].get_targets();
-    },
+
+        for(let i = 0; i < c_obj.fightingBosses.length; i++) {
+            //health foreground
+            c_obj.bossStatusBars[i][0].style.width = c_obj.get_width(c_obj.fightingBosses[i].total_health, c_obj.fightingBosses[i].max_total_health) ;
+            c_obj.bossStatusBars[i][1].innerHTML = StylizeDecimals(c_obj.fightingBosses[i].total_health) + '/' + StylizeDecimals(c_obj.fightingBosses[i].max_total_health);
+            //unit nr foreground
+            c_obj.bossStatusBars[i][2].style.width = c_obj.get_width(c_obj.fightingBosses[i].units, c_obj.fightingBosses[i].max_units) ;
+            c_obj.bossStatusBars[i][3].innerHTML = StylizeDecimals(c_obj.fightingBosses[i].units, true) + '/' + StylizeDecimals(c_obj.fightingBosses[i].max_units, true);
+            //attack status foreground
+            c_obj.bossStatusBars[i][4].style.width = c_obj.get_width(c_obj.fightingBosses[i].attack_counter, c_obj.fightingBosses[i].attack_time);
+            c_obj.bossStatusBars[i][5].innerHTML = StylizeDecimals(c_obj.fightingBosses[i].get_total_attack());
+        }
+
+        if(c_obj.do_fight()) {
+            c_obj.resolve_win();
+        }
+    }
+    save() {
+        let save_text = super.save();
+
+        return save_text;
+    }
+    load(save_text) {
+        save_text = save_text.split('/*/');
+        let i = super.load(save_text);
+    }
+    deploy_armies() {
+        for(let i = 0; i < this.fightingArmies.length; i++) {
+            this.fightingArmies[i].deploy_around_boss(this.fightingBosses[0]);
+        }
+        this.fightingBosses[0].get_targets();
+    }
     get_width(curr, max) {
-        return new Decimal(BossFightPage.barWidth).mul( curr.div(max) ).floor().toNumber();
-    },
+        return new Decimal(this.barWidth).mul( curr.div(max) ).floor().toNumber();
+    }
     do_fight() {
-        for(let i = 0; i < BossFightPage.fightingArmies.length; i++) {
-            if(BossFightPage.fightingArmyStatuses[i] == 1) {
-                BossFightPage.fightingArmies[i].tick(20, BossFightPage.fightingBosses[0]);
-                if(BossFightPage.fightingArmies[i].total_health.lte(0.00001)) {
-                    BossFightPage.fightingArmyStatuses[i] = 0;
-                    BossFightPage.fightingArmies[i].total_health = new Decimal(0);
-                    BossFightPage.fightingArmiesNr -= 1;
-                    if(BossFightPage.fightingArmiesNr == 0) {
+        for(let i = 0; i < this.fightingArmies.length; i++) {
+            if(this.fightingArmyStatuses[i] == 1) {
+                this.fightingArmies[i].tick(20, this.fightingBosses[0]);
+                if(this.fightingArmies[i].total_health.lte(0.00001)) {
+                    this.fightingArmyStatuses[i] = 0;
+                    this.fightingArmies[i].total_health = new Decimal(0);
+                    this.fightingArmiesNr -= 1;
+                    if(this.fightingArmiesNr == 0) {
                         return true;
                     }
                 }
@@ -599,24 +722,24 @@ const BossFightPage = {
             
         }
 
-        for(let i = 0; i < BossFightPage.fightingBosses.length; i++) {
-            if(BossFightPage.fightingBossStatuses[i] == 1) {
-                BossFightPage.fightingBosses[i].tick(20, BossFightPage.fightingArmies[0]);
-                if(BossFightPage.fightingBosses[i].total_health.lte(0.00001)) {
-                    BossFightPage.fightingBossStatuses[i] = 0;
-                    BossFightPage.fightingBosses[i].total_health = new Decimal(0);
-                    BossFightPage.fightingBossesNr -= 1;
-                    if(BossFightPage.fightingBossesNr == 0) {
+        for(let i = 0; i < this.fightingBosses.length; i++) {
+            if(this.fightingBossStatuses[i] == 1) {
+                this.fightingBosses[i].tick(20, this.fightingArmies[0]);
+                if(this.fightingBosses[i].total_health.lte(0.00001)) {
+                    this.fightingBossStatuses[i] = 0;
+                    this.fightingBosses[i].total_health = new Decimal(0);
+                    this.fightingBossesNr -= 1;
+                    if(this.fightingBossesNr == 0) {
                         return true;
                     }
                 }
             }
             
         }
-    },
+    }
     resolve_win() {
         //Boss won
-        if(BossFightPage.fightingArmiesNr == 0) {
+        if(this.fightingArmiesNr == 0) {
             
         }
         //Army won
@@ -624,125 +747,78 @@ const BossFightPage = {
 
         }
         //put armies back to raid what they were raiding before
-        for(let i = 0; i < BossFightPage.armiesRemovedFrom.length; i++) {
-            TowerPage.Tower.raidedFloors.push(BossFightPage.armiesRemovedFrom[i]);
+        for(let i = 0; i < this.armiesRemovedFrom.length; i++) {
+            TowerPage.Tower.raidedFloors.push(this.armiesRemovedFrom[i]);
         }
     
         //change page to fight end page
-        HidePages(7);
-    },
-    displayEveryTick() {
-        //fill in sliders
-        for(let i = 0; i < BossFightPage.fightingArmies.length; i++) {
-            //health foreground
-            BossFightPage.armyStatusBars[i][0].style.width = BossFightPage.get_width(BossFightPage.fightingArmies[i].total_health, BossFightPage.fightingArmies[i].max_total_health) ;
-            BossFightPage.armyStatusBars[i][1].innerHTML = StylizeDecimals(BossFightPage.fightingArmies[i].total_health) + '/' + StylizeDecimals(BossFightPage.fightingArmies[i].max_total_health);
-            //unit nr foreground
-            BossFightPage.armyStatusBars[i][2].style.width = BossFightPage.get_width(BossFightPage.fightingArmies[i].units, BossFightPage.fightingArmies[i].max_units) ;
-            BossFightPage.armyStatusBars[i][3].innerHTML = StylizeDecimals(BossFightPage.fightingArmies[i].units, true) + '/' + StylizeDecimals(BossFightPage.fightingArmies[i].max_units, true) +
-                                                            ' (' + StylizeDecimals(BossFightPage.fightingArmies[i].deployed, true) + ')';
-            //attack status foreground
-            BossFightPage.armyStatusBars[i][4].style.width = BossFightPage.get_width(BossFightPage.fightingArmies[i].attack_counter, BossFightPage.fightingArmies[i].attack_time);
-            BossFightPage.armyStatusBars[i][5].innerHTML = StylizeDecimals(BossFightPage.fightingArmies[i].get_total_attack(BossFightPage.fightingBosses[0]) );
-        }
-
-        for(let i = 0; i < BossFightPage.fightingBosses.length; i++) {
-            //health foreground
-            BossFightPage.bossStatusBars[i][0].style.width = BossFightPage.get_width(BossFightPage.fightingBosses[i].total_health, BossFightPage.fightingBosses[i].max_total_health) ;
-            BossFightPage.bossStatusBars[i][1].innerHTML = StylizeDecimals(BossFightPage.fightingBosses[i].total_health) + '/' + StylizeDecimals(BossFightPage.fightingBosses[i].max_total_health);
-            //unit nr foreground
-            BossFightPage.bossStatusBars[i][2].style.width = BossFightPage.get_width(BossFightPage.fightingBosses[i].units, BossFightPage.fightingBosses[i].max_units) ;
-            BossFightPage.bossStatusBars[i][3].innerHTML = StylizeDecimals(BossFightPage.fightingBosses[i].units, true) + '/' + StylizeDecimals(BossFightPage.fightingBosses[i].max_units, true);
-            //attack status foreground
-            BossFightPage.bossStatusBars[i][4].style.width = BossFightPage.get_width(BossFightPage.fightingBosses[i].attack_counter, BossFightPage.fightingBosses[i].attack_time);
-            BossFightPage.bossStatusBars[i][5].innerHTML = StylizeDecimals(BossFightPage.fightingBosses[i].get_total_attack());
-        }
-
-        if(BossFightPage.do_fight()) {
-            BossFightPage.resolve_win();
-        }
-    },
+        HidePages('BossFightingResultPage');
+    }
     update_feed() {
-        let i, ii = BossFightPage.feedMoves.length - 1;
-        for(i = 0; i < BossFightPage.feedMoves.length; i++, ii--) {
-            BossFightPage.feedElements[ii].innerHTML = '<br>' + BossFightPage.feedMoves[i][0].moveset.get_move_name(...BossFightPage.feedMoves[i][1]) + '<br>';
+        let i, ii = this.feedMoves.length - 1;
+        for(i = 0; i < this.feedMoves.length; i++, ii--) {
+            this.feedElements[ii].innerHTML = '<br>' + this.feedMoves[i][0].moveset.get_move_name(...this.feedMoves[i][1]) + '<br>';
         }
-        for(i; i < BossFightPage.feedElements.length;i++) {
-            BossFightPage.feedElements[i].innerHTML = '';
+        for(i; i < this.feedElements.length;i++) {
+            this.feedElements[i].innerHTML = '';
         }
-    },
+    }
     reset() {
         //reset fighting armies and bosses
-        BossFightPage.fightingArmies =[];
-        BossFightPage.fightingArmiesNr = 0;
-        BossFightPage.fightingBosses = [];
-        BossFightPage.fightingBossesNr = 0;
-        BossFightPage.fightingArmyStatuses = [];
-        BossFightPage.fightingBossStatuses = [];
+        this.fightingArmies =[];
+        this.fightingArmiesNr = 0;
+        this.fightingBosses = [];
+        this.fightingBossesNr = 0;
+        this.fightingArmyStatuses = [];
+        this.fightingBossStatuses = [];
         //reset army removal (from raiding a tower level) tracker array
-        BossFightPage.armiesRemovedFrom = [];
+        this.armiesRemovedFrom = [];
         //reset feed
-        BossFightPage.feedMoves = [];
-        BossFightPage.update_feed();
-    },
+        this.feedMoves = [];
+        this.update_feed();
+    }
+};
+
+let BossFightingPage = new BossFightingPageClass('BossFightingPage');
+
+class BossFightingResultPageClass extends PageClass {
+    constructor(name) {
+        super(name);
+
+        this.resultInfo= document.querySelector("#AfterFightMessage");
+        this.backButton = document.querySelector("#BackButtonFromResults");
+
+        this.initializeEventListeners();
+    }
+    initializeEventListeners() {
+        //Back to tower page button
+        this.backButton.addEventListener('click', function() {
+            //get resource bar and page buttons back
+            document.querySelector("#PageButtonsContainer").hidden = false;
+            document.querySelector('#PageTopResourcesContainer').hidden = false;
+            //return to tower page
+            HidePages('TowerPage');
+        });
+    }
+    displayOnLoad() {}
+    display() {
+        this.resultInfo.innerHTML = this.generate_message();
+    }
+    displayEveryTick(c_obj) {}
     save() {
-        return String(this.timesVisited)
-    },
+        let save_text = super.save();
+
+        return save_text;
+    }
     load(save_text) {
-        this.timesVisited = Number(save_text);
-    },
-    
-}
-BossFightPage.container = document.querySelector('#BossFightPageContainer');
-
-//get army status bars
-let status_bars = document.querySelectorAll('.army_in_boss_fight_bar');
-for(let i = 0; i < BossFightPage.nrArmyStatusBars; i++) {
-    BossFightPage.armyStatusBars.push([]);
-    for(let j = 0; j < BossFightPage.barElementsPerArmy; j++) {
-        BossFightPage.armyStatusBars[i].push(status_bars[i * BossFightPage.barElementsPerArmy + j]);
+        save_text = save_text.split('/*/');
+        let i = super.load(save_text);
     }
-}
-
-//get boss status bars
-status_bars = document.querySelectorAll('.boss_in_boss_fight_bar');
-for(let i = 0; i < BossFightPage.nrBossStatusBats; i++) {
-    BossFightPage.bossStatusBars.push([]);
-    for(let j = 0; j < BossFightPage.barElementsPerBoss; j++) {
-        BossFightPage.bossStatusBars[i].push(status_bars[i * BossFightPage.barElementsPerBoss+ j]);
-    }
-}
-
-//feed elements
-BossFightPage.feedElements = document.querySelectorAll('.boss_fight_move_feed_element');
-for(let i = 0; i < BossFightPage.feedElements.length; i++) {
-    BossFightPage.feedElements[i].addEventListener('mouseenter', function(event) {
-        if(BossFightPage.feedElements[i].innerHTML != '') {
-            //display anew only if mouse was moved
-            if(!(PopupWindow.left == event.clientX && PopupWindow.top == event.clientY)) {
-                let feed_elem = BossFightPage.feedMoves[BossFightPage.feedMoves.length - 1 - i];
-                PopupWindow.show(event.clientX, event.clientY, feed_elem[0].moveset.get_move_description(...feed_elem[1]));
-            }
-            
-        }
-    }); 
-    BossFightPage.feedElements[i].addEventListener('mousemove', function(event) {
-        let feed_elem = BossFightPage.feedMoves[BossFightPage.feedMoves.length - 1 - i];
-        PopupWindow.show(event.clientX, event.clientY, feed_elem[0].moveset.get_move_description(...feed_elem[1]));
-    }); 
-    BossFightPage.feedElements[i].addEventListener('mouseleave', function(event) {
-        PopupWindow.hide();
-    }); 
-}
-
-const BossFightingResultPage = {
-    container : undefined,
-    resultInfo: undefined,
     generate_message() {
         let t;
-        if(BossFightPage.fightingArmiesNr == 0) {
+        if(BossFightingPage.fightingArmiesNr == 0) {
             t = 'You lost!<br>';
-            if(BossFightPage.fight.lose_soldiers) {
+            if(BossFightingPage.fight.lose_soldiers) {
                 t += 'With your loss, you lost all your soldiers as well!';
             }
             else {
@@ -752,7 +828,7 @@ const BossFightingResultPage = {
         }
         else {
             t = 'You won!<br>';
-            if(BossFightPage.fight.lose_soldiers) {
+            if(BossFightingPage.fight.lose_soldiers) {
                 t += "Though you lost part of your army.";
             }
             else {
@@ -761,28 +837,7 @@ const BossFightingResultPage = {
             }
         }
         return t;
-    },
-    displayOnLoad() {
-    },
-    display() {
-        BossFightingResultPage.resultInfo.innerHTML = BossFightingResultPage.generate_message();
-    },
-    displayEveryTick() {
-    },
-    save() {},
-    load() {},
+    }
 };
 
-
-BossFightingResultPage.container = document.querySelector('#BossFightingResultPageContainer');
-BossFightingResultPage.resultInfo = document.querySelector("#AfterFightMessage");
-
-//Back to tower page button
-document.querySelector("#BackButtonFromResults").addEventListener('click', function() {
-    //get resource bar and page buttons back
-    document.querySelector("#PageButtonsContainer").hidden = false;
-    document.querySelector('#PageTopResourcesContainer').hidden = false;
-    //return to tower page
-    HidePages(0);
-});
-
+let BossFightingResultPage = new BossFightingResultPageClass('BossFightingResultPage')

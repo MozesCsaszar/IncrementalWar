@@ -139,8 +139,7 @@ class Army {
         }
         //send unlock request after change
         if(unlock_stuff) {
-            Unlockables.unlock(['army','power'],this.power);
-            Unlockables.unlock(['army','size'],this.size);
+            
         }
         return true;
     }
@@ -365,123 +364,311 @@ class Army {
         i++;
         return i;
     }
-}
+};
 
+class SelectionItemListClass extends ItemListClass {
+    //class names come in form of: .<name> or #<name>
+    constructor(container_idetifier,element_idetifier, previous_button_identifier, back_button_identifier, next_button_identifier, item_list = []) {
+        super(container_idetifier,element_idetifier, previous_button_identifier, back_button_identifier, next_button_identifier, item_list);
 
-const ArmyPage = {
-    pageButton : undefined,
-    container : undefined,
-    armyManagerContainer : undefined,
-    selectRows: {
-        creatures : [],
-        weapons : [],
-    },
-    //the end number of select rows in each category, in order: creatures, weapons
-    selectRowsTypes: ['creatures', 'weapons'],
-    selectRowsNrs: [1, 9],
-    //store equipped state by a bitwise method ( 2 ** army_nr shows if that army equipped the element or not)
-    elementEquipState: {
-        creatures: {'None' : 0, 'Human' : 0,},
-        weapons: {'None' : 0},
-    },
-    info : undefined,
-    partInfo : undefined,
-    armySizeInput : undefined,
-    currentArmy : 0,
-    changeArmyButtons : [],
-    maxArmySizeButton : undefined,
-    elementSelectList:undefined,
-    currentSelecting : {
-        weapons : -1,
-    },
-    levelText : undefined,
-    levelUpButton : undefined,
-    levelUpCost : undefined,
-    timesVisited: 0,
-    displayOnLoad() {
-        for(let i = 0; i < ArmyPage.changeArmyButtons.length; i++) {
-            ArmyPage.changeArmyButtons[i].style.borderColor = 'var(--default-toggle-button-border-color)';
-        }
-        ArmyPage.changeArmyButtons[ArmyPage.currentArmy].style.borderColor = 'var(--selected-toggle-button-border-color)';
-        ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
-        ArmyPage.armySizeInput.value = StylizeDecimals(Player.armies[ArmyPage.currentArmy].size,true);
-    },
-    display() {
-        ArmyPage.changeArmyButtons[ArmyPage.currentArmy].style.borderColor ='var(--selected-toggle-button-border-color)';
-        ArmyPage.changeArmy(ArmyPage.currentArmy);
-        if(this.timesVisited == 0) {
-            TutorialPage.unlockTutorial('Army Page');
-            TutorialPage.startTutorial('Army Page', true, 1);
-        }
-        this.timesVisited++;
-    },
-    displayEveryTick() {
-        ArmyPage.selectRows.creatures[0][0].innerHTML = (Player.armies[ArmyPage.currentArmy].creature == 'None'  ? '(&infin;)' : '(' + StylizeDecimals(Player.inventory.creatures[Player.armies[ArmyPage.currentArmy].creature],true) + ')');
-        for(i = 0; i < 8; i++) {
-            ArmyPage.selectRows.weapons[i][0].innerHTML = (Player.armies[ArmyPage.currentArmy].weapons[i] == 'None' ? '(&infin;)' : '(' + StylizeDecimals(Player.inventory.weapons[Player.armies[ArmyPage.currentArmy].weapons[i]],true) + ')');
-        }
-    },
-    changeArmy(change_to) {
-
-        //      reset creature which was used
-        ArmyPage.selectRows.creatures[0][1].innerHTML = Player.armies[change_to].creature;
-        
-        //      reset weapon selects if they where used
-        let k = 0;
-        while(k < 8 && Player.armies[ArmyPage.currentArmy].weapons[k] != 'None') {
-            ArmyPage.selectRows.weapons[k][1].innerHTML = 'None';
-            k++;
-        }
-        //          set new selects and hide selectButtons used
-        k = 0;
-        ArmyPage.currentArmy = change_to;
-        //     set setters' innerHTML value
-        while(k < 8 && Player.armies[ArmyPage.currentArmy].weapons[k] != "None") {
-            ArmyPage.selectRows.weapons[k][0].parentElement.hidden = false;
-            ArmyPage.selectRows.weapons[k][1].innerHTML = Player.armies[ArmyPage.currentArmy].weapons[k];
-            k++;
-        }
-        //          show next selector if possible and needed
-        //      set the next weapon selector visible if needed and possible
-        if( k < Player.armies[ArmyPage.currentArmy].max_weapons && Player.armies[ArmyPage.currentArmy].creature != "None") {
-            ArmyPage.selectRows.weapons[k][0].parentElement.hidden = false;
-            k++;
-        }
-        //          hide unused selectors
-        //      hide unused weapon selectors
-        while(k < Player.armies[ArmyPage.currentArmy].max_weapons) {
-            ArmyPage.selectRows.weapons[k][0].parentElement.hidden = true;
-            k++;
-        }
-        //          set the info and other stuff
-        ArmyPage.info.innerHTML = Player.armies[change_to].get_text();
-        ArmyPage.armySizeInput.value = StylizeDecimals(Player.armies[change_to].size, true);
-        //set level text
-        ArmyPage.levelText.innerHTML = 'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1);
-        if(Player.armies[ArmyPage.currentArmy].level < Army.level_prices.length) {
-            ArmyPage.levelUpCost.innerHTML = 'Cost: ' +  StylizeDecimals(Army.level_prices[Player.armies[ArmyPage.currentArmy].level]);
-            
-            //show level up stuff
-            ArmyPage.levelUpButton.hidden = false;
-            document.getElementById('ArmyLevelUpCost').hidden = false;
+        this.type = 'creatures';
+        this.changeIndex = 0;
+    }
+    hideElement(elem_nr) {
+        super.hideElement(elem_nr);
+        this.elements[elem_nr].innerHTML = '';
+        this.elements[elem_nr].style.borderStyle = 'none';
+    }
+    showElement(elem_nr) {
+        super.showElement(elem_nr);
+        this.elements[elem_nr].style.borderStyle = 'solid';
+    }
+    elementMouseenter(elem_nr) {
+        if(this.itemList[elem_nr] == 'None') {
+            ArmyPage.partInfo.innerHTML = 'None';
         }
         else {
-            ArmyPage.levelText.innerHTML += ' (Max)';
-            //hide level up stuff
-            ArmyPage.levelUpButton.hidden = true;
-            document.getElementById('ArmyLevelUpCost').hidden = true;
+            ArmyPage.partInfo.innerHTML = stuff[this.type][this.itemList[elem_nr]].get_text();
         }
-        //      if element selection was active, hide it
-        if(!ArmyPage.elementSelectList.hidden) {
-            ArmyPage.elementSelectList.container.hidden = true;
-            ArmyPage.armyManagerContainer.hidden = false;
+        ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_change_text(this.type,this.itemList[elem_nr],this.changeIndex);
+    }
+    elementMouseleave(elem_nr) {
+        ArmyPage.partInfo.innerHTML = '';
+        ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
+    }
+    elementClick(elem_nr) {
+        if(!Player.armies[ArmyPage.currentArmy].change_element(this.type, this.elements[elem_nr].innerHTML, this.changeIndex, true, ArmyPage.currentArmy)) {
+            return;
         }
-    },
+        ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
+        ArmyPage.selectRows[this.type][this.changeIndex][1].innerHTML = this.elements[elem_nr].innerHTML;
+        if(this.type == 'creatures') {
+            //hide select rows for weapons and the like
+            for(let j = Player.armies[ArmyPage.currentArmy].weapons.length - 1; j > -1; j--) {
+                ArmyPage.selectRows.weapons[j][0].parentElement.hidden = true;
+                ArmyPage.selectRows.weapons[j][1].innerHTML = 'None';
+            }
+            //show first weapon selection row and the like if the creature is not None
+            if(ArmyPage.selectRows.creatures[0][1].innerHTML != 'None') {
+                ArmyPage.selectRows.weapons[0][0].parentElement.hidden = false;
+            }
+        }
+        else if(this.type == 'weapons') {
+            let found = false;
+            //hide select rows for weapons and the like
+            for(let j = 0; j < Player.armies[ArmyPage.currentArmy].weapons.length; j++) {
+                if(Player.armies[ArmyPage.currentArmy].weapons[j] == 'None') {
+                    if(found) {
+                        ArmyPage.selectRows.weapons[j][0].parentElement.hidden = true;
+                    }
+                    else {
+                        found = true;
+                        ArmyPage.selectRows.weapons[j][0].parentElement.hidden = false;
+                    }
+                }
+                ArmyPage.selectRows.weapons[j][1].innerHTML = Player.armies[ArmyPage.currentArmy].weapons[j];
+            }
+        }
+        
+        //hide selection list
+        this.container.hidden = true;
+        //show management item
+        ArmyPage.armyManagerContainer.hidden = false;
+    }
+    populateElement(elem_nr) {
+        this.elements[elem_nr].innerHTML = this.itemList[this.getItemListIndex(elem_nr)];
+    }
+    backButtonMouseenter() {
+        ArmyPage.partInfo.innerHTML = 'Take me back, baby!';
+    }
+    backButtonMouseleave() {
+        ArmyPage.partInfo.innerHTML = '';
+    }
+    backButtonClick() {
+        this.hide();
+        ArmyPage.armyManagerContainer.hidden = false;
+    }
+    hidePreviousButton() {
+        super.hidePreviousButton();
+        this.previousButton.style.borderStyle = 'none';
+        this.previousButton.innerHTML = ''
+    }
+    showPreviousButton() {
+        super.showPreviousButton();
+        this.previousButton.style.borderStyle = 'solid';
+        this.previousButton.innerHTML = '&lt;'
+    }
+    hideNextButton() {
+        super.hideNextButton();
+        this.nextButton.style.borderStyle = 'none';
+        this.nextButton.innerHTML = ''
+    }
+    showNextButton() {
+        super.showNextButton();
+        this.nextButton.style.borderStyle = 'solid';
+        this.nextButton.innerHTML = '&gt;'
+    }
+
+    changeType(type) {
+        this.type = type;
+    }
+
+    changeSelection(type, item_list) {
+        this.changeType(type);
+        this.changeItemList(item_list);
+    }
+    
+    show() {
+        super.show(true);
+        ArmyPage.armyManagerContainer.hidden = true;
+    }
+};
+
+class SelectArmyButtonsClass extends ButtonGroupClass {
+    constructor(container_idetifier, button_identifier, selected_style, default_style) {
+        super(container_idetifier, button_identifier, selected_style, default_style);
+    }
+
+    buttonClick(button_nr) {
+        super.buttonClick(button_nr);
+        ArmyPage.changeArmy(button_nr);
+    }
+}
+
+class ArmyPageClass extends PageClass {
+    constructor(name) {
+        super(name);
+
+        this.pageButton= document.querySelector('#ArmyPageButton');
+        this.armyManagerContainer= document.querySelector(".army_management_container");
+        this.selectRows= {
+            creatures : [],
+            weapons : [],
+        };
+        //the end number of select rows in each category, in order=creatures, weapons
+        this.selectRowsTypes=['creatures', 'weapons'];
+        this.selectRowsNrs=[1, 9];
+        //set up select rows
+        let item_rows1 = document.querySelectorAll(".nr_available_div.page_army");
+        //      MAYBE NEEDED LATER
+        //let item_rows2 = document.querySelectorAll(container_name + ' > ' + list_name + ' > ' + list_item_name + " > .element_name_div");
+        let item_rows3 = document.querySelectorAll(".complementary_button.page_army");
+        //get them selectRows up & running
+        let selectRowsI = 0;
+        for(let i = 0; i < item_rows1.length; i++) {
+            //change to new type if old one ran out
+            if(i >= this.selectRowsNrs[selectRowsI]) {
+                selectRowsI++;
+            }
+            this.selectRows[this.selectRowsTypes[selectRowsI]].push([item_rows1[i], item_rows3[i]]);
+        }
+        
+        //store equipped state by a bitwise method ( 2 ** army_nr shows if that army equipped the element or not)
+        this.elementEquipState={
+            creatures: {'None' : 0, 'Human' : 0,},
+            weapons: {'None' : 0},
+        };
+        this.info= document.querySelector('#ArmyPageInfo');
+        this.partInfo= document.querySelector('#ArmyPagePartInfo');
+        this.armySizeInput= document.querySelector('#ArmySizeInput');
+        this.currentArmy= 0;
+        this.changeArmyButtons=  new SelectArmyButtonsClass('.select_subpage_container.page_army', '.select_button', {'borderColor': 'var(--selected-toggle-button-border-color)'}, {'borderColor': 'var(--default-toggle-button-border-color)'});
+        this.maxArmySizeButton= document.querySelector('#MaxArmySize');
+        this.elementSelectList= new SelectionItemListClass('.element_list.page_army', '.element_list_item', '.element_list_prev_button', '.element_list_back_button', '.element_list_next_button', []);
+        this.currentSelecting= {
+            weapons : -1,
+        };
+        this.levelText= document.querySelector('#ArmyLevelText');
+        this.levelUpButton= document.querySelector('#ArmyLevelUpButton');
+        this.levelUpCost= document.querySelector('#ArmyLevelUpCost');
+
+        this.initializeEventListeners();
+    }
+    //called when page reloads
+    initializeEventListeners() {
+        let c_obj = this;
+
+        //initialize all select's, selectButtons parent's and selectButtons' mouse functions
+        for(let type in this.selectRows) {
+            if(type == 'creatures') {
+                //select click
+                this.selectRows.creatures[0][1].addEventListener('click', function() {
+                    if(c_obj.elementSelectList.hidden) {
+                        c_obj.elementSelectList.changeType(type);
+                        c_obj.elementSelectList.changeItemList(c_obj.generateItemList(type, c_obj.currentArmy));
+                        c_obj.elementSelectList.changeIndex = 0;
+                        c_obj.elementSelectList.show();
+                    }
+                    else {
+                        c_obj.selectRows.creatures[0][1].innerHTML = Player.armies[c_obj.currentArmy].creature;
+                    }
+                });
+                //selects' parent mouseenter and mouseleave
+                this.selectRows.creatures[0][1].addEventListener('mouseenter', function() {
+                    c_obj.partInfo.innerHTML = stuff.creatures[Player.armies[c_obj.currentArmy].creature].get_text();
+                });
+                this.selectRows.creatures[0][1].addEventListener('mouseleave', function() {
+                    c_obj.partInfo.innerHTML = '';
+                });
+            }
+            else if(type == 'weapons') {
+                //selects and their parents
+                for(let i = 0; i < 8; i++) {
+                    //select click
+                    this.selectRows[type][i][1].addEventListener('click', function() {
+                        if(c_obj.elementSelectList.hidden) {
+                            c_obj.elementSelectList.changeType(type);
+                            c_obj.elementSelectList.changeItemList(c_obj.generateItemList(type, c_obj.currentArmy));
+                            c_obj.elementSelectList.changeIndex = i;
+                            
+                            c_obj.elementSelectList.show();
+                        }
+                        else {
+                            c_obj.selectRows.weapons[i][1].innerHTML = Player.armies[c_obj.currentArmy].weapons[i];
+                        }
+                    });
+                    //selects' parent mouseenter and mouseleave
+                    this.selectRows[type][i][1].addEventListener('mouseenter', function() {
+                        c_obj.partInfo.innerHTML = stuff.weapons[Player.armies[c_obj.currentArmy].weapons[i]].get_text();
+                    });
+                    this.selectRows[type][i][1].addEventListener('mouseleave', function() {
+                        c_obj.partInfo.innerHTML = '';
+                    });
+                }
+            }
+        }
+
+        //army size buttons click functions
+        this.armySizeInput.addEventListener('change', () => {
+            Player.armies[c_obj.currentArmy].set_size(new Decimal(c_obj.armySizeInput.value));
+        });
+        this.maxArmySizeButton.addEventListener('click', () => {
+            Player.armies[c_obj.currentArmy].set_size(new Decimal(Infinity));
+        });
+
+        this.levelUpButton.addEventListener('mouseenter', function() {
+            if(Player.armies[c_obj.currentArmy].level < Army.level_prices.length) {
+                c_obj.info.innerHTML = Player.armies[c_obj.currentArmy].get_level_up_text();
+                c_obj.partInfo.innerHTML = Player.armies[c_obj.currentArmy].get_compare_level_text();
+                c_obj.levelText.innerHTML = 'Level: ' + (Player.armies[c_obj.currentArmy].level+1) + 
+                                                '<span style="color:' + UtilityFunctions.get_compare_color(Player.armies[c_obj.currentArmy].level, Player.armies[c_obj.currentArmy].level + 1, false)
+                                                + '"> &rightarrow; </span>' + (Player.armies[c_obj.currentArmy].level + 2) + '<br>';
+            }
+        });
+
+        this.levelUpButton.addEventListener('mouseleave', function() {
+            c_obj.info.innerHTML = Player.armies[c_obj.currentArmy].get_text();
+            c_obj.levelText.innerHTML = 'Level: ' + (Player.armies[c_obj.currentArmy].level+1) + (Player.armies[c_obj.currentArmy].level >= Army.level_prices.length ? ' (Max)' : '');
+            c_obj.partInfo.innerHTML = '';
+        });
+
+        this.levelUpButton.addEventListener('click', function() {
+            Player.armies[c_obj.currentArmy].level_up();
+            c_obj.info.innerHTML = Player.armies[c_obj.currentArmy].get_text();
+            
+            c_obj.levelText.innerHTML = 'Level: ' + (Player.armies[c_obj.currentArmy].level+1);
+            if(Player.armies[c_obj.currentArmy].level < Army.level_prices.length) {
+                c_obj.info.innerHTML = Player.armies[c_obj.currentArmy].get_level_up_text();
+                c_obj.partInfo.innerHTML = Player.armies[c_obj.currentArmy].get_compare_level_text();
+                c_obj.levelText.innerHTML = 'Level: ' + (Player.armies[c_obj.currentArmy].level+1) + 
+                                                '<span style="color:' + UtilityFunctions.get_compare_color(Player.armies[c_obj.currentArmy].level, Player.armies[c_obj.currentArmy].level + 1, false)
+                                                + '">  &rightarrow; </span>' + (Player.armies[c_obj.currentArmy].level + 2) + '<br>';
+                c_obj.levelUpCost.innerHTML = 'Cost: ' +  StylizeDecimals(Army.level_prices[Player.armies[c_obj.currentArmy].level]);
+            }
+            else {
+                c_obj.partInfo.innerHTML = '';
+                c_obj.levelText.innerHTML = 'Level: ' + (Player.armies[c_obj.currentArmy].level+1) + ' (Max)';
+                c_obj.levelUpButton.hidden = true;
+                document.getElementById('ArmyLevelUpCost').hidden = true;
+            }
+        });
+    }
+    //called when new save gets loaded
+    displayOnLoad() {
+        this.info.innerHTML = Player.armies[this.currentArmy].get_text();
+        this.armySizeInput.value = StylizeDecimals(Player.armies[this.currentArmy].size,true);
+    }
+    display() {
+        //this.changeArmyButtons[this.currentArmy].buttonClick();
+        //this.changeArmy(this.currentArmy);
+        if(this.timesVisited == 0) {
+            TutorialPage.unlockTutorial('Army Page');
+            TutorialPage.startTutorial('Army Page', true, 'ArmyPage');
+        }
+        this.timesVisited++;
+    }
+    displayEveryTick(c_obj) {
+        c_obj.selectRows.creatures[0][0].innerHTML = (Player.armies[c_obj.currentArmy].creature == 'None'  ? '(&infin;)' : '(' + StylizeDecimals(Player.inventory.creatures[Player.armies[c_obj.currentArmy].creature],true) + ')');
+        for(i = 0; i < 8; i++) {
+            c_obj.selectRows.weapons[i][0].innerHTML = (Player.armies[c_obj.currentArmy].weapons[i] == 'None' ? '(&infin;)' : '(' + StylizeDecimals(Player.inventory.weapons[Player.armies[c_obj.currentArmy].weapons[i]],true) + ')');
+        }
+    }
+    //called when a save text is needed
     save() {
-        let save_text;
+        let save_text = super.save();
+
         //save current army
-        save_text = ArmyPage.currentArmy + '/*/';
-        save_text += this.timesVisited;
+        save_text += '/*/' + this.currentArmy;
         //save equip state
         save_text += '/*/' + Object.keys(this.elementEquipState).length;
         for(let [tipe, type] of Object.entries(this.elementEquipState)) {
@@ -490,44 +677,18 @@ const ArmyPage = {
                 save_text += '/*/' + key + '/*/' + value;
             }
         }
+
+        save_text += '/*/' + this.changeArmyButtons.save();
+
         return save_text;
-    },
-    equipElementByArmy(type, element, army_nr) {
-        if(element != 'None') {
-            let nr = 2 ** army_nr;
-            if(ArmyPage.elementEquipState[type][element] == undefined) {
-                ArmyPage.elementEquipState[type][element];
-            }
-            ArmyPage.elementEquipState[type][element] += nr;
-        }
-    },
-    deequipElementByArmy(type, element, army_nr) {
-        if(element != 'None') {
-            let nr = 2 ** army_nr;
-            ArmyPage.elementEquipState[type][element] -= nr;
-        }
-    },
-    isElementEquippedByArmy(type, element, army_nr) {
-        let nr = 2 ** army_nr;
-        return Math.floor( ArmyPage.elementEquipState[type][element] / nr ) == 1;
-    },
-    generateItemList(type, army_nr) {
-        let list = []
-        for(let element of Object.keys(ArmyPage.elementEquipState[type])) {
-            if(!ArmyPage.isElementEquippedByArmy(type, element, army_nr)) {
-                list.push(element);
-            }
-        }
-        return list;
-    },
+    }
+    //called when you need to get values from a save_text
     load(save_text) {
         save_text = save_text.split('/*/');
-        let i = 0;
+        let i = super.load(save_text);
+
         //reset color before doing anything else
-        ArmyPage.changeArmyButtons[ArmyPage.currentArmy].style.borderColor = 'var(--selected-toggle-button-border-color)';
-        ArmyPage.currentArmy = Number(save_text[i]);
-        i++;
-        this.timesVisited = Number(save_text[i]);
+        this.currentArmy = Number(save_text[i]);
         i++;
         let len_type, len_kv;
         len_type = Number(save_text[i]);
@@ -541,364 +702,93 @@ const ArmyPage = {
                 i+=2;
             }
         }
-        ArmyPage.displayOnLoad();
-    },
-}
+        i += this.changeArmyButtons.load(save_text, i);
+        this.displayOnLoad();
+    }
+    changeArmy(change_to) {
 
-ArmyPage.pageButton = document.querySelector('#ArmyPageButton');
-ArmyPage.container = document.querySelector('#ArmyPageContainer');
-ArmyPage.armyManagerContainer = document.querySelector(".army_management_container");
-ArmyPage.info = document.querySelector('#ArmyPageInfo');
-ArmyPage.armySizeInput = document.querySelector('#ArmySizeInput');
-ArmyPage.changeArmyButtons = document.querySelectorAll('.select_army_button');
-ArmyPage.maxArmySizeButton = document.querySelector('#MaxArmySize');
-ArmyPage.partInfo = document.querySelector('#ArmyPagePartInfo');
-ArmyPage.levelText = document.querySelector('#ArmyLevelText');
-ArmyPage.levelUpButton = document.querySelector('#ArmyLevelUpButton');
-ArmyPage.levelUpCost = document.querySelector('#ArmyLevelUpCost');
-
-//initialize changeArmyButton's click function
-for(let i = 0; i < ArmyPage.changeArmyButtons.length; i++) {
-    ArmyPage.changeArmyButtons[i].addEventListener('click', () => {
-        ArmyPage.changeArmyButtons[ArmyPage.currentArmy].style.borderColor = 'var(--default-toggle-button-border-color)';
-        ArmyPage.changeArmy(i);
-        ArmyPage.changeArmyButtons[ArmyPage.currentArmy].style.borderColor = 'var(--selected-toggle-button-border-color)';
-    });
-}
-
-class ItemList {
-    //class names come in form of: .<name> or #<name>
-    constructor(container_name,list_name, list_item_name, back_button_name, item_list = [], type = 'creatures') {
-        this.item_list = item_list;
-        this.type = type;
-        this.change_index = 0;
-        this.container = document.querySelector(container_name + ' > ' + list_name);
-        this.items = document.querySelectorAll(container_name + ' > ' + list_name + ' > ' + list_item_name);
-        this.back_button = document.querySelector(container_name + ' > ' + list_name + ' > ' + back_button_name);
-        let current_obj = this;
-        //item mouse functions
-        for(let i = 0; i < this.items.length; i++) {
+        //      reset creature which was used
+        this.selectRows.creatures[0][1].innerHTML = Player.armies[change_to].creature;
+        
+        //      reset weapon selects if they where used
+        let k = 0;
+        while(k < 8 && Player.armies[this.currentArmy].weapons[k] != 'None') {
+            this.selectRows.weapons[k][1].innerHTML = 'None';
+            k++;
+        }
+        //          set new selects and hide selectButtons used
+        k = 0;
+        this.currentArmy = change_to;
+        //     set setters' innerHTML value
+        while(k < 8 && Player.armies[this.currentArmy].weapons[k] != "None") {
+            this.selectRows.weapons[k][0].parentElement.hidden = false;
+            this.selectRows.weapons[k][1].innerHTML = Player.armies[this.currentArmy].weapons[k];
+            k++;
+        }
+        //          show next selector if possible and needed
+        //      set the next weapon selector visible if needed and possible
+        if( k < Player.armies[this.currentArmy].max_weapons && Player.armies[this.currentArmy].creature != "None") {
+            this.selectRows.weapons[k][0].parentElement.hidden = false;
+            k++;
+        }
+        //          hide unused selectors
+        //      hide unused weapon selectors
+        while(k < Player.armies[this.currentArmy].max_weapons) {
+            this.selectRows.weapons[k][0].parentElement.hidden = true;
+            k++;
+        }
+        //          set the info and other stuff
+        this.info.innerHTML = Player.armies[change_to].get_text();
+        this.armySizeInput.value = StylizeDecimals(Player.armies[change_to].size, true);
+        //set level text
+        this.levelText.innerHTML = 'Level: ' + (Player.armies[this.currentArmy].level+1);
+        if(Player.armies[this.currentArmy].level < Army.level_prices.length) {
+            this.levelUpCost.innerHTML = 'Cost: ' +  StylizeDecimals(Army.level_prices[Player.armies[this.currentArmy].level]);
             
-            this.items[i].addEventListener('mouseenter', function() {
-                if(i < current_obj.item_list.length) {
-                    //GENERALIZE THIS PART
-                    if(current_obj.item_list[i] == 'None') {
-                        ArmyPage.partInfo.innerHTML = 'None';
-                    }
-                    else {
-                        ArmyPage.partInfo.innerHTML = stuff[current_obj.type][current_obj.item_list[i]].get_text();
-                    }
-                    ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_change_text(current_obj.type,current_obj.item_list[i],current_obj.change_index);
-                }
-                else {
-                    ArmyPage.partInfo.innerHTML = '';
-                }
-                
-            });
-            this.items[i].addEventListener('mouseleave', function() {
-                //GENERALIZE THIS PART
-                ArmyPage.partInfo.innerHTML = '';
-                ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
-            });
-            this.items[i].addEventListener('click', function() {
-                if(!Player.armies[ArmyPage.currentArmy].change_element(current_obj.type, current_obj.items[i].innerHTML, current_obj.change_index, true, ArmyPage.currentArmy)) {
-                    return;
-                }
-                ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
-                ArmyPage.selectRows[current_obj.type][current_obj.change_index][1].innerHTML = current_obj.items[i].innerHTML;
-                if(current_obj.type == 'creatures') {
-                    //hide select rows for weapons and the like
-                    for(let j = Player.armies[ArmyPage.currentArmy].weapons.length - 1; j > -1; j--) {
-                        ArmyPage.selectRows.weapons[j][0].parentElement.hidden = true;
-                        ArmyPage.selectRows.weapons[j][1].innerHTML = 'None';
-                    }
-                    //show first weapon selection row and the like if the creature is not None
-                    if(ArmyPage.selectRows.creatures[0][1].innerHTML != 'None') {
-                        ArmyPage.selectRows.weapons[0][0].parentElement.hidden = false;
-                    }
-                }
-                else if(current_obj.type == 'weapons') {
-                    let found = false;
-                    //hide select rows for weapons and the like
-                    for(let j = 0; j < Player.armies[ArmyPage.currentArmy].weapons.length; j++) {
-                        if(Player.armies[ArmyPage.currentArmy].weapons[j] == 'None') {
-                            if(found) {
-                                ArmyPage.selectRows.weapons[j][0].parentElement.hidden = true;
-                            }
-                            else {
-                                found = true;
-                                ArmyPage.selectRows.weapons[j][0].parentElement.hidden = false;
-                            }
-                        }
-                        ArmyPage.selectRows.weapons[j][1].innerHTML = Player.armies[ArmyPage.currentArmy].weapons[j];
-                    }
-                }
-                
-                //hide selection list
-                current_obj.container.hidden = true;
-                //show management item
-                ArmyPage.armyManagerContainer.hidden = false;
-            });
+            //show level up stuff
+            this.levelUpButton.hidden = false;
+            document.getElementById('ArmyLevelUpCost').hidden = false;
         }
-        this.back_button.addEventListener('mouseenter', function() {
-            ArmyPage.partInfo.innerHTML = 'Take me back, baby!';
-        });
-        this.back_button.addEventListener('mouseleave', function() {
-            ArmyPage.partInfo.innerHTML = '';
-        });
-        this.back_button.addEventListener('click', function() {
-            current_obj.container.hidden = true;
-            ArmyPage.armyManagerContainer.hidden = false;
-        });
+        else {
+            this.levelText.innerHTML += ' (Max)';
+            //hide level up stuff
+            this.levelUpButton.hidden = true;
+            document.getElementById('ArmyLevelUpCost').hidden = true;
+        }
+        //      if element selection was active, hide it
+        if(!this.elementSelectList.hidden) {
+            this.elementSelectList.container.hidden = true;
+            this.armyManagerContainer.hidden = false;
+        }
     }
-
-    get hidden() {
-        return this.container.hidden;
-    }
-
-    change_item_list(item_list) {
-        this.item_list = item_list;
-    }
-
-    change_type(type) {
-        this.type = type;
-    }
-
-    change_selection(type, item_list) {
-        this.change_type(type);
-        this.change_item_list(item_list);
-    }
-    
-    show() {
-        this.container.hidden = false;
-        ArmyPage.armyManagerContainer.hidden = true;
-        for(let i = 0; i < this.items.length; i++) {
-            if(i < this.item_list.length) {
-                this.items[i].innerHTML = this.item_list[i];
+    equipElementByArmy(type, element, army_nr) {
+        if(element != 'None') {
+            let nr = 2 ** army_nr;
+            if(this.elementEquipState[type][element] == undefined) {
+                this.elementEquipState[type][element];
             }
-            else {
-                this.items[i].innerHTML = '';
+            this.elementEquipState[type][element] += nr;
+        }
+    }
+    deequipElementByArmy(type, element, army_nr) {
+        if(element != 'None') {
+            let nr = 2 ** army_nr;
+            this.elementEquipState[type][element] -= nr;
+        }
+    }
+    isElementEquippedByArmy(type, element, army_nr) {
+        let nr = 2 ** army_nr;
+        return Math.floor( this.elementEquipState[type][element] / nr ) == 1;
+    }
+    generateItemList(type, army_nr) {
+        let list = []
+        for(let element of Object.keys(this.elementEquipState[type])) {
+            if(!this.isElementEquippedByArmy(type, element, army_nr)) {
+                list.push(element);
             }
         }
+        return list;
     }
 };
 
-//      GENERALIZE THIS BIT
-ArmyPage.elementSelectList = new ItemList('.army_info_container', '.element_select_list', '.element_select_list_item', '.element_select_list_back_button', ['None', 'Human']);
-let item_rows1 = document.querySelectorAll(".nr_available_div.page_army");
-//      MAYBE NEEDED LATER
-//let item_rows2 = document.querySelectorAll(container_name + ' > ' + list_name + ' > ' + list_item_name + " > .element_name_div");
-let item_rows3 = document.querySelectorAll(".complementary_button.page_army");
-//get them selectRows up & running
-let selectRowsI = 0;
-for(let i = 0; i < item_rows1.length; i++) {
-    //change to new type if old one ran out
-    if(i >= ArmyPage.selectRowsNrs[selectRowsI]) {
-        selectRowsI++;
-    }
-    ArmyPage.selectRows[ArmyPage.selectRowsTypes[selectRowsI]].push([item_rows1[i], item_rows3[i]]);
-}
-
-//initialize all select's, selectButtons parent's and selectButtons' mouse functions
-for(let type in ArmyPage.selectRows) {
-    if(type == 'creatures') {
-        //select click
-        ArmyPage.selectRows.creatures[0][1].addEventListener('click', function() {
-            if(ArmyPage.elementSelectList.hidden) {
-                ArmyPage.elementSelectList.change_type(type);
-                ArmyPage.elementSelectList.change_item_list(ArmyPage.generateItemList(type, ArmyPage.currentArmy));
-                ArmyPage.elementSelectList.change_index = 0;
-                ArmyPage.elementSelectList.show();
-            }
-            else {
-                ArmyPage.selectRows.creatures[0][1].innerHTML = Player.armies[ArmyPage.currentArmy].creature;
-            }
-        });
-        //selects' parent mouseenter and mouseleave
-        ArmyPage.selectRows.creatures[0][1].addEventListener('mouseenter', function() {
-            ArmyPage.partInfo.innerHTML = stuff.creatures[Player.armies[ArmyPage.currentArmy].creature].get_text();
-        });
-        ArmyPage.selectRows.creatures[0][1].addEventListener('mouseleave', function() {
-            ArmyPage.partInfo.innerHTML = '';
-        });
-        /*      ARCHIVED
-        //selectButton click, mouseenter and mouseleave
-        for(let i = 0; i < ArmyPage.selectButtons.creatures.length; i++) {
-            ArmyPage.selectButtons.creatures[i].addEventListener('click', () => {
-                //save previous creature and weapons of the army for reset purposes
-                const prev = Player.armies[ArmyPage.currentArmy].creature;
-                let prev_weapons = [];
-                for(let j = 0; j < Player.armies[ArmyPage.currentArmy].weapons.length; j++) {
-                    prev_weapons.push(Player.armies[ArmyPage.currentArmy].weapons[j]);
-                }
-                if(!Player.armies[ArmyPage.currentArmy].change_element(type, ArmyPage.selectButtons[type][i].innerHTML)) {
-                    return;
-                }
-
-                //if the previous select wasn't None, show it again
-                if(prev != 'None') {
-                    ArmyPage.selectButtons[type][ArmyPage.nameToButtonNumber[type][prev]].hidden = false;
-                }
-
-                ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
-                ArmyPage.selectRows[type][0].innerHTML = ArmyPage.selectButtons[type][i].innerHTML;
-                //hide select bars for weapons and the like
-                for(let j = Player.armies[ArmyPage.currentArmy].weapons.length - 1; j > -1; j--) {
-                    ArmyPage.selectRows.weapons[j].parentElement.hidden = true;
-                    ArmyPage.selectRows.weapons[j].value = 'None';
-                }
-                if(ArmyPage.selectRows.creatures[0].innerHTML != 'None') {
-                    ArmyPage.selectRows.weapons[0].parentElement.hidden = false;
-                }
-                //after selecting, hide select buttons
-                ArmyPage.selectButtons.creatures[i].parentElement.hidden = true;
-                //if the selected thing is not None, then hide it to not show anymore
-                if(ArmyPage.selectRows.creatures[0].innerHTML != 'None') {
-                    ArmyPage.selectButtons.creatures[i].hidden = true;
-                }
-                //show unequipped weapons
-                for(let j = 0; j < prev_weapons.length; j++) {
-                    ArmyPage.selectButtons['weapons'][ArmyPage.nameToButtonNumber['weapons'][prev_weapons[j]]].hidden = false;
-                    ArmyPage.selectRows['weapons'][j].innerHTML = 'None';
-                }
-            });
-            ArmyPage.selectButtons.creatures[i].addEventListener('mouseenter', function(event) {
-                ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_change_text('creatures',ArmyPage.selectButtons.creatures[i].innerHTML, false);
-                //show info text for the changed part
-                ArmyPage.partInfo.innerHTML = stuff.creatures[Player.armies[ArmyPage.currentArmy].creature].get_compare_text(stuff.creatures[ArmyPage.selectButtons.creatures[i].innerHTML]);
-            });
-            ArmyPage.selectButtons.creatures[i].addEventListener('mouseleave', function() {
-                ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
-                //hide info text of the changing part
-                ArmyPage.partInfo.innerHTML = '';
-            });
-        }
-        //*/
-    }
-    else if(type == 'weapons') {
-        //selects and their parents
-        for(let i = 0; i < 8; i++) {
-            //select click
-            ArmyPage.selectRows[type][i][1].addEventListener('click', function() {
-                if(ArmyPage.elementSelectList.hidden) {
-                    ArmyPage.elementSelectList.change_type(type);
-                    ArmyPage.elementSelectList.change_item_list(ArmyPage.generateItemList(type, ArmyPage.currentArmy));
-                    ArmyPage.elementSelectList.change_index = i;
-                    
-                    ArmyPage.elementSelectList.show();
-                }
-                else {
-                    ArmyPage.selectRows.weapons[i][1].innerHTML = Player.armies[ArmyPage.currentArmy].weapons[i];
-                }
-            });
-            //selects' parent mouseenter and mouseleave
-            ArmyPage.selectRows[type][i][1].addEventListener('mouseenter', function() {
-                ArmyPage.partInfo.innerHTML = stuff.weapons[Player.armies[ArmyPage.currentArmy].weapons[i]].get_text();
-            });
-            ArmyPage.selectRows[type][i][1].addEventListener('mouseleave', function() {
-                ArmyPage.partInfo.innerHTML = '';
-            });
-        }
-        /*      ARCHIVED
-        //selectButton click, mouseenter and mouseleave
-        for(let i = 0; i < ArmyPage.selectButtons[type].length; i++) {
-            ArmyPage.selectButtons[type][i].addEventListener('click', () => {
-
-                let prev = Player.armies[ArmyPage.currentArmy][type][ArmyPage.currentSelecting[type]];
-
-                if(!Player.armies[ArmyPage.currentArmy].change_element(type,ArmyPage.selectButtons[type][i].innerHTML, ArmyPage.currentSelecting[type])) {
-                    return;
-                }
-
-                //if the previous select wasn't None, show it again
-                if(prev != 'None') {
-                    ArmyPage.selectButtons[type][ArmyPage.nameToButtonNumber[type][prev]].hidden = false;
-                }
-
-                ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
-                
-                ArmyPage.selectRows[type][ArmyPage.currentSelecting[type]].innerHTML = ArmyPage.selectButtons[type][i].innerHTML;
-                //after selecting, hide select buttons
-                ArmyPage.selectButtons[type][i].parentElement.hidden = true;
-
-                //if the selected thing is not None, then hide it to not show anymore
-                if(ArmyPage.selectButtons[type][i].innerHTML != 'None') {
-                    ArmyPage.selectButtons[type][i].hidden = true;
-                }
-
-                //hide stuff with None, only leave one
-                const c_army = Player.armies[ArmyPage.currentArmy]
-                found = false
-                for(let j = 0; j < c_army.max_weapons; j++) {
-                    ArmyPage.selectRows[type][j].innerHTML = c_army.weapons[j];
-                    if(c_army.weapons[j] == 'None') {
-                        if(found) {
-                            ArmyPage.selectRows[type][j].parentElement.hidden = true;
-                        }
-                        else {
-                            found = true;
-                            ArmyPage.selectRows[type][j].parentElement.hidden = false;
-                        }
-                    }
-                }
-            });
-            ArmyPage.selectButtons[type][i].addEventListener('mouseenter', function() {
-                ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_change_text(type,ArmyPage.selectButtons[type][i].innerHTML, ArmyPage.currentSelecting[type]);
-                //show info text for the changed part
-                ArmyPage.partInfo.innerHTML = stuff[type][Player.armies[ArmyPage.currentArmy][type][ArmyPage.currentSelecting[type]]].get_compare_text(stuff[type][ArmyPage.selectButtons[type][i].innerHTML]);
-            });
-            ArmyPage.selectButtons[type][i].addEventListener('mouseleave', function() {
-                ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
-                //hide info text of the changing part
-                ArmyPage.partInfo.innerHTML = '';
-            });
-        
-        };
-        //*/
-    }
-}
-
-//army size buttons click functions
-ArmyPage.armySizeInput.addEventListener('change', () => {
-    Player.armies[ArmyPage.currentArmy].set_size(new Decimal(ArmyPage.armySizeInput.value));
-});
-ArmyPage.maxArmySizeButton.addEventListener('click', () => {
-    Player.armies[ArmyPage.currentArmy].set_size(new Decimal(Infinity));
-});
-
-ArmyPage.levelUpButton.addEventListener('mouseenter', function() {
-    if(Player.armies[ArmyPage.currentArmy].level < Army.level_prices.length) {
-        ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_level_up_text();
-        ArmyPage.partInfo.innerHTML = Player.armies[ArmyPage.currentArmy].get_compare_level_text();
-        ArmyPage.levelText.innerHTML = 'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1) + 
-                                        '<span style="color:' + UtilityFunctions.get_compare_color(Player.armies[ArmyPage.currentArmy].level, Player.armies[ArmyPage.currentArmy].level + 1, false)
-                                        + '"> &rightarrow; </span>' + (Player.armies[ArmyPage.currentArmy].level + 2) + '<br>';
-    }
-});
-
-ArmyPage.levelUpButton.addEventListener('mouseleave', function() {
-    ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
-    ArmyPage.levelText.innerHTML = 'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1) + (Player.armies[ArmyPage.currentArmy].level >= Army.level_prices.length ? ' (Max)' : '');
-    ArmyPage.partInfo.innerHTML = '';
-});
-
-ArmyPage.levelUpButton.addEventListener('click', function() {
-    Player.armies[ArmyPage.currentArmy].level_up();
-    ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_text();
-    
-    ArmyPage.levelText.innerHTML = 'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1);
-    if(Player.armies[ArmyPage.currentArmy].level < Army.level_prices.length) {
-        ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_level_up_text();
-        ArmyPage.partInfo.innerHTML = Player.armies[ArmyPage.currentArmy].get_compare_level_text();
-        ArmyPage.levelText.innerHTML = 'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1) + 
-                                        '<span style="color:' + UtilityFunctions.get_compare_color(Player.armies[ArmyPage.currentArmy].level, Player.armies[ArmyPage.currentArmy].level + 1, false)
-                                        + '">  &rightarrow; </span>' + (Player.armies[ArmyPage.currentArmy].level + 2) + '<br>';
-        ArmyPage.levelUpCost.innerHTML = 'Cost: ' +  StylizeDecimals(Army.level_prices[Player.armies[ArmyPage.currentArmy].level]);
-    }
-    else {
-        ArmyPage.partInfo.innerHTML = '';
-        ArmyPage.levelText.innerHTML = 'Level: ' + (Player.armies[ArmyPage.currentArmy].level+1) + ' (Max)';
-        ArmyPage.levelUpButton.hidden = true;
-        document.getElementById('ArmyLevelUpCost').hidden = true;
-    }
-});
+let ArmyPage = new ArmyPageClass('ArmyPage');

@@ -16,7 +16,7 @@ class TowerFloor {
         j = 0;
         while(j < TowerPage.Tower.floors[nr_floor].levels.length) {
             //only show if it is unlocked
-            TowerPage.towerLevels[j].hidden = !(IsUnlocked['towerLevels'][nr_floor][j]);
+            TowerPage.towerLevels[j].hidden = false;
             j++;
         };
         //color by availability and set position
@@ -122,7 +122,7 @@ class TowerLevel extends ParentTowerLevel {
                 this.raiding_army = -1;
                 Player.armies[TowerPage.currentArmy].raiding = -1;
                 //remove the problematic element from the end of the array which stores the raided places
-                for(j = 0; j < TowerPage.Tower.raidedFloors.length; j++) {
+                for(let j = 0; j < TowerPage.Tower.raidedFloors.length; j++) {
                     if(TowerPage.Tower.raidedFloors[j][0] == TowerPage.Tower.currentFloor && TowerPage.Tower.raidedFloors[j][1] == level_nr) {
                         TowerPage.Tower.raidedFloors.splice(j,1);
                         break;
@@ -134,7 +134,7 @@ class TowerLevel extends ParentTowerLevel {
             else {
                 //if this army was already raiding, remove previous raid
                 if(Player.armies[TowerPage.currentArmy].raiding != -1) {
-                    for(j = 0; j < TowerPage.Tower.raidedFloors.length; j++) {
+                    for(let j = 0; j < TowerPage.Tower.raidedFloors.length; j++) {
                         if(TowerPage.Tower.floors[TowerPage.Tower.raidedFloors[j][0]].levels[TowerPage.Tower.raidedFloors[j][1]].raiding_army == TowerPage.currentArmy)  {
                             last_one = TowerPage.Tower.raidedFloors[j][1];
                             TowerPage.Tower.raidedFloors.splice(j,1);
@@ -145,7 +145,7 @@ class TowerLevel extends ParentTowerLevel {
                 }
                 //if the level is already raided, remove it
                 if(this.raiding_army != -1) {
-                    for(j = 0; j < TowerPage.Tower.raidedFloors.length; j++) {
+                    for(let j = 0; j < TowerPage.Tower.raidedFloors.length; j++) {
                         if(TowerPage.Tower.raidedFloors[j][0] == TowerPage.Tower.currentFloor && TowerPage.Tower.raidedFloors[j][1] == level_nr) {
                             TowerPage.Tower.raidedFloors.splice(j,1);
                             break;
@@ -162,7 +162,6 @@ class TowerLevel extends ParentTowerLevel {
             if(!this.unlocked_next_levels) {
                 for(let j = 0; j < this.unlocks.length; j++) {
                     let un = this.unlocks[j];
-                    Unlockables.unlock(['towerLevels',un[0]] , 0, un[1]);
                     //* CHANGE THIS (MOVE IT SOMEWHERE ELSE)
                     if(un[0] == TowerPage.Tower.currentFloor) {
                         TowerPage.towerLevels[un[1]].hidden = false;
@@ -243,93 +242,69 @@ class BossFightLevel extends ParentTowerLevel {
         document.querySelector("#PageButtonsContainer").hidden = true;
         document.querySelector('#PageTopResourcesContainer').hidden = true;
         BossArmySelectionPage.fight = new Fight([this.boss], 1, false)
-        HidePages(5);
+        HidePages('BossArmySelectionPage');
 
         return false;
     }
     
 }
 
+class TowerSelectArmyButtonsClass extends ButtonGroupClass {
+    constructor(container_idetifier, button_identifier, selected_style, default_style) {
+        super(container_idetifier, button_identifier, selected_style, default_style);
+    }
 
-const TowerPage = {
-    towerFloors : [],
-    towerLevels : [],
-    towerInfo : undefined,
-    pageButton : undefined,
-    container : undefined,
-    changeArmyButtons : undefined,
-    currentArmy : 0,
-    armyInfo : undefined,
-    Tower : {
-        floors : [],
-        raidedFloors : [],
-        currentFloor : 0,
-    },
-    timesVisited: 0,
-    displayOnLoad() {
-        TowerPage.towerFloors[TowerPage.Tower.currentFloor].style.backgroundColor = 'var(--selected-tower-floor-background-color)';
-        TowerPage.changeArmyButtons[TowerPage.currentArmy].style.borderColor = 'var(--selected-toggle-button-border-color)';
-        TowerPage.changeArmy(TowerPage.currentArmy);
-        TowerPage.Tower.floors[TowerPage.Tower.currentFloor].display(TowerPage.Tower.currentFloor);
-        //set the context text to the value you need on levels raided
-        for(let i = 0; i < TowerPage.Tower.raidedFloors.length; i++) {
-            let path = TowerPage.Tower.raidedFloors[i];
-            TowerPage.towerLevels[path[1]].setAttribute('contenttext',TowerPage.Tower.floors[path[0]].levels[path[1]].raiding_army + 1);
-        }
-    },
-    display() {
-        TowerPage.towerFloors[TowerPage.Tower.currentFloor].style.backgroundColor = 'var(--selected-tower-floor-background-color)';
-        TowerPage.changeArmyButtons[TowerPage.currentArmy].style.borderColor = 'var(--selected-toggle-button-border-color)';
-        TowerPage.changeArmy(TowerPage.currentArmy);
-        if(this.timesVisited == 0) {
-            TutorialPage.unlockTutorial('Tower Page');
-            TutorialPage.startTutorial('Tower Page', true, 0);
-        }
-        this.timesVisited++;
-    },
-    displayEveryTick() {
+    buttonClick(button_nr) {
+        super.buttonClick(button_nr);
+        TowerPage.changeArmy(button_nr);
+    }
+}
 
-    },
-    changeArmy(change_to) {
-        TowerPage.currentArmy = change_to;
-        TowerPage.armyInfo.innerHTML = Player.armies[TowerPage.currentArmy].get_text(true);
-        TowerPage.Tower.floors[TowerPage.Tower.currentFloor].display(TowerPage.Tower.currentFloor);
-    },
-    save() {
-        //save the current army and Tower
-        let save_text = TowerPage.currentArmy + '/*/' + TowerPage.Tower.currentFloor + '/*/';
-        //save raided floors and raided levels
-        save_text += TowerPage.Tower.raidedFloors.length;
+class TowerClass {
+    constructor() {
+        this.floors = [];
+        this.raidedFloors = [];
+        this.currentFloor = 0;
+    }
+
+    getGoldPerSecond() {
+        let gold_per_second = new Decimal(0);
         for(let i = 0; i < TowerPage.Tower.raidedFloors.length; i++) {
-            save_text += '/*/' + TowerPage.Tower.raidedFloors[i][0] + '/*/' + TowerPage.Tower.raidedFloors[i][1] + '/*/' + TowerPage.Tower.floors[TowerPage.Tower.raidedFloors[i][0]].levels[TowerPage.Tower.raidedFloors[i][1]].raiding_army;
+            gold_per_second = gold_per_second.add(TowerPage.Tower.floors[TowerPage.Tower.raidedFloors[i][0]].levels[TowerPage.Tower.raidedFloors[i][1]].goldPerSecond);
         }
-        save_text += '/*/' + this.timesVisited;
-        return save_text;
-    },
-    load(save_text) {
-        save_text = save_text.split('/*/');
+        return gold_per_second;
+    }
+}
+
+class TowerPageClass extends PageClass {
+    constructor(name) {
+        super(name);
+        
+        this.towerFloors = Array.from(document.querySelectorAll('.tower_part').values());
+        
+        //reverse tower floors
         let i = 0;
-        TowerPage.currentArmy = Number(save_text[i]);
-        i++;
-        TowerPage.Tower.currentFloor = Number(save_text[i]);
-        i++;
-        let len = Number(save_text[i]);
-        i++;
-        //get raided levels set up
-        for(j = 0; j < len; j++) {
-            TowerPage.Tower.raidedFloors.push([Number(save_text[i]),Number(save_text[i+1])]);
-            TowerPage.Tower.floors[TowerPage.Tower.raidedFloors[j][0]].levels[TowerPage.Tower.raidedFloors[j][1]].raiding_army = Number(save_text[i+2]);
-            TowerPage.towerLevels[TowerPage.Tower.raidedFloors[j][1]].innerHTML = Number(save_text[i+2])+1;
-            i+=3;
+        let j = this.towerFloors.length;
+        while(i < j) {
+            [this.towerFloors[i],this.towerFloors[j]] = [this.towerFloors[j], this.towerFloors[i]];
+            i++;
+            j--;
         }
-        this.timesVisited = Number(save_text[i]);
-        i++;
-        //display changes with on load function
-        TowerPage.displayOnLoad();
-    },
-};
-                                                                    
-TowerPage.Tower.floors[0] = new TowerFloor([new TowerLevel(100,50,500,100, 0, new Stats(['Defense'],[new SubStats(new Decimal(0.5))]), new Decimal(500), new Decimal(1), [[0, 1], [0, 2]], 'Sewers 1', 'Still laughing, you go inside the building only to realize that the stink is even worse than what you thought it would be. Now you start to feel sorry for the guy who tried to organize a date here. <br> Going one step further, you find yourselves in knee-high dirty water hoping that the situation will change for the better in the next few minutes.'),
+        this.towerFloors.shift();
+        this.towerLevels = document.querySelectorAll('.tower_level');
+        this.towerInfo = document.getElementById('TowerPageTowerInfo');
+        this.pageButton = document.getElementById('TowerPageButton');
+        this.changeArmyButtons = new TowerSelectArmyButtonsClass('.toggle_button_container.page_tower', '.toggle_button', {'borderColor': 'var(--selected-toggle-button-border-color)'}, {'borderColor': 'var(--default-toggle-button-border-color)'});
+        this.currentArmy = 0;
+        this.armyInfo = document.getElementById('TowerPageArmyInfo');
+        this.Tower = new TowerClass();
+        this.initializeTowerFloors();
+
+        this.initializeEventListeners();
+    }
+    //a place to store data about Tower floors
+    initializeTowerFloors() {
+        this.Tower.floors[0] = new TowerFloor([new TowerLevel(100,50,500,100, 0, new Stats(['Defense'],[new SubStats(new Decimal(0.5))]), new Decimal(500), new Decimal(1), [[0, 1], [0, 2]], 'Sewers 1', 'Still laughing, you go inside the building only to realize that the stink is even worse than what you thought it would be. Now you start to feel sorry for the guy who tried to organize a date here. <br> Going one step further, you find yourselves in knee-high dirty water hoping that the situation will change for the better in the next few minutes.'),
                                             new TowerLevel(100,50,449,49, 3, new Stats(['Defense'],[new SubStats(new Decimal(1))]), new Decimal(250), new Decimal(2), [[0, 3], [0, 4]], 'Sewers 2', 'You took the trapdoor on the left side of the first level. The stench is no better, but at least some new strange moss is inhabiting the left wall.'),
                                             new TowerLevel(100,50,449,151, 3, new Stats(['Defense'],[new SubStats(new Decimal(1))]), new Decimal(250), new Decimal(2), [[0, 3], [0, 5]], 'Sewers 3', 'You took the trapdoor on the right side of the first level. The stench is no better, but at least some new strange moss is inhabiting the right wall.'),
                                             new TowerLevel(120,50,423,115, 2,new Stats(['Defense'],[new SubStats(new Decimal(3.4))]), new Decimal(450), new Decimal(15), [[0, 6]], 'Sewers 4', 'After taking one door to the back, you find yourself in a moss-filled place. Instead of the wetness of water, you are greeted with the slimeiness of... well, of slime.'),
@@ -339,142 +314,154 @@ TowerPage.Tower.floors[0] = new TowerFloor([new TowerLevel(100,50,500,100, 0, ne
                                             new TowerLevel(30,70,300,220, 0,new Stats(['Defense'],[new SubStats(new Decimal(9.5))]), new Decimal(1200), new Decimal(87),[[0,8]], 'Sewers 8', 'The stink intensifies to an unheard-of level when you enter the room. The slime pools on the ground, knee-high in places, ankle high in others. It is dripping from the ceiling as well, along from the edges of the spiral staircase leading ever upwards. Some railing would come in handy, but you can\'t get everything in life...'),
                                             new BossFightLevel(30,70,230,220, 0,'Slime', new Decimal(1200), new Decimal(40),[], 'Sewer\'s Top', 'The topmost level of the sewers. It is lit with candles. Due to the slight topwards incline and the slight upwards arc of the floor, the slime is only running in two rivers next to the walls.  You don\'t want to find out what lurks in the shadows, but will have to do so eventually...'),],
                                         'Sewers', 'Wet and stinky and the odor gets worse the higher you go. Before the entrance stands a lone sign: \'EXTREME DANGER OF DEATH (also not an ideal place for a date, trust me)\'');
-TowerPage.Tower.floors[1] = new TowerFloor([new TowerLevel(100,50,300,100, 0, new Stats(['Defense'],[new SubStats(new Decimal(5))]),new Decimal(300),new Decimal(2),[],'The Slums','When you venture beyond the sewers, the place looks like a big slum, full of giant rats.')],'Rat-haven','A place where the rats thrive.')
+        this.Tower.floors[1] = new TowerFloor([new TowerLevel(100,50,300,100, 0, new Stats(['Defense'],[new SubStats(new Decimal(5))]),new Decimal(300),new Decimal(2),[],'The Slums','When you venture beyond the sewers, the place looks like a big slum, full of giant rats.')],'Rat-haven','A place where the rats thrive.')
 
-TowerPage.towerFloors = Array.from(document.querySelectorAll('.tower_part'));
-TowerPage.towerLevels = document.querySelectorAll('.tower_level');
-TowerPage.pageButton = document.querySelector('#TowerPageButton');
-TowerPage.container = document.querySelector('#TowerPageContainer');
-TowerPage.changeArmyButtons = document.querySelectorAll('.change_army_button');
-TowerPage.armyInfo = document.querySelector('#TowerPageArmyInfo');
-TowerPage.towerInfo = document.querySelector('#TowerPageTowerInfo');
+    }
+    //called when page reloads
+    initializeEventListeners() {
+        let c_obj = this;
 
-//reverse tower floors
-let i = 0;
-let j = 27;
-while(i < j) {
-    [TowerPage.towerFloors[i],TowerPage.towerFloors[j]] = [TowerPage.towerFloors[j], TowerPage.towerFloors[i]];
-    i++;
-    j--;
-}
-
-//initialize tower page change army buttons
-for(let i = 0; i < TowerPage.changeArmyButtons.length; i++) {
-    TowerPage.changeArmyButtons[i].addEventListener('click', () => {
-        TowerPage.changeArmyButtons[TowerPage.currentArmy].style.borderColor = 'var(--default-toggle-button-border-color)';
-        TowerPage.changeArmy(i);
-        TowerPage.changeArmyButtons[TowerPage.currentArmy].style.borderColor = 'var(--selected-toggle-button-border-color)';
-    })
-};
-
-//initialize TOWER FLOOR hover functions
-for(let i = 0; i < TowerPage.towerFloors.length; i++) {
-    //revert the numbering on the floors because they are in the list in reverse order
-    //on mouseenter display new floor
-    TowerPage.towerFloors[i].addEventListener('mouseenter', () => {
-        if(i >= TowerPage.Tower.floors.length) {
-            TowerPage.towerInfo.innerHTML = 'Under developement, sorry. :<)';
-        }
-        else {
-            TowerPage.Tower.floors[i].display(i);
-            //if the current floor is not selected
-            if(i != TowerPage.Tower.currentFloor) {
-                TowerPage.towerFloors[i].style.backgroundColor = 'var(--hover-tower-floor-background-color)';
-            }
-            else {
-                TowerPage.towerFloors[i].style.backgroundColor = 'var(--hover-selected-tower-floor-background-color)';
-            }
-        }
-    });
-    //on mouseleave, revert to current floor
-    TowerPage.towerFloors[i].addEventListener('mouseleave', () => {
-        TowerPage.Tower.floors[TowerPage.Tower.currentFloor].display(TowerPage.Tower.currentFloor);
-        if(i != TowerPage.Tower.currentFloor) {
-            TowerPage.towerFloors[i].style.backgroundColor = 'var(--default-tower-floor-background-color)';
-        }
-        else {
-            TowerPage.towerFloors[i].style.backgroundColor = 'var(--selected-tower-floor-background-color)';
-        }
-        
-    });
-    //on click change color and currentFloor
-    TowerPage.towerFloors[i].addEventListener('click', () => {
-        if(i >= TowerPage.Tower.floors.length) {
-            return;
-        }
-        TowerPage.towerFloors[TowerPage.Tower.currentFloor].style.background = 'var(--default-tower-floor-background-color)';
-        TowerPage.Tower.currentFloor = i;
-        TowerPage.towerFloors[i].style.background = 'var(--selected-tower-floor-background-color)';
-    });
-};
-
-//TOWER LEVEL click, enter and leave events and new atribute
-for(let i = 0; i < TowerPage.towerLevels.length; i++) {
-    //display new level stuff on mouseenter
-    TowerPage.towerLevels[i].addEventListener('mouseenter', () => {
-        TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].display(TowerPage.Tower.floors[TowerPage.Tower.currentFloor].name);
-    });
-    //on mouseleave, display current floor
-    TowerPage.towerLevels[i].addEventListener('mouseleave', () => {
-        TowerPage.towerInfo.innerHTML = TowerPage.Tower.floors[TowerPage.Tower.currentFloor].get_text();
-    });
-    //on click, change army that is raiding it
-    TowerPage.towerLevels[i].addEventListener('click', () => {
-        let last_one = TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].raid(i);
-        if(!(last_one === false)) {
-            if(TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].raiding_army == -1) {
-                TowerPage.towerLevels[i].setAttribute('contenttext','');
-                TowerPage.towerLevels[i].innerHTML = '';
-            }
-            else {
-                let cont_text = String(TowerPage.currentArmy + 1);
-                TowerPage.towerLevels[i].setAttribute('contenttext', cont_text);
-                TowerPage.towerLevels[i].innerHTML = cont_text;
-            }
-            if(last_one != -1) {
-                TowerPage.towerLevels[last_one].setAttribute('contenttext','');
-                TowerPage.towerLevels[last_one].innerHTML = '';
-            }
-            TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].display(TowerPage.Tower.floors[TowerPage.Tower.currentFloor].name);
-            /*      ARCHIVED
-            //if it is the same army raiding it then to which you are trying to set it, then remove that army
-            if(TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].raiding_army == TowerPage.currentArmy) {
-                TowerPage.towerLevels[i].setAttribute('contenttext','');
-                TowerPage.towerLevels[i].innerHTML = '';
-            }
-            else {
-                //if this army was occupied, remove previous raid
-                if(Player.armies[TowerPage.currentArmy].raiding != -1) {
-                    for(j = 0; j < TowerPage.Tower.raidedFloors.length; j++) {
-                        if(TowerPage.Tower.floors[TowerPage.Tower.raidedFloors[j][0]].levels[TowerPage.Tower.raidedFloors[j][1]].raiding_army == TowerPage.currentArmy)  {
-                            if(TowerPage.Tower.raidedFloors[j][0] == TowerPage.Tower.currentFloor) {
-                                TowerPage.towerLevels[Player.armies[TowerPage.currentArmy].raiding].setAttribute('contenttext','');
-                                TowerPage.towerLevels[Player.armies[TowerPage.currentArmy].raiding].innerHTML = '';
-                            }
-                            break;
-                        }
-                    }
-                    TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[Player.armies[TowerPage.currentArmy].raiding].raiding_army = -1;
+        //initialize TOWER FLOOR hover functions
+        for(let i = 0; i < this.towerFloors.length; i++) {
+            //revert the numbering on the floors because they are in the list in reverse order
+            //on mouseenter display new floor
+            this.towerFloors[i].addEventListener('mouseenter', () => {
+                if(i >= c_obj.Tower.floors.length) {
+                    c_obj.towerInfo.innerHTML = 'Under developement, sorry. :<)';
                 }
-                contenttext = String(TowerPage.currentArmy + 1);
-                TowerPage.towerLevels[i].setAttribute('contenttext',contenttext);
-                TowerPage.towerLevels[i].innerHTML = contenttext;
-            }
-            //*/
-            /*
-            if(!TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].unlocked_next_levels) {
-                for(let j = 0; j < TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].unlocks.length; j++) {
-                    let un = TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].unlocks[j];
-                    Unlockables.unlock(['towerLevels',un[0]] , 0, un[1]);
-                    if(un[0] == TowerPage.Tower.currentFloor) {
-                        TowerPage.towerLevels[un[1]].hidden = false;
+                else {
+                    c_obj.Tower.floors[i].display(i);
+                    //if the current floor is not selected
+                    if(i != c_obj.Tower.currentFloor) {
+                        c_obj.towerFloors[i].style.backgroundColor = 'var(--hover-tower-floor-background-color)';
                     }
-                    
+                    else {
+                        c_obj.towerFloors[i].style.backgroundColor = 'var(--hover-selected-tower-floor-background-color)';
+                    }
                 }
-                TowerPage.Tower.floors[TowerPage.Tower.currentFloor].levels[i].unlocked_next_levels = true;
-            }
-            //*/
+            });
+            //on mouseleave, revert to current floor
+            this.towerFloors[i].addEventListener('mouseleave', () => {
+                c_obj.Tower.floors[c_obj.Tower.currentFloor].display(c_obj.Tower.currentFloor);
+                if(i != c_obj.Tower.currentFloor) {
+                    c_obj.towerFloors[i].style.backgroundColor = 'var(--default-tower-floor-background-color)';
+                }
+                else {
+                    c_obj.towerFloors[i].style.backgroundColor = 'var(--selected-tower-floor-background-color)';
+                }
+                
+            });
+            //on click change color and currentFloor
+            this.towerFloors[i].addEventListener('click', () => {
+                if(i >= c_obj.Tower.floors.length) {
+                    return;
+                }
+                c_obj.towerFloors[c_obj.Tower.currentFloor].style.background = 'var(--default-tower-floor-background-color)';
+                c_obj.Tower.currentFloor = i;
+                c_obj.towerFloors[i].style.background = 'var(--selected-tower-floor-background-color)';
+            });
+        };
+
+        //TOWER LEVEL click, enter and leave events and new atribute
+        for(let i = 0; i < this.towerLevels.length; i++) {
+            //display new level stuff on mouseenter
+            this.towerLevels[i].addEventListener('mouseenter', () => {
+                c_obj.Tower.floors[c_obj.Tower.currentFloor].levels[i].display(c_obj.Tower.floors[c_obj.Tower.currentFloor].name);
+            });
+            //on mouseleave, display current floor
+            this.towerLevels[i].addEventListener('mouseleave', () => {
+                c_obj.towerInfo.innerHTML = c_obj.Tower.floors[c_obj.Tower.currentFloor].get_text();
+            });
+            //on click, change army that is raiding it
+            this.towerLevels[i].addEventListener('click', () => {
+                let last_one = c_obj.Tower.floors[c_obj.Tower.currentFloor].levels[i].raid(i);
+                if(!(last_one === false)) {
+                    if(c_obj.Tower.floors[c_obj.Tower.currentFloor].levels[i].raiding_army == -1) {
+                        c_obj.towerLevels[i].setAttribute('contenttext','');
+                        c_obj.towerLevels[i].innerHTML = '';
+                    }
+                    else {
+                        let cont_text = String(c_obj.currentArmy + 1);
+                        c_obj.towerLevels[i].setAttribute('contenttext', cont_text);
+                        c_obj.towerLevels[i].innerHTML = cont_text;
+                    }
+                    if(last_one != -1) {
+                        c_obj.towerLevels[last_one].setAttribute('contenttext','');
+                        c_obj.towerLevels[last_one].innerHTML = '';
+                    }
+                    c_obj.Tower.floors[c_obj.Tower.currentFloor].levels[i].display(c_obj.Tower.floors[c_obj.Tower.currentFloor].name);
+                }
+            });
+            this.towerLevels[i].setAttribute('contenttext','');
+        };
+    }
+    //called when new save gets loaded
+    displayOnLoad() {
+        this.towerFloors[this.Tower.currentFloor].style.backgroundColor = 'var(--selected-tower-floor-background-color)';
+        this.changeArmy(this.currentArmy);
+        this.Tower.floors[this.Tower.currentFloor].display(this.Tower.currentFloor);
+        //set the context text to the value you need on levels raided
+        for(let i = 0; i < this.Tower.raidedFloors.length; i++) {
+            let path = this.Tower.raidedFloors[i];
+            this.towerLevels[path[1]].setAttribute('contenttext',this.Tower.floors[path[0]].levels[path[1]].raiding_army + 1);
         }
-    });
-    TowerPage.towerLevels[i].setAttribute('contenttext','');
+    }
+    display() {
+        this.changeArmy(this.currentArmy);
+        this.Tower.floors[this.Tower.currentFloor].display(this.Tower.currentFloor);
+        if(this.timesVisited == 0) {
+            TutorialPage.unlockTutorial('Tower Page');
+            TutorialPage.startTutorial('Tower Page', true, 'TowerPage');
+        }
+        this.timesVisited++;
+    }
+    displayEveryTick(c_obj) {}
+    //called when a save text is needed
+    save() {
+        let save_text = super.save();
+
+        save_text += '/*/' + this.currentArmy + '/*/' + this.Tower.currentFloor + '/*/';
+        //save raided floors and raided levels
+        save_text += this.Tower.raidedFloors.length;
+        for(let i = 0; i < this.Tower.raidedFloors.length; i++) {
+            save_text += '/*/' + this.Tower.raidedFloors[i][0] + '/*/' + this.Tower.raidedFloors[i][1] + '/*/' + this.Tower.floors[this.Tower.raidedFloors[i][0]].levels[this.Tower.raidedFloors[i][1]].raiding_army;
+        }
+
+        save_text += '/*/' + this.changeArmyButtons.save();
+
+        return save_text;
+    }
+    //called when you need to get values from a save_text
+    //maybe should call displayOnLoad?
+    //returns the number of steps taken
+    load(save_text) {
+        save_text = save_text.split('/*/');
+        let i = super.load(save_text);
+        this.currentArmy = Number(save_text[i]);
+        i++;
+        this.Tower.currentFloor = Number(save_text[i]);
+        i++;
+        let len = Number(save_text[i]);
+        i++;
+        //get raided levels set up
+        for(let j = 0; j < len; j++) {
+            this.Tower.raidedFloors.push([Number(save_text[i]),Number(save_text[i+1])]);
+            this.Tower.floors[this.Tower.raidedFloors[j][0]].levels[this.Tower.raidedFloors[j][1]].raiding_army = Number(save_text[i+2]);
+            this.towerLevels[this.Tower.raidedFloors[j][1]].innerHTML = Number(save_text[i+2])+1;
+            i+=3;
+        }
+
+        i += this.changeArmyButtons.load(save_text, i);
+
+        //display changes with on load function
+        this.displayOnLoad();
+    }
+    changeArmy(change_to) {
+        this.currentArmy = change_to;
+        this.armyInfo.innerHTML = Player.armies[this.currentArmy].get_text(true);
+        this.Tower.floors[this.Tower.currentFloor].display(this.Tower.currentFloor);
+    }
 };
+                 
+let TowerPage = new TowerPageClass('TowerPage');
+
