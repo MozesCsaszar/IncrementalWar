@@ -222,7 +222,7 @@ class TowerClass {
         let found = undefined;
 
         for(let j = 0; j < this.raidedLevels.length; j++) {
-            if(this.floors[this.raidedLevels[j][0]].levels[this.raidedLevels[j][1]].raiding_army == army_nr)  {
+            if(this.raidedLevels[j][2] == army_nr)  {
                 found = this.raidedLevels.splice(j,1)[0];
                 break;
             }
@@ -242,5 +242,22 @@ class TowerClass {
                 break;
             }
         }
+    }
+    save() {
+        let save_text = String(this.currentFloor);
+        save_text += '/*/' + String(this.raidedLevels.length);
+        for(let i = 0; i < this.raidedLevels.length; i++) {
+            save_text += '/*/' + this.raidedLevels[i][0] + '/*/' + this.raidedLevels[i][1] + '/*/' + this.raidedLevels[i][2];
+        }
+        return save_text;
+    }
+    //returns the modified i
+    load(save_text, i) {
+        this.currentFloor = Number(save_text[i]); i++;
+        let len = Number(save_text[i]); i++;
+        for(let ii = 0; ii < len; ii++, i += 3) {
+            this.addRaidedLevel(Number(save_text[i]), Number(save_text[i + 1]), Number(save_text[i + 2]));
+        }
+        return i;
     }
 };

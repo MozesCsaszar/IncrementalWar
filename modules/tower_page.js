@@ -132,12 +132,9 @@ class TowerPageClass extends PageClass {
     save() {
         let save_text = super.save();
 
-        save_text += '/*/' + this.currentArmy + '/*/' + this.Tower.currentFloor + '/*/';
+        save_text += '/*/' + this.currentArmy + '/*/';
         //save raided floors and raided levels
-        save_text += this.Tower.raidedLevels.length;
-        for(let i = 0; i < this.Tower.raidedLevels.length; i++) {
-            save_text += '/*/' + this.Tower.raidedLevels[i][0] + '/*/' + this.Tower.raidedLevels[i][1] + '/*/' + this.Tower.floors[this.Tower.raidedLevels[i][0]].levels[this.Tower.raidedLevels[i][1]].raiding_army;
-        }
+        save_text += this.Tower.save();
 
         save_text += '/*/' + this.changeArmyButtons.save();
 
@@ -147,20 +144,8 @@ class TowerPageClass extends PageClass {
     load(save_text) {
         save_text = save_text.split('/*/');
         let i = super.load(save_text);
-        this.currentArmy = Number(save_text[i]);
-        i++;
-        this.Tower.currentFloor = Number(save_text[i]);
-        i++;
-        let len = Number(save_text[i]);
-        i++;
-        //get raided levels set up
-        for(let j = 0; j < len; j++) {
-            this.Tower.raidedLevels.push([Number(save_text[i]),Number(save_text[i+1])]);
-            this.Tower.floors[this.Tower.raidedLevels[j][0]].levels[this.Tower.raidedLevels[j][1]].raiding_army = Number(save_text[i+2]);
-            this.towerLevels[this.Tower.raidedLevels[j][1]].innerHTML = Number(save_text[i+2])+1;
-            i+=3;
-        }
-
+        this.currentArmy = Number(save_text[i]); i++;
+        i = this.Tower.load(save_text, i);
         i += this.changeArmyButtons.load(save_text, i);
 
         //display changes with on load function
