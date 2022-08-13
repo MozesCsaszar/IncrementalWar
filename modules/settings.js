@@ -84,6 +84,8 @@ class SettingsPageClass extends PageClass {
         //Save your game to file
         this.saveGameButton.addEventListener('click', () => {
             let save_text = Player.save();
+            save_text += '*/*' + allThingsStatistics.save();
+            save_text += '*/*' + UH.save();
             for(let page of Object.values(GM.pages)) {
                 save_text += '*/*' + page.save();
             }
@@ -102,6 +104,8 @@ class SettingsPageClass extends PageClass {
                     save_text = save_text.split('*/*');
                     let i = 0;
                     Player.load(save_text[i]); i++;
+                    allThingsStatistics.load(save_text[i]); i++;
+                    UH.load(save_text[i]); i++;
                     for(let page of Object.values(GM.pages)) {
                         page.load(save_text[i]); i++;
                     }
@@ -147,7 +151,7 @@ class SettingsPageClass extends PageClass {
         }
         else if(this.timesVisited == 1) {
             //CHANGE/SOLVE THIS
-            GM.pageButtons.container.parentElement.hidden = false;
+            GB.pageButtons.container.parentElement.hidden = false;
         }
         this.timesVisited++;
     }

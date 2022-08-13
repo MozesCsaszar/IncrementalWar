@@ -187,21 +187,7 @@ const Player = {
     }
 }
 
-//          UNLOCKS
-
-
 //          ALL THE PAGES IN ONE PLACE
-
-class PageButtonsClass extends ButtonGroupClass {
-    constructor(container_idetifier, button_identifier, selected_style, default_style) {
-        super(container_idetifier, button_identifier, selected_style, default_style);
-    }
-
-    buttonClick(button_nr) {
-        super.buttonClick(button_nr);
-        HidePages(this.buttons[button_nr].getAttribute('page'));
-    }
-}
 
 class GameManagerClass {
     constructor() {
@@ -215,8 +201,7 @@ class GameManagerClass {
         for(let page of Object.values(this.pages)) {
             page.hidden = true;
         }
-        this.pageButtons = new PageButtonsClass('#AllPageButtons', '.page_button', {'borderColor': 'var(--selected-page-button-border-color)'}, {'borderColor': 'var(--default-page-button-border-color)'})
-    
+        
         this.canSave = true;
 
         this.initializeEventListeners();
@@ -227,7 +212,6 @@ class GameManagerClass {
     stopSaveInterval() {
         clearInterval(this.saveInterval);
     }
-
     initializeEventListeners() {
         let c_obj = this;
 
@@ -269,6 +253,8 @@ class GameManagerClass {
         const local_storage = window.localStorage;
         local_storage.clear();
         local_storage.setItem('Player',Player.save());
+        local_storage.setItem('Statistics', allThingsStatistics.save());
+        local_storage.setItem('Unlocks', UH.save());
         for(let page of Object.values(this.pages)) {
             let text = page.save();
             local_storage.setItem(page.name,text);
@@ -280,6 +266,8 @@ class GameManagerClass {
     LoadFromLocalStorage() {
         const local_storage = window.localStorage;
         Player.load(local_storage.getItem('Player'));
+        allThingsStatistics.load(local_storage.getItem('Statistics'));
+        UH.load(local_storage.getItem('Unlocks'));
         //load pages
         for(let page of Object.values(this.pages)) {
             page.load(local_storage.getItem(page.name));
@@ -288,16 +276,16 @@ class GameManagerClass {
         //  shinaningans to get the current page to display correctly (CHANGE THIS?)
         let a = local_storage.getItem('currentPage');
         if(a == 'TowerPage') {
-            this.pageButtons.selected = 1;
+            GB.pageButtons.selected = 1;
             this.currentPage = 'ArmyPage';
         }
         else {
-            this.pageButtons.selected = 0;
+            GB.pageButtons.selected = 0;
             this.currentPage = 'TowerPage';
         }
-        for(let i = 0; i < this.pageButtons.buttons.length; i++) {
-            if(this.pageButtons.buttons[i].getAttribute('page') == a) {
-                this.pageButtons.buttonClick(i);
+        for(let i = 0; i < GB.pageButtons.buttons.length; i++) {
+            if(GB.pageButtons.buttons[i].getAttribute('page') == a) {
+                GB.pageButtons.buttonClick(i);
             }
         }
         this.LoadOfflineProgress(Date.now() - Number(local_storage.getItem('lastSavedTime')), a);
@@ -340,8 +328,8 @@ const goldText = document.querySelector('#GoldText');
 
 function tick() {
     goldText.innerHTML = StylizeDecimals(Player.gold);
-    for(i = 0; i < TowerPage.Tower.raidedFloors.length; i++) {
-        TowerPage.Tower.floors[TowerPage.Tower.raidedFloors[i][0]].levels[TowerPage.Tower.raidedFloors[i][1]].tick(20);
+    for(i = 0; i < TowerPage.Tower.raidedLevels.length; i++) {
+        TowerPage.Tower.floors[TowerPage.Tower.raidedLevels[i][0]].levels[TowerPage.Tower.raidedLevels[i][1]].tick(20);
     }
 }
 

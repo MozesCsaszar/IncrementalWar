@@ -485,10 +485,10 @@ class BossArmySelectionPageClass extends PageClass {
             BossFightingPage.reset();
             BossFightingPage.fight = c_obj.fight;
             for(let i = 0; i < c_obj.fight.max_selectible_armies; i++) {
-                for(let j = 0; j < TowerPage.Tower.raidedFloors.length; j++) {
-                    if(TowerPage.Tower.raidedFloors[j][0] == BossFightingPage.fight.selected_armies[i]) {
-                        BossFightingPage.armiesRemovedFrom.push(TowerPage.Tower.raidedFloors.splice(j,1)[0]);
-                        break;
+                if(c_obj.fight.selected_armies[i] != -1) {
+                    let result = TowerPage.Tower.removeRaidedLevelByArmy(c_obj.fight.selected_armies[i]);
+                    if(result != undefined) {
+                        BossFightingPage.armiesRemovedFrom.push();
                     }
                 }
             }
@@ -748,7 +748,7 @@ class BossFightingPageClass extends PageClass {
         }
         //put armies back to raid what they were raiding before
         for(let i = 0; i < this.armiesRemovedFrom.length; i++) {
-            TowerPage.Tower.raidedFloors.push(this.armiesRemovedFrom[i]);
+            TowerPage.Tower.raidedLevels.push(this.armiesRemovedFrom[i]);
         }
     
         //change page to fight end page

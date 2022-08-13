@@ -182,7 +182,7 @@ class TutorialPageClass extends PageClass {
     startTutorial(tutorial_name, is_mandatory, last_page) {
         this.pageButtonsVisibility = document.querySelector("#PageButtonsContainer").hidden;
         this.setUpTutorial(tutorial_name, is_mandatory, last_page);
-        document.querySelector('#PageButtonsContainer').hidden = true;
+        document.querySelector("#PageButtonsContainer").hidden = true;
         if(is_mandatory) {
             HidePages('TutorialPage');
         }

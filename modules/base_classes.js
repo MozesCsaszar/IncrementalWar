@@ -1,3 +1,24 @@
+//FIGHTING RELATED
+//CHANGE THIS PLACEMENT
+/*
+    bosses - the names of the bosses from stuff which you need to fight
+    max_selectible_armies - max number of armies the player can bring to the fight
+    lose_soldiers - true if you lose soldiers based on the soldier_loss_ratio of the boss you are fighting
+                    false if you don't lose soldiers no matter what
+*/
+class Fight {
+    constructor(bosses=[], max_selectible_armies, lose_soldiers) {
+        this.bosses = bosses;
+        this.max_selectible_armies = max_selectible_armies;
+        this.lose_soldiers = lose_soldiers;
+        //initialize selected armies
+        this.selected_armies = []
+        for(let i = 0; i < max_selectible_armies; i++) {
+            this.selected_armies.push(-1);
+        }
+    }
+}
+
 //A base Page class which has all the functions and values necessary for it to work
 class PageClass {
     constructor(name) {

@@ -17,12 +17,12 @@
     <!--   BUTTONS FOR PAGES-->
     <div id = "PageButtonsContainer">
         <div id="AllPageButtons">
-            <button class='page_button' id = "TowerPageButton" page="TowerPage">Tower</button>
-            <button class='page_button' id = "ArmyPageButton" page="ArmyPage">Army</button>
+            <button class='page_button' id = "TowerPageButton" page="TowerPage" hidden>Tower</button>
+            <button class='page_button' id = "ArmyPageButton" page="ArmyPage" hidden>Army</button>
             <button class='page_button' id = "StorePageButton" page="StorePage">Store</button>
             <button class='page_button' id = "SettingsPageButton" page="SettingsPage">Settings</button>
         </div>
-        <hr style="position: relative;height:3px; border:none; top:-10px; background-color:limegreen;width:100%;">
+        <hr style="position: relative;height:3px; border:none; top:-10px; background-color:var(--default-page-button-background-color);width:100%;">
         <!--   A LINE TO BE UNDER THE BUTTONS-->
     </div>
 
@@ -289,7 +289,7 @@
     <div id="StorePageContainer">
         <div id="StoreSubpageButtons" class="select_subpage_container page_store">
             <button id="StoreCreaturesSubpageButton" class="select_button">Creatures</button>
-            <button id="StoreWeaponsSubpageButton" class="select_button">Weapons</button>
+            <button id="StoreWeaponsSubpageButton" class="select_button" hidden>Weapons</button>
         </div>
         <div id="StoreSubpageContainer">
             <div class="nr_name_button_flex_container page_store">
@@ -380,13 +380,16 @@
     <script src="modules/stats.js"></script>
     <script src="modules/army_comps.js"></script>
     <script src="modules/base_classes.js"></script>
-    <script src="modules/army.js"></script>
     <script src="modules/tower.js"></script>
+    <script src="modules/statistics.js"></script>
+    <script src="modules/army.js"></script>
+    <script src="modules/tower_page.js"></script>
     <script src="modules/store_page.js"></script>
     <script src="modules/boss.js"></script>
-    <script src="modules/unlocks.js"></script>
     <script src="modules/settings.js"></script>
     <script src="modules/tutorial.js"></script>
+    <script src="modules/game_body.js"></script>
+    <script src="modules/unlocks.js"></script>
     <script src="IncrementalWar.js"></script>
     
 </body>

@@ -113,7 +113,7 @@ class Army {
 
                 //and remove elements and refund their costs
                 for(let i = this.weapons.length - 1; i > -1; i--) {
-                    this.change_element('weapons','None',i);
+                    this.change_element('weapons','None',i, unlock_stuff);
                 }
 
                 //change stats from old to new
@@ -139,7 +139,8 @@ class Army {
         }
         //send unlock request after change
         if(unlock_stuff) {
-            
+            allThingsStatistics.setStatisticsToMax(['Player', 'armies', ArmyPage.currentArmy, 'Attack'], this.stats['Attack'].get_plain_power());
+            allThingsStatistics.setStatisticsToMax(['Player', 'armies', 'all', 'Attack'], this.stats['Attack'].get_plain_power());
         }
         return true;
     }

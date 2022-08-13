@@ -23,6 +23,9 @@ class Buyer {
             }
             Player.inventory[this.type][this.name] = Player.inventory[this.type][this.name].add(buy_nr);
             this.nr_bought = this.nr_bought.add(buy_nr);
+            if(allThingsStatistics.addToStatistics(['StorePage', this.type, this.name], buy_nr)) {
+                StorePage.itemList.changePage(StorePage.itemList.page);
+            }
             return true;
         }
         return false;
@@ -123,6 +126,14 @@ class StoreSubpageButtonGroupClass extends ButtonGroupClass {
         super(container_idetifier, button_identifier, selected_style, default_style);
     }
 
+    showButton(button_nr) {
+        super.showButton(button_nr);
+        this.buttons[button_nr].hidden = false;
+    }
+    hideButton(button_nr) {
+        super.hideButton(button_nr);
+        this.buttons[button_nr].hidden = true;
+    }
     buttonClick(button_nr) {
         super.buttonClick(button_nr);
         StorePage.changeSubpage(StorePage.subpageTypes[button_nr]);
@@ -146,7 +157,7 @@ class StorePageClass extends PageClass {
 
         this.buyers = {
             'creatures': [new Buyer('creatures','Human')],
-            'weapons': [new Buyer('weapons','Knife'), new Buyer('weapons','Dagger'),new Buyer('weapons','Longsword')],
+            'weapons': [new Buyer('weapons','Knife')],
         };
         this.pageButton = document.querySelector('#StorePageButton');
         this.subpageTypes = ['creatures', 'weapons'];
