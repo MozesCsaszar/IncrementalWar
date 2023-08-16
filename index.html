@@ -1,398 +1,436 @@
-
 <head>
-    <link rel="stylesheet" href="style.css"></link>
+  <link rel="stylesheet" href="style.css">
+  </link>
 
-    <script src="./modules/variables.js"></script>
+  <script src="./node_modules/jquery/dist/jquery.js"></script>
 
-    <script src="modules/stats.js" defer></script>
-    <script src="modules/army_comps.js" defer></script>
-    <script src="modules/base_classes.js" defer></script>
-    <script src="modules/tower.js" defer></script>
-    <script src="modules/statistics.js" defer></script>
-    <script src="modules/army.js" defer></script>
-    <script src="modules/tower_page.js" defer></script>
-    <script src="modules/store_page.js" defer></script>
-    <script src="modules/boss.js" defer></script>
-    <script src="modules/settings.js" defer></script>
-    <script src="modules/tutorial.js" defer></script>
-    <script src="modules/game_body.js" defer></script>
-    <script src="modules/unlocks.js" defer></script>
+  <script src="./modules/variables.js"></script>
 
-    <script src="IncrementalWar.js" defer></script>
+  <script src="modules/stats.js" defer></script>
+  <script src="modules/army_comps.js" defer></script>
+  <script src="modules/base_classes.js" defer></script>
+  <script src="modules/tower.js" defer></script>
+  <script src="modules/statistics.js" defer></script>
+  <script src="modules/army.js" defer></script>
+  <script src="modules/tower_page.js" defer></script>
+  <script src="modules/store_page.js" defer></script>
+  <script src="modules/boss.js" defer></script>
+  <script src="modules/settings.js" defer></script>
+  <script src="modules/tutorial.js" defer></script>
+  <script src="modules/game_body.js" defer></script>
+  <script src="modules/unlocks.js" defer></script>
+
+  <script src="IncrementalWar.js" defer></script>
 </head>
 
 
 
-<body id ="body">
-    <div id="PopupWindowContainer" hidden>
+<body id="body">
+  <div id="PopupWindowContainer" hidden>
 
+  </div>
+  <div id="PageTopResourcesContainer">
+    <div id="CurrentGoldContainer">Gold: &nbsp<div id="GoldText">0000</div>
     </div>
-    <div id="PageTopResourcesContainer">
-        <div id="CurrentGoldContainer">Gold: &nbsp<div id = "GoldText">0000</div></div>
+  </div>
+
+  <br>
+  <!--   BUTTONS FOR PAGES-->
+  <div id="PageButtonsContainer">
+    <div id="AllPageButtons">
+      <button class='page_button' id="TowerPageButton" page="TowerPage" hidden>Tower</button>
+      <button class='page_button' id="ArmyPageButton" page="ArmyPage" hidden>Army</button>
+      <button class='page_button' id="StorePageButton" page="StorePage">Store</button>
+      <button class='page_button' id="SettingsPageButton" page="SettingsPage">Settings</button>
     </div>
+    <hr
+      style="position: relative;height:3px; border:none; top:-10px; background-color:var(--default-page-button-background-color);width:100%;">
+    <!--   A LINE TO BE UNDER THE BUTTONS-->
+  </div>
 
-    <br>
-    <!--   BUTTONS FOR PAGES-->
-    <div id = "PageButtonsContainer">
-        <div id="AllPageButtons">
-            <button class='page_button' id = "TowerPageButton" page="TowerPage" hidden>Tower</button>
-            <button class='page_button' id = "ArmyPageButton" page="ArmyPage" hidden>Army</button>
-            <button class='page_button' id = "StorePageButton" page="StorePage">Store</button>
-            <button class='page_button' id = "SettingsPageButton" page="SettingsPage">Settings</button>
-        </div>
-        <hr style="position: relative;height:3px; border:none; top:-10px; background-color:var(--default-page-button-background-color);width:100%;">
-        <!--   A LINE TO BE UNDER THE BUTTONS-->
-    </div>
+  <div id="OfflinePageContainer" hidden>
+    <div id="OfflineGreeting">Welcome back, Captain!</div>
+    <div id="OfflineInfoText"></div>
+    <button id="ContinueFromOfflineProgress">Back to my office.</button>
+  </div>
 
-    <div id="OfflinePageContainer" hidden>
-        <div id="OfflineGreeting">Welcome back, Captain!</div>
-        <div id="OfflineInfoText"></div>
-        <button id = "ContinueFromOfflineProgress">Back to my office.</button>
-    </div>
+  <div id="TowerPageContainer">
 
-    <div id= "TowerPageContainer">
-
-        <!--   CHANGE ARMY BUTTONS-->
-        <div class="toggle_button_container page_tower">
-            <button class='toggle_button'>1</button>
-            <button class='toggle_button'>2</button>
-            <button class='toggle_button'>3</button>
-        </div>
-
-        <div class="tower_page_container">
-            <div id = 'TowerPageArmyInfo' class = 'info_text' style="order:1;">Test, Test, but what do I test? I test if this test is visible or not, thanks tests.</div>
-
-            <div id = 'TowerPageTowerInfo' class = 'info_text' style="order:2;">Test, Test, but what do I test? I test if this test is visible or not, thanks tests.</div>
-
-            <div class='tower' style="order:3;">
-                <div class='tower_top3 tower_part'></div>
-                <div class='tower_top2 tower_part'></div>
-                <div class='tower_top1 tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-                <div class='tower_floor tower_part'></div>
-            </div>
-
-            <div id = "TowerLevelsContainer" style="order:4;">
-                <div class='tower_level' hidden = 'true'></div>
-                <div class='tower_level' hidden = 'true'></div>
-                <div class='tower_level' hidden = 'true'></div>
-                <div class='tower_level' hidden = 'true'></div>
-                <div class='tower_level' hidden = 'true'></div>
-                <div class='tower_level' hidden = 'true'></div>
-                <div class='tower_level' hidden = 'true'></div>
-                <div class='tower_level' hidden = 'true'></div>
-                <div class='tower_level' hidden = 'true'></div>
-                <div class='tower_level' hidden = 'true'></div>
-                <div class='tower_level' hidden = 'true'></div>
-                <div class='tower_level' hidden = 'true'></div>
-            </div>
-
-        </div>
-
+    <!--   CHANGE ARMY BUTTONS-->
+    <div class="toggle_button_container page_tower">
+      <button class='toggle_button'>1</button>
+      <button class='toggle_button'>2</button>
+      <button class='toggle_button'>3</button>
     </div>
 
-    <div id = "BossArmySelectionPageContainer" hidden>
-        <div class = 'fighting_army_select_label' hidden>
-            <div class="boss_army_select_army_name" style="grid-row:1; grid-column: 1;">Army I:</div>
-                    <div class="toggle_button_container page_boss_select_army n0">
-                    <button class='toggle_button'>1</button>
-                    <button class='toggle_button'>2</button>
-                    <button class='toggle_button'>3</button>
-                </div>
-            <div class='select_boss_army_info' >No army to be seen here.</div>
-        </div>
+    <div class="tower_page_container">
+      <div id='TowerPageArmyInfo' class='info_text' style="order:1;">Test, Test, but what do I test? I test if this test
+        is visible or not, thanks tests.</div>
 
-        <div class = 'fighting_army_select_label' style="grid-row:2; grid-column: 1;">Army II: &nbsp
-            <div class="toggle_button_container page_boss_select_army n1">
-                <button class='toggle_button'>1</button>
-                <button class='toggle_button'>2</button>
-                <button class='toggle_button'>3</button>
-            </div>
+      <div id='TowerPageTowerInfo' class='info_text' style="order:2;">Test, Test, but what do I test? I test if this
+        test is visible or not, thanks tests.</div>
 
+      <div class='tower' style="order:3;">
+        <div class='tower_top3 tower_part'></div>
+        <div class='tower_top2 tower_part'></div>
+        <div class='tower_top1 tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+        <div class='tower_floor tower_part'></div>
+      </div>
 
-            <br>
-            <div class='select_boss_army_info' >So here goes your army info, you shouldn't see this normally, so please be on your way, than you.:))</div>
-        </div>
-        <div class = 'fighting_army_select_label' style="grid-row:3; grid-column: 1;">Army III:
-            <div class="toggle_button_container page_boss_select_army n2">
-                <button class='toggle_button'>1</button>
-                <button class='toggle_button'>2</button>
-                <button class='toggle_button'>3</button>
-            </div>
-            <br>
-            <div class='select_boss_army_info'>So here goes your army info, you shouldn't see this normally, so please be on your way, than you.:))</div>
-        </div>
-
-
-        <div id="BossFightDifficultyGauge" style="grid-row:1/3; grid-column: 2;text-align: center; align-self:center;" hidden>Difficulty</div>
-        <!-- The back and fight buttons -->
-        <div style="grid-row: 3; grid-column: 2; text-align: center; align-self: end;">
-            <button id="BackFromBossArmySelectionPage">Back</button>
-            <button id="StartBossFightButton" hidden>Fight</button>
-        </div>
-
-        <div id="BossInfo" style="grid-row:1/4; grid-column: 3;">
-            <div id="BossInfoText"></div>
-        </div>
-    </div>
-
-    <div id = "BossFightingPageContainer" hidden>
-        <div class="army_in_boss_fight" style="grid-column:1; grid-row: 1;" hidden>
-            <label class="army_in_boss_fight_name">Army I</label>
-            <div class="army_in_boss_fight_health_background">
-                <span class = "army_in_boss_fight_health_foreground  army_in_boss_fight_bar"></span>
-                <span class = "army_in_boss_fight_health_text  army_in_boss_fight_bar"></span>
-            </div>
-            <div class="army_in_boss_fight_units_background" >
-                <span class = "army_in_boss_fight_units_foreground  army_in_boss_fight_bar" ></span>
-                <span class = "army_in_boss_fight_units_text  army_in_boss_fight_bar"></span>
-            </div>
-            <div class="army_in_boss_fight_attack_background">
-                <span class = "army_in_boss_fight_attack_foreground  army_in_boss_fight_bar"></span>
-                <span class = "army_in_boss_fight_attack_text  army_in_boss_fight_bar"></span>
-            </div>
-        </div>
-        <div class="army_in_boss_fight" style="grid-column:1; grid-row: 2" hidden>
-            <label class="army_in_boss_fight_name">Army II</label>
-            <div class="army_in_boss_fight_health_background">
-                <span class = "army_in_boss_fight_health_foreground  army_in_boss_fight_bar"></span>
-                <span class = "army_in_boss_fight_health_text  army_in_boss_fight_bar"></span>
-            </div>
-            <div class="army_in_boss_fight_units_background" >
-                <span class = "army_in_boss_fight_units_foreground  army_in_boss_fight_bar" ></span>
-                <span class = "army_in_boss_fight_units_text  army_in_boss_fight_bar"></span>
-            </div>
-            <div class="army_in_boss_fight_attack_background">
-                <span class = "army_in_boss_fight_attack_foreground  army_in_boss_fight_bar"></span>
-                <span class = "army_in_boss_fight_attack_text  army_in_boss_fight_bar"></span>
-            </div>
-        </div>
-        <div class="army_in_boss_fight" style="grid-column:1; grid-row: 3;" hidden>
-            <label class="army_in_boss_fight_name">Army III</label>
-            <div class="army_in_boss_fight_health_background">
-                <span class = "army_in_boss_fight_health_foreground  army_in_boss_fight_bar"></span>
-                <span class = "army_in_boss_fight_health_text  army_in_boss_fight_bar"></span>
-            </div>
-            <div class="army_in_boss_fight_units_background" >
-                <span class = "army_in_boss_fight_units_foreground  army_in_boss_fight_bar" ></span>
-                <span class = "army_in_boss_fight_units_text  army_in_boss_fight_bar"></span>
-            </div>
-            <div class="army_in_boss_fight_attack_background">
-                <span class = "army_in_boss_fight_attack_foreground army_in_boss_fight_bar"></span>
-                <span class = "army_in_boss_fight_attack_text army_in_boss_fight_bar"></span>
-            </div>
-        </div>
-        <div id="BossFightMoveFeed" style="grid-column:2; grid-row: 1/4;">
-            <div class="boss_fight_move_feedElement"></div>
-            <div class="boss_fight_move_feedElement"></div>
-            <div class="boss_fight_move_feedElement"></div>
-            <div class="boss_fight_move_feedElement"></div>
-            <div class="boss_fight_move_feedElement"></div>
-        </div>
-        <div class="boss_in_boss_fight" style="grid-column:3; grid-row: 1;" >
-            <label class="boss_in_boss_fight_name">Blank</label>
-            <div class="boss_in_boss_fight_health_background">
-                <span class = "boss_in_boss_fight_health_foreground boss_in_boss_fight_bar"></span>
-                <span class = "boss_in_boss_fight_health_text boss_in_boss_fight_bar"></span>
-            </div>
-            <div class="boss_in_boss_fight_units_background">
-                <span class = "boss_in_boss_fight_units_foreground boss_in_boss_fight_bar"></span>
-                <span class = "boss_in_boss_fight_units_text boss_in_boss_fight_bar"></span>
-            </div>
-            <div class="boss_in_boss_fight_attack_background">
-                <span class = "boss_in_boss_fight_attack_foreground boss_in_boss_fight_bar"></span>
-                <span class = "boss_in_boss_fight_attack_text boss_in_boss_fight_bar"></span>
-            </div>
-        </div>
+      <div id="TowerLevelsContainer" style="order:4;">
+        <div class='tower_level' hidden='true'></div>
+        <div class='tower_level' hidden='true'></div>
+        <div class='tower_level' hidden='true'></div>
+        <div class='tower_level' hidden='true'></div>
+        <div class='tower_level' hidden='true'></div>
+        <div class='tower_level' hidden='true'></div>
+        <div class='tower_level' hidden='true'></div>
+        <div class='tower_level' hidden='true'></div>
+        <div class='tower_level' hidden='true'></div>
+        <div class='tower_level' hidden='true'></div>
+        <div class='tower_level' hidden='true'></div>
+        <div class='tower_level' hidden='true'></div>
+      </div>
 
     </div>
 
-    <div id = "BossFightingResultPageContainer" hidden>
-        <div id="AfterFightMessage">
-            Yeah, yeah, yeah.
-        </div>
-        <button id="BackButtonFromResults">Back</button>
+  </div>
+
+  <div id="BossArmySelectionPageContainer" hidden>
+    <div class='fighting_army_select_label' hidden>
+      <div class="boss_army_select_army_name" style="grid-row:1; grid-column: 1;">Army I:</div>
+      <div class="toggle_button_container page_boss_select_army n0">
+        <button class='toggle_button'>1</button>
+        <button class='toggle_button'>2</button>
+        <button class='toggle_button'>3</button>
+      </div>
+      <div class='select_boss_army_info'>No army to be seen here.</div>
     </div>
 
-    <div id = "ArmyPageContainer">
-        <div class="select_subpage_container page_army">
-            <button class='select_button'>Army 1</button>
-            <button class='select_button'>Army 2</button>
-            <button class='select_button'>Army 3</button>
-        </div>
+    <div class='fighting_army_select_label' style="grid-row:2; grid-column: 1;">Army II: &nbsp
+      <div class="toggle_button_container page_boss_select_army n1">
+        <button class='toggle_button'>1</button>
+        <button class='toggle_button'>2</button>
+        <button class='toggle_button'>3</button>
+      </div>
 
-        <!--   ARMY SELECTOR STUFF-->
-        <div class="army_info_container">
-            <div class="army_management_container">
-                <div id = "ArmyLevelText">Army level: 100</div> <div style="display:flex;height:fit-content;width: 350px;"><button hidden id = "ArmyLevelUpButton" style="width:80px;">Level up!</button> <div id = "ArmyLevelUpCost" hidden></div></div>
-                <div>Size of army: <input type="text" id='ArmySizeInput' style='width:100px;' value = 0> <button id="MaxArmySize">MAX</button></div>
 
-                <div class="nr_name_button_flex_container page_army">
-                    <!--            CREATURES (1)               -->
-                    <div id = 'ArmyCreatureContainer' class="nr_name_button_container page_army">
-                        <div class="nr_available_div page_army">(0)</div> <div class = 'element_name_div'>Creature: </div> <button class = 'complementary_button page_army'>None</button>
-                    </div>
-                    <!--            WEAPONS (8)                 -->
-                    <div class="nr_name_button_container">
-                        <div class="nr_available_div page_army">(0)</div> <div class = 'element_name_div'>Weapon I: </div> <button class = 'complementary_button page_army'>None</button>
-                    </div>
-                    <div class="nr_name_button_container">
-                        <div class="nr_available_div page_army">(0)</div> <div class = 'element_name_div'>Weapon II: </div> <button class = 'complementary_button page_army'>None</button>
-                    </div>
-                    <div class="nr_name_button_container">
-                        <div class="nr_available_div page_army">(0)</div> <div class = 'element_name_div'>Weapon III: </div> <button class = 'complementary_button page_army'>None</button>
-                    </div>
-                    <div class="nr_name_button_container">
-                        <div class="nr_available_div page_army">(0)</div> <div class = 'element_name_div'>Weapon IV: </div> <button class = 'complementary_button page_army'>None</button>
-                    </div>
-                    <div class="nr_name_button_container">
-                        <div class="nr_available_div page_army">(0)</div> <div class = 'element_name_div'>Weapon V: </div> <button class = 'complementary_button page_army'>None</button>
-                    </div>
-                    <div class="nr_name_button_container">
-                        <div class="nr_available_div page_army">(0)</div> <div class = 'element_name_div'>Weapon VI: </div> <button class = 'complementary_button page_army'>None</button>
-                    </div>
-                    <div class="nr_name_button_container">
-                        <div class="nr_available_div page_army">(0)</div> <div class = 'element_name_div'>Weapon VII: </div> <button class = 'complementary_button page_army'>None</button>
-                    </div>
-                    <div class="nr_name_button_container">
-                        <div class="nr_available_div page_army">(0)</div> <div class = 'element_name_div'>Weapon VIII: </div> <button class = 'complementary_button page_army'>None</button>
-                    </div>
-                </div>
-            </div>
-            <div class="element_list page_army" hidden>
-                <div class="element_list_item"></div>
-                <div class="element_list_item"></div>
-                <div class="element_list_item"></div>
-                <div class="element_list_item"></div>
-                <div class="element_list_item"></div>
-                <div class="element_list_item"></div>
-                <div class="element_list_item"></div>
-                <div class="element_list_item"></div>
-                <div class="element_list_buttons_container">
-                    <button class="element_list_prev_button"> &lt; </button>
-                    <button class="element_list_back_button">Back</button>
-                    <button class="element_list_next_button"> &gt; </button>
-                </div>
-
-            </div>
-            <div id = 'ArmyPagePartInfo' class = 'info_text' ></div>
-            <div id = 'ArmyPageInfo' class = 'info_text'></div>
-        </div>
+      <br>
+      <div class='select_boss_army_info'>So here goes your army info, you shouldn't see this normally, so please be on
+        your way, than you.:))</div>
+    </div>
+    <div class='fighting_army_select_label' style="grid-row:3; grid-column: 1;">Army III:
+      <div class="toggle_button_container page_boss_select_army n2">
+        <button class='toggle_button'>1</button>
+        <button class='toggle_button'>2</button>
+        <button class='toggle_button'>3</button>
+      </div>
+      <br>
+      <div class='select_boss_army_info'>So here goes your army info, you shouldn't see this normally, so please be on
+        your way, than you.:))</div>
     </div>
 
-    <div id="StorePageContainer">
-        <div id="StoreSubpageButtons" class="select_subpage_container page_store">
-            <button id="StoreCreaturesSubpageButton" class="select_button">Creatures</button>
-            <button id="StoreWeaponsSubpageButton" class="select_button" hidden>Weapons</button>
-        </div>
-        <div id="StoreSubpageContainer">
-            <div class="nr_name_button_flex_container page_store">
-                <div class="nr_name_button_container page_store" style="grid-row:1;">
-                    <div class="nr_available_div">(0)</div> <div class = 'element_name_div'>Human</div> <button class = 'complementary_button'>Buy</button>
-                </div>
-                <div class="nr_name_button_container page_store"style="grid-row:2;">
-                    <div class="nr_available_div">(0)</div> <div class = 'element_name_div'>Human</div> <button class = 'complementary_button'>Buy</button>
-                </div>
-                <div class="nr_name_button_container page_store" style="grid-row:3;">
-                    <div class="nr_available_div">(0)</div> <div class = 'element_name_div'>Human</div> <button class = 'complementary_button'>Buy</button>
-                </div>
-                <div class="nr_name_button_container page_store" style="grid-row:4;">
-                    <div class="nr_available_div">(0)</div> <div class = 'element_name_div'>Human</div> <button class = 'complementary_button'>Buy</button>
-                </div>
-                <div class="nr_name_button_container page_store" style="grid-row:5;">
-                    <div class="nr_available_div">(0)</div> <div class = 'element_name_div'>Human</div> <button class = 'complementary_button'>Buy</button>
-                </div>
-                <div class="nr_name_button_container page_store"style= "grid-row:6;">
-                    <div class="nr_available_div">(0)</div> <div class = 'element_name_div'>Human</div> <button class = 'complementary_button'>Buy</button>
-                </div>
-                <div class="nr_name_button_container page_store" style="grid-row:7;">
-                    <div class="nr_available_div">(0)</div> <div class = 'element_name_div'>Human</div> <button class = 'complementary_button'>Buy</button>
-                </div>
-                <div class="nr_name_button_container page_store" style="grid-row:8;">
-                    <div class="nr_available_div">(0)</div> <div class = 'element_name_div'>Human</div> <button class = 'complementary_button'>Buy</button>
-                </div>
-                <div class="nr_name_button_container page_store" style="grid-row:9;">
-                    <div class="nr_available_div">(0)</div> <div class = 'element_name_div'>Human</div> <button class = 'complementary_button'>Buy</button>
-                </div>
-                <div class="nr_name_button_container page_store" style="grid-row:10;">
-                    <div class="nr_available_div">(0)</div> <div class = 'element_name_div'>Human</div> <button class = 'complementary_button'>Buy</button>
-                </div>
-                <div class="nr_name_button_container page_store" style="grid-row:11;">
-                    <div class="nr_available_div">(0)</div> <div class = 'element_name_div'>Human</div> <button class = 'complementary_button'>Buy</button>
-                </div>
 
-                <div class="element_list_buttons_container" style="grid-row:12;">
-                    <button class="element_list_prev_button"> &lt; </button>
-                    <button class="element_list_back_button">Back</button>
-                    <button class="element_list_next_button"> &gt; </button>
-                </div>
-            </div>
-
-            <div id = 'StorePageInfo' class = 'info_text' ></div>
-
-            <div class="toggle_button_container page_store">
-                <button class='toggle_button page_store' >I</button>
-                <button class='toggle_button page_store' >X</button>
-                <button class='toggle_button page_store' >C</button>
-                <button class='toggle_button page_store' >M</button>
-            </div>
-        </div>
-
+    <div id="BossFightDifficultyGauge" style="grid-row:1/3; grid-column: 2;text-align: center; align-self:center;"
+      hidden>Difficulty</div>
+    <!-- The back and fight buttons -->
+    <div style="grid-row: 3; grid-column: 2; text-align: center; align-self: end;">
+      <button id="BackFromBossArmySelectionPage">Back</button>
+      <button id="StartBossFightButton" hidden>Fight</button>
     </div>
 
-    <div id ="TutorialPageContainer" hidden>
-        <div class="element_list page_tutorial">
-            <div class="element_list_item"></div>
-            <div class="element_list_item"></div>
-            <div class="element_list_item"></div>
-            <div class="element_list_item"></div>
-            <div class="element_list_item"></div>
-            <div class="element_list_item"></div>
-            <div class="element_list_item"></div>
-            <div class="element_list_item"></div>
-            <div class="element_list_buttons_container">
-                <button class="element_list_prev_button"> &lt; </button>
-                <button class="element_list_back_button">Back</button>
-                <button class="element_list_next_button"> &gt; </button>
-            </div>
-        </div>
-        <div class="image_previous_next_container page_tutorial">
-            <img class="tutorial_image page_tutorial" alt="You should see an image here... Because you don't, tough luck for you." style='grid-row:1; grid-column:1/3;'>
-            <button class="tutorial_previous_button page_tutorial">Previous</button> <button class="tutorial_next_button page_tutorial">Next</button>
-        </div>
+    <div id="BossInfo" style="grid-row:1/4; grid-column: 3;">
+      <div id="BossInfoText"></div>
+    </div>
+  </div>
+
+  <div id="BossFightingPageContainer" hidden>
+    <div class="army_in_boss_fight" style="grid-column:1; grid-row: 1;" hidden>
+      <label class="army_in_boss_fight_name">Army I</label>
+      <div class="army_in_boss_fight_health_background">
+        <span class="army_in_boss_fight_health_foreground  army_in_boss_fight_bar"></span>
+        <span class="army_in_boss_fight_health_text  army_in_boss_fight_bar"></span>
+      </div>
+      <div class="army_in_boss_fight_units_background">
+        <span class="army_in_boss_fight_units_foreground  army_in_boss_fight_bar"></span>
+        <span class="army_in_boss_fight_units_text  army_in_boss_fight_bar"></span>
+      </div>
+      <div class="army_in_boss_fight_attack_background">
+        <span class="army_in_boss_fight_attack_foreground  army_in_boss_fight_bar"></span>
+        <span class="army_in_boss_fight_attack_text  army_in_boss_fight_bar"></span>
+      </div>
+    </div>
+    <div class="army_in_boss_fight" style="grid-column:1; grid-row: 2" hidden>
+      <label class="army_in_boss_fight_name">Army II</label>
+      <div class="army_in_boss_fight_health_background">
+        <span class="army_in_boss_fight_health_foreground  army_in_boss_fight_bar"></span>
+        <span class="army_in_boss_fight_health_text  army_in_boss_fight_bar"></span>
+      </div>
+      <div class="army_in_boss_fight_units_background">
+        <span class="army_in_boss_fight_units_foreground  army_in_boss_fight_bar"></span>
+        <span class="army_in_boss_fight_units_text  army_in_boss_fight_bar"></span>
+      </div>
+      <div class="army_in_boss_fight_attack_background">
+        <span class="army_in_boss_fight_attack_foreground  army_in_boss_fight_bar"></span>
+        <span class="army_in_boss_fight_attack_text  army_in_boss_fight_bar"></span>
+      </div>
+    </div>
+    <div class="army_in_boss_fight" style="grid-column:1; grid-row: 3;" hidden>
+      <label class="army_in_boss_fight_name">Army III</label>
+      <div class="army_in_boss_fight_health_background">
+        <span class="army_in_boss_fight_health_foreground  army_in_boss_fight_bar"></span>
+        <span class="army_in_boss_fight_health_text  army_in_boss_fight_bar"></span>
+      </div>
+      <div class="army_in_boss_fight_units_background">
+        <span class="army_in_boss_fight_units_foreground  army_in_boss_fight_bar"></span>
+        <span class="army_in_boss_fight_units_text  army_in_boss_fight_bar"></span>
+      </div>
+      <div class="army_in_boss_fight_attack_background">
+        <span class="army_in_boss_fight_attack_foreground army_in_boss_fight_bar"></span>
+        <span class="army_in_boss_fight_attack_text army_in_boss_fight_bar"></span>
+      </div>
+    </div>
+    <div id="BossFightMoveFeed" style="grid-column:2; grid-row: 1/4;">
+      <div class="boss_fight_move_feedElement"></div>
+      <div class="boss_fight_move_feedElement"></div>
+      <div class="boss_fight_move_feedElement"></div>
+      <div class="boss_fight_move_feedElement"></div>
+      <div class="boss_fight_move_feedElement"></div>
+    </div>
+    <div class="boss_in_boss_fight" style="grid-column:3; grid-row: 1;">
+      <label class="boss_in_boss_fight_name">Blank</label>
+      <div class="boss_in_boss_fight_health_background">
+        <span class="boss_in_boss_fight_health_foreground boss_in_boss_fight_bar"></span>
+        <span class="boss_in_boss_fight_health_text boss_in_boss_fight_bar"></span>
+      </div>
+      <div class="boss_in_boss_fight_units_background">
+        <span class="boss_in_boss_fight_units_foreground boss_in_boss_fight_bar"></span>
+        <span class="boss_in_boss_fight_units_text boss_in_boss_fight_bar"></span>
+      </div>
+      <div class="boss_in_boss_fight_attack_background">
+        <span class="boss_in_boss_fight_attack_foreground boss_in_boss_fight_bar"></span>
+        <span class="boss_in_boss_fight_attack_text boss_in_boss_fight_bar"></span>
+      </div>
     </div>
 
-    <div id = "SettingsPageContainer">
-        <button id = "SaveGameButton" style='margin-top: 20px;'>Save game</button>
-        <input type='file' accept=".txt" id="LoadGameButton">
-        <button id = "SettingsPageTutorialButton">Tutorials</button>
-        <button id = "ChangeTheme">Black Theme</button>
-        <button id = "ResetButton">Reset Game</button>
+  </div>
+
+  <div id="BossFightingResultPageContainer" hidden>
+    <div id="AfterFightMessage">
+      Yeah, yeah, yeah.
     </div>
-    <script src="break_infinity.js"></script>
+    <button id="BackButtonFromResults">Back</button>
+  </div>
+
+  <div id="ArmyPageContainer">
+    <div class="select_subpage_container page_army">
+      <button class='select_button'>Army 1</button>
+      <button class='select_button'>Army 2</button>
+      <button class='select_button'>Army 3</button>
+    </div>
+
+    <!--   ARMY SELECTOR STUFF-->
+    <div class="army_info_container">
+      <div class="army_management_container">
+        <div id="ArmyLevelText">Army level: 100</div>
+        <div style="display:flex;height:fit-content;width: 350px;"><button hidden id="ArmyLevelUpButton"
+            style="width:80px;">Level up!</button>
+          <div id="ArmyLevelUpCost" hidden></div>
+        </div>
+        <div>Size of army: <input type="text" id='ArmySizeInput' style='width:100px;' value=0> <button
+            id="MaxArmySize">MAX</button></div>
+
+        <div class="nr_name_button_flex_container page_army">
+          <!--            CREATURES (1)               -->
+          <div id='ArmyCreatureContainer' class="nr_name_button_container page_army">
+            <div class="nr_available_div page_army">(0)</div>
+            <div class='element_name_div'>Creature: </div> <button class='complementary_button page_army'>None</button>
+          </div>
+          <!--            WEAPONS (8)                 -->
+          <div class="nr_name_button_container">
+            <div class="nr_available_div page_army">(0)</div>
+            <div class='element_name_div'>Weapon I: </div> <button class='complementary_button page_army'>None</button>
+          </div>
+          <div class="nr_name_button_container">
+            <div class="nr_available_div page_army">(0)</div>
+            <div class='element_name_div'>Weapon II: </div> <button class='complementary_button page_army'>None</button>
+          </div>
+          <div class="nr_name_button_container">
+            <div class="nr_available_div page_army">(0)</div>
+            <div class='element_name_div'>Weapon III: </div> <button
+              class='complementary_button page_army'>None</button>
+          </div>
+          <div class="nr_name_button_container">
+            <div class="nr_available_div page_army">(0)</div>
+            <div class='element_name_div'>Weapon IV: </div> <button class='complementary_button page_army'>None</button>
+          </div>
+          <div class="nr_name_button_container">
+            <div class="nr_available_div page_army">(0)</div>
+            <div class='element_name_div'>Weapon V: </div> <button class='complementary_button page_army'>None</button>
+          </div>
+          <div class="nr_name_button_container">
+            <div class="nr_available_div page_army">(0)</div>
+            <div class='element_name_div'>Weapon VI: </div> <button class='complementary_button page_army'>None</button>
+          </div>
+          <div class="nr_name_button_container">
+            <div class="nr_available_div page_army">(0)</div>
+            <div class='element_name_div'>Weapon VII: </div> <button
+              class='complementary_button page_army'>None</button>
+          </div>
+          <div class="nr_name_button_container">
+            <div class="nr_available_div page_army">(0)</div>
+            <div class='element_name_div'>Weapon VIII: </div> <button
+              class='complementary_button page_army'>None</button>
+          </div>
+        </div>
+      </div>
+      <div class="element_list page_army" hidden>
+        <div class="element_list_item"></div>
+        <div class="element_list_item"></div>
+        <div class="element_list_item"></div>
+        <div class="element_list_item"></div>
+        <div class="element_list_item"></div>
+        <div class="element_list_item"></div>
+        <div class="element_list_item"></div>
+        <div class="element_list_item"></div>
+        <div class="element_list_buttons_container">
+          <button class="element_list_prev_button"> &lt; </button>
+          <button class="element_list_back_button">Back</button>
+          <button class="element_list_next_button"> &gt; </button>
+        </div>
+
+      </div>
+      <div id='ArmyPagePartInfo' class='info_text'></div>
+      <div id='ArmyPageInfo' class='info_text'></div>
+    </div>
+  </div>
+
+  <div id="StorePageContainer">
+    <div id="StoreSubpageButtons" class="select_subpage_container page_store">
+      <button id="StoreCreaturesSubpageButton" class="select_button">Creatures</button>
+      <button id="StoreWeaponsSubpageButton" class="select_button" hidden>Weapons</button>
+    </div>
+    <div id="StoreSubpageContainer">
+      <div class="nr_name_button_flex_container page_store">
+        <div class="nr_name_button_container page_store" style="grid-row:1;">
+          <div class="nr_available_div">(0)</div>
+          <div class='element_name_div'>Human</div> <button class='complementary_button'>Buy</button>
+        </div>
+        <div class="nr_name_button_container page_store" style="grid-row:2;">
+          <div class="nr_available_div">(0)</div>
+          <div class='element_name_div'>Human</div> <button class='complementary_button'>Buy</button>
+        </div>
+        <div class="nr_name_button_container page_store" style="grid-row:3;">
+          <div class="nr_available_div">(0)</div>
+          <div class='element_name_div'>Human</div> <button class='complementary_button'>Buy</button>
+        </div>
+        <div class="nr_name_button_container page_store" style="grid-row:4;">
+          <div class="nr_available_div">(0)</div>
+          <div class='element_name_div'>Human</div> <button class='complementary_button'>Buy</button>
+        </div>
+        <div class="nr_name_button_container page_store" style="grid-row:5;">
+          <div class="nr_available_div">(0)</div>
+          <div class='element_name_div'>Human</div> <button class='complementary_button'>Buy</button>
+        </div>
+        <div class="nr_name_button_container page_store" style="grid-row:6;">
+          <div class="nr_available_div">(0)</div>
+          <div class='element_name_div'>Human</div> <button class='complementary_button'>Buy</button>
+        </div>
+        <div class="nr_name_button_container page_store" style="grid-row:7;">
+          <div class="nr_available_div">(0)</div>
+          <div class='element_name_div'>Human</div> <button class='complementary_button'>Buy</button>
+        </div>
+        <div class="nr_name_button_container page_store" style="grid-row:8;">
+          <div class="nr_available_div">(0)</div>
+          <div class='element_name_div'>Human</div> <button class='complementary_button'>Buy</button>
+        </div>
+        <div class="nr_name_button_container page_store" style="grid-row:9;">
+          <div class="nr_available_div">(0)</div>
+          <div class='element_name_div'>Human</div> <button class='complementary_button'>Buy</button>
+        </div>
+        <div class="nr_name_button_container page_store" style="grid-row:10;">
+          <div class="nr_available_div">(0)</div>
+          <div class='element_name_div'>Human</div> <button class='complementary_button'>Buy</button>
+        </div>
+        <div class="nr_name_button_container page_store" style="grid-row:11;">
+          <div class="nr_available_div">(0)</div>
+          <div class='element_name_div'>Human</div> <button class='complementary_button'>Buy</button>
+        </div>
+
+        <div class="element_list_buttons_container" style="grid-row:12;">
+          <button class="element_list_prev_button"> &lt; </button>
+          <button class="element_list_back_button">Back</button>
+          <button class="element_list_next_button"> &gt; </button>
+        </div>
+      </div>
+
+      <div id='StorePageInfo' class='info_text'></div>
+
+      <div class="toggle_button_container page_store">
+        <button class='toggle_button page_store'>I</button>
+        <button class='toggle_button page_store'>X</button>
+        <button class='toggle_button page_store'>C</button>
+        <button class='toggle_button page_store'>M</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="TutorialPageContainer" hidden>
+    <div class="element_list page_tutorial">
+      <div class="element_list_item"></div>
+      <div class="element_list_item"></div>
+      <div class="element_list_item"></div>
+      <div class="element_list_item"></div>
+      <div class="element_list_item"></div>
+      <div class="element_list_item"></div>
+      <div class="element_list_item"></div>
+      <div class="element_list_item"></div>
+      <div class="element_list_buttons_container">
+        <button class="element_list_prev_button"> &lt; </button>
+        <button class="element_list_back_button">Back</button>
+        <button class="element_list_next_button"> &gt; </button>
+      </div>
+    </div>
+    <div class="image_previous_next_container page_tutorial">
+      <img class="tutorial_image page_tutorial"
+        alt="You should see an image here... Because you don't, tough luck for you."
+        style='grid-row:1; grid-column:1/3;'>
+      <button class="tutorial_previous_button page_tutorial">Previous</button> <button
+        class="tutorial_next_button page_tutorial">Next</button>
+    </div>
+  </div>
+
+  <div id="SettingsPageContainer">
+    <button id="SaveGameButton" style='margin-top: 20px;'>Save game</button>
+    <input type='file' accept=".txt" id="LoadGameButton">
+    <button id="SettingsPageTutorialButton">Tutorials</button>
+    <button id="ChangeTheme">Black Theme</button>
+    <button id="ResetButton">Reset Game</button>
+  </div>
+  <script src="break_infinity.js"></script>
 </body>
-
-

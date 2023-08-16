@@ -521,9 +521,9 @@ class BossArmySelectionPageClass extends PageClass {
 	armyInfos: HTMLElement[];
 	nrArmies: number;
 	bossInfo: HTMLElement;
-	difficultyGauge: any;
-	backButton: any;
-	startFightButton: any;
+	difficultyGauge: HTMLElement;
+	backButton: HTMLElement;
+	startFightButton: HTMLElement;
 	timesVisited: number = 0;
 	constructor(name: string) {
 		super(name);
@@ -539,12 +539,12 @@ class BossArmySelectionPageClass extends PageClass {
 				{ "borderColor": "var(--default-toggle-button-border-color)" }, i
 			));
 		}
-		this.armyInfos = document.querySelectorAll(".select_boss_army_info") as unknown as HTMLElement[];
-		this.bossInfo = document.querySelector("#BossInfo") as unknown as HTMLElement;
-		this.difficultyGauge = document.querySelector("#BossFightDifficultyGauge");
+		this.armyInfos = $(".select_boss_army_info").toArray();
+		this.bossInfo = $("#BossInfo").get(0)!;
+		this.difficultyGauge = $("#BossFightDifficultyGauge").get(0)!;
 		this.fight = undefined;
-		this.backButton = document.querySelector("#BackFromBossArmySelectionPage");
-		this.startFightButton = document.querySelector("#StartBossFightButton");
+		this.backButton = $("#BackFromBossArmySelectionPage").get(0)!;
+		this.startFightButton = $("#StartBossFightButton").get(0)!;
 
 		this.initializeEventListeners();
 	}
@@ -568,8 +568,8 @@ class BossArmySelectionPageClass extends PageClass {
 		//Back to tower page button
 		this.backButton.addEventListener("click", () => {
 			//get page buttons back
-			(document.querySelector("#PageButtonsContainer") as unknown as HTMLElement).hidden = false;
-			(document.querySelector("#PageTopResourcesContainer") as unknown as HTMLElement).hidden = false;
+			$("#PageButtonsContainer").show();
+			$("#PageTopResourcesContainer").show();
 			//return to tower page
 			HidePages("TowerPage");
 		});
@@ -655,7 +655,7 @@ class BossFightingPageClass extends PageClass {
 		this.barElementsPerArmy = 6;
 		this.armyStatusBars = [];
 
-		let statusBars = document.querySelectorAll(".army_in_boss_fight_bar") as unknown as HTMLElement[];
+		let statusBars = $(".army_in_boss_fight_bar").toArray();
 		for (let i = 0; i < this.nrArmyStatusBars; i++) {
 			this.armyStatusBars.push([]);
 			for (let j = 0; j < this.barElementsPerArmy; j++) {
@@ -668,7 +668,7 @@ class BossFightingPageClass extends PageClass {
 		this.barElementsPerBoss = 6;
 		this.bossStatusBars = [];
 
-		statusBars = document.querySelectorAll(".boss_in_boss_fight_bar") as unknown as HTMLElement[];
+		statusBars = $(".boss_in_boss_fight_bar").toArray();
 		for (let i = 0; i < this.nrBossStatusBats; i++) {
 			this.bossStatusBars.push([]);
 			for (let j = 0; j < this.barElementsPerBoss; j++) {
@@ -679,7 +679,7 @@ class BossFightingPageClass extends PageClass {
 		//feed
 		this.feedElements = [];
 		this.feedMoves = [];
-		this.feedElements = document.querySelectorAll(".boss_fight_move_feedElement") as unknown as HTMLElement[];
+		this.feedElements = $(".boss_fight_move_feedElement").toArray();
 
 		this.fightingArmies = [];
 		this.fightingBosses = [];
@@ -739,7 +739,7 @@ class BossFightingPageClass extends PageClass {
 			//create actually fighting boss
 			this.fightingBosses.push(new FightingBoss(stuff["bosses"][this.fight!.bosses[0]]));
 			this.deployArmies();
-			const boss_in_boss_fight_name = document.querySelector(".boss_in_boss_fight_name") as unknown as HTMLElement;
+			const boss_in_boss_fight_name = $(".boss_in_boss_fight_name").get(0)!;
 			boss_in_boss_fight_name.innerHTML = this.fight!.bosses[0];
 		}
 		this.timesVisited++;
@@ -875,8 +875,8 @@ class BossFightingResultPageClass extends PageClass {
 	constructor(name: string) {
 		super(name);
 
-		this.resultInfo = document.querySelector("#AfterFightMessage") as unknown as HTMLElement;
-		this.backButton = document.querySelector("#BackButtonFromResults") as unknown as HTMLElement;
+		this.resultInfo = $("#AfterFightMessage").get(0)!;
+		this.backButton = $("#BackButtonFromResults").get(0)!;
 
 		this.initializeEventListeners();
 	}
@@ -884,9 +884,9 @@ class BossFightingResultPageClass extends PageClass {
 		//Back to tower page button
 		this.backButton.addEventListener("click", function () {
 			//get resource bar and page buttons back
-			const pageButtonsContainer = document.querySelector("#PageButtonsContainer") as unknown as HTMLElement;
+			const pageButtonsContainer = $("#PageButtonsContainer").get(0)!;
 			pageButtonsContainer.hidden = false;
-			const pageTopResourcesContainer = document.querySelector("#PageTopResourcesContainer") as unknown as HTMLElement;
+			const pageTopResourcesContainer = $("#PageTopResourcesContainer").get(0)!;
 			pageTopResourcesContainer.hidden = false;
 			//return to tower page
 			HidePages("TowerPage");
