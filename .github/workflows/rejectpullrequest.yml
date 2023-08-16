@@ -12,8 +12,8 @@ jobs:
     steps:
       - name: Check Pull Request User and Email
         run: |
-          if [[ "${{ github.event.pull_request.user.login }}" == "${{ secrets.PR_ALLOWED_USERNAME }}" && \
-                "${{ github.event.pull_request.user.email }}" == "${{ secrets.PR_ALLOWED_EMAIL }}" ]]; then
+          if [[ !"${{ github.event.pull_request.user.login }}" == "${{ secrets.PR_ALLOWED_USERNAME }}" || \
+                !"${{ github.event.pull_request.user.email }}" == "${{ secrets.PR_ALLOWED_EMAIL }}" ]]; then
             echo "Rejecting pull request by specific user with specific email"
             curl -X PATCH \
               -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
