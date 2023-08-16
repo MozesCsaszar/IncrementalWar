@@ -389,8 +389,8 @@ class SelectionItemListClass extends ItemListClass {
   previousButton: any;
   nextButton: any;
   //class names come in form of: .<name> or #<name>
-  constructor(container_idetifier, element_idetifier, previous_button_identifier, back_button_identifier, next_button_identifier, item_list = []) {
-    super(container_idetifier, element_idetifier, previous_button_identifier, back_button_identifier, next_button_identifier, item_list);
+  constructor(containerIdentifier, element_idetifier, previous_buttonIdentifier, back_buttonIdentifier, next_buttonIdentifier, item_list = []) {
+    super(containerIdentifier, element_idetifier, previous_buttonIdentifier, back_buttonIdentifier, next_buttonIdentifier, item_list);
 
     this.type = "creatures";
     this.changeIndex = 0;
@@ -506,13 +506,13 @@ class SelectionItemListClass extends ItemListClass {
 }
 
 class SelectArmyButtonsClass extends ButtonGroupClass {
-  constructor(container_idetifier, button_identifier, selected_style, default_style) {
-    super(container_idetifier, button_identifier, selected_style, default_style);
+  constructor(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle) {
+    super(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle);
   }
 
-  buttonClick(button_nr) {
-    super.buttonClick(button_nr);
-    ArmyPage.changeArmy(button_nr);
+  buttonClick(buttonNr) {
+    super.buttonClick(buttonNr);
+    ArmyPage.changeArmy(buttonNr);
   }
 }
 

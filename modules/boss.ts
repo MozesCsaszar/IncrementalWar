@@ -235,7 +235,7 @@ class FightingArmy {
 		target.getAttacked(this.getTotalAttack(target));
 	}
 
-	tick(ticksPerSec, target: FightingBoss) {
+	tick(ticksPerSec: number, target: FightingBoss) {
 		this.attackCounter = this.attackCounter.add(new Decimal(1).div(ticksPerSec));
 		if (this.attackCounter.gte(this.attackTime)) {
 			this.attackCounter = new Decimal(0);
@@ -390,27 +390,27 @@ class FightingBoss {
 		this.currentStats = this.move!.modifyStats(this.stats);
 	}
 
-	tick(ticksPerSec, target: FightingUnit) {
+	tick(ticksPerSec: number) {
 		this.attackCounter = this.attackCounter.add(new Decimal(1).div(ticksPerSec));
 		if (this.attackCounter.gte(this.attackTime)) {
 			this.attackCounter = new Decimal(0);
-			this.doAttack(target);
+			this.doAttack();
 		}
 	}
 
-	getAttacked(power) {
+	getAttacked(power: Decimal) {
 		this.totalHealth = this.totalHealth.sub(power);
 		this.floatingDamage = this.floatingDamage.add(power);
-		const nr_units_dead = this.floatingDamage.div(this.stats["Health"]).floor();
-		if (this.floatingDamage.gte(this.stats["Health"])) {
+		const nr_units_dead = this.floatingDamage.div(this.stats.get<Decimal>("Health")).floor();
+		if (this.floatingDamage.gte(this.stats.get<Decimal>("Health"))) {
 			this.units = this.units.sub(nr_units_dead);
-			this.floatingDamage = this.floatingDamage.sub(nr_units_dead.mul(this.stats["Health"]));
+			this.floatingDamage = this.floatingDamage.sub(nr_units_dead.mul(this.stats.get<Decimal>("Health")));
 		}
 	}
 	//a function which calculates how many units can there be around the boss at a given moment
 	//works with numbers currently, please change this!
-	getNrAround = function (u_s) {
-		function is_good(n, u_s) {
+	getNrAround(u_s: number) {
+		function isGood(n: number, u_s: number) {
 			const x = (n - 2) / (2 * n) * Math.PI;
 			if (Math.cos(x) / (1 - Math.cos(x)) >= u_s) {
 				return true;
@@ -421,7 +421,7 @@ class FightingBoss {
 		u_s = u_s / this.size;
 		let bot = 2, top = this.size * 10;
 		let mid = Math.floor((top + bot) / 2);
-		while (!is_good(mid, u_s)) {
+		while (!isGood(mid, u_s)) {
 			top = mid;
 			mid = Math.floor((top + bot) / 2);
 			if (mid == 2) {
@@ -429,7 +429,7 @@ class FightingBoss {
 			}
 		}
 		let last;
-		while (is_good(mid, u_s)) {
+		while (isGood(mid, u_s)) {
 			last = mid;
 			bot = mid;
 			mid = Math.floor((top + bot) / 2);
@@ -437,29 +437,29 @@ class FightingBoss {
 		return last;
 	}
 
-	deployUnitAround(army) {
+	deployUnitAround(army: FightingArmy) {
 		this.enemiesAround.push(new FightingUnit(army));
 	}
 }
 
 class BossSelectArmyButtonsClass extends ButtonGroupClass {
-	number: any;
+	number: number;
 	selected: number;
 	buttons: any;
-	constructor(container_idetifier, button_identifier, selected_style, default_style, number) {
-		container_idetifier += ".n" + String(number);
-		super(container_idetifier, button_identifier, selected_style, default_style);
+	constructor(containerIdentifier: string, buttonIdentifier: string, selectedStyle, defaultStyle, number) {
+		containerIdentifier += ".n" + String(number);
+		super(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle);
 
 		this.number = number;
 		this.selected = -1;
 	}
-	showButton(button_nr) {
-		super.showButton(button_nr);
-		this.buttons[button_nr].hidden = false;
+	showButton(buttonNr: number) {
+		super.showButton(buttonNr);
+		this.buttons[buttonNr].hidden = false;
 	}
-	hideButton(button_nr) {
-		super.hideButton(button_nr);
-		this.buttons[button_nr].hidden = true;
+	hideButton(buttonNr: number) {
+		super.hideButton(buttonNr);
+		this.buttons[buttonNr].hidden = true;
 	}
 	deselect() {
 		if (this.selected != -1) {
@@ -473,33 +473,33 @@ class BossSelectArmyButtonsClass extends ButtonGroupClass {
 		throw new Error("Method not implemented.");
 	}
 
-	buttonClick(button_nr) {
+	buttonClick(buttonNr: number) {
 		//reset old armies
-		if (BossArmySelectionPage.fight.selectedArmies[this.number] != -1) {
+		if (BossArmySelectionPage.fight!.selectedArmies[this.number] != -1) {
 			for (let k = 0; k < BossArmySelectionPage.nrArmySelects; k++) {
 				if (this.number != k) {
-					BossArmySelectionPage.armySelects[k].showButton(button_nr);
+					BossArmySelectionPage.armySelects[k].showButton(buttonNr);
 				}
 			}
 		}
 		//if you select the same army again
-		if (button_nr == this.selected) {
-			BossArmySelectionPage.fight.selectedArmies[this.number] = -1;
+		if (buttonNr == this.selected) {
+			BossArmySelectionPage.fight!.selectedArmies[this.number] = -1;
 			BossArmySelectionPage.armyInfos[this.number].innerHTML = "No army to be seen here.";
 		}
 		//if you selected a new army
 		else {
-			BossArmySelectionPage.fight.selectedArmies[this.number] = button_nr;
-			BossArmySelectionPage.armyInfos[this.number].innerHTML = Player.armies[button_nr].get_fighting_stats_text();
+			BossArmySelectionPage.fight!.selectedArmies[this.number] = buttonNr;
+			BossArmySelectionPage.armyInfos[this.number].innerHTML = Player.armies[buttonNr].get_fighting_stats_text();
 			for (let k = 0; k < BossArmySelectionPage.nrArmySelects; k++) {
 				if (k != this.number) {
-					BossArmySelectionPage.armySelects[k].hideButton(button_nr);
+					BossArmySelectionPage.armySelects[k].hideButton(buttonNr);
 				}
 			}
 		}
 
 		//do button group things
-		if (this.selected == button_nr) {
+		if (this.selected == buttonNr) {
 			this.deselect();
 		}
 		else {
@@ -508,7 +508,7 @@ class BossSelectArmyButtonsClass extends ButtonGroupClass {
 					this.buttons[this.selected].style[key] = value;
 				}
 			}
-			this.selectButton(button_nr);
+			this.selectButton(buttonNr);
 		}
 		BossArmySelectionPage.showHideFightButton();
 	}
@@ -554,9 +554,9 @@ class BossArmySelectionPageClass extends PageClass {
 			//reset boss fight page
 			BossFightingPage.reset();
 			BossFightingPage.fight = this.fight;
-			for (let i = 0; i < this.fight.maxSelectibleArmies; i++) {
-				if (this.fight.selectedArmies[i] != -1) {
-					const result = TowerPage.Tower.removeRaidedLevelByArmy(this.fight.selectedArmies[i]);
+			for (let i = 0; i < this.fight!.maxSelectibleArmies; i++) {
+				if (this.fight!.selectedArmies[i] != -1) {
+					const result = TowerPage.Tower.removeRaidedLevelByArmy(this.fight!.selectedArmies[i]);
 					if (result != undefined) {
 						BossFightingPage.armiesRemovedFrom.push();
 					}
@@ -638,7 +638,7 @@ class BossFightingPageClass extends PageClass {
 	fightingArmies: FightingArmy[] = [];
 	fightingBosses: FightingBoss[] = [];
 	fightingArmyStatuses: number[] = [];
-	fightingBossStatuses: Stats[] = [];
+	fightingBossStatuses: number[] = [];
 	fightingArmiesNr: number;
 	fightingBossesNr: number;
 	timesVisited: number = 0;
@@ -723,50 +723,51 @@ class BossFightingPageClass extends PageClass {
 		//else set up the fight
 		else {
 			for (let i = 0; i < this.fight!.maxSelectibleArmies; i++) {
-				this.armyStatusBars[i][0].parentElement.parentElement.hidden = false;
+				this.armyStatusBars[i][0].parentElement!.parentElement!.hidden = false;
 				//create actually fighting armies
-				this.fightingArmies.push(new FightingArmy(Player.armies[this.fight.selectedArmies[i]]));
+				this.fightingArmies.push(new FightingArmy(Player.armies[this.fight!.selectedArmies[i]]));
 				this.fightingArmyStatuses.push(1);
 			}
-			this.fightingArmiesNr = this.fight.maxSelectibleArmies;
+			this.fightingArmiesNr = this.fight!.maxSelectibleArmies;
 
-			for (let i = this.fight.maxSelectibleArmies; i < this.nrArmyStatusBars; i++) {
-				this.armyStatusBars[i][0].parentElement.parentElement.hidden = true;
+			for (let i = this.fight!.maxSelectibleArmies; i < this.nrArmyStatusBars; i++) {
+				this.armyStatusBars[i][0].parentElement!.parentElement!.hidden = true;
 				this.fightingBossStatuses.push(1);
 			}
 			this.fightingBossesNr = 1;
 
 			//create actually fighting boss
-			this.fightingBosses.push(new FightingBoss(stuff["bosses"][this.fight.bosses[0]]));
+			this.fightingBosses.push(new FightingBoss(stuff["bosses"][this.fight!.bosses[0]]));
 			this.deployArmies();
-			document.querySelector(".boss_in_boss_fight_name").innerHTML = this.fight.bosses[0];
+			const boss_in_boss_fight_name = document.querySelector(".boss_in_boss_fight_name") as unknown as HTMLElement;
+			boss_in_boss_fight_name.innerHTML = this.fight!.bosses[0];
 		}
 		this.timesVisited++;
 	}
-	displayEveryTick(this) {
+	displayEveryTick() {
 		//fill in sliders
 		for (let i = 0; i < this.fightingArmies.length; i++) {
 			//health foreground
-			this.armyStatusBars[i][0].style.width = this.getWidth(this.fightingArmies[i].totalHealth, this.fightingArmies[i].maxTotalHealth);
+			this.armyStatusBars[i][0].style.width = this.getWidth(this.fightingArmies[i].totalHealth, this.fightingArmies[i].maxTotalHealth) + "";
 			this.armyStatusBars[i][1].innerHTML = StylizeDecimals(this.fightingArmies[i].totalHealth) + "/" + StylizeDecimals(this.fightingArmies[i].maxTotalHealth);
 			//unit nr foreground
-			this.armyStatusBars[i][2].style.width = this.getWidth(this.fightingArmies[i].units, this.fightingArmies[i].maxUnits);
+			this.armyStatusBars[i][2].style.width = this.getWidth(this.fightingArmies[i].units, this.fightingArmies[i].maxUnits) + "";
 			this.armyStatusBars[i][3].innerHTML = StylizeDecimals(this.fightingArmies[i].units, true) + "/" + StylizeDecimals(this.fightingArmies[i].maxUnits, true) +
 				" (" + StylizeDecimals(this.fightingArmies[i].deployed, true) + ")";
 			//attack status foreground
-			this.armyStatusBars[i][4].style.width = this.getWidth(this.fightingArmies[i].attackCounter, this.fightingArmies[i].attackTime);
+			this.armyStatusBars[i][4].style.width = this.getWidth(this.fightingArmies[i].attackCounter, this.fightingArmies[i].attackTime) + "";
 			this.armyStatusBars[i][5].innerHTML = StylizeDecimals(this.fightingArmies[i].getTotalAttack(this.fightingBosses[0]));
 		}
 
 		for (let i = 0; i < this.fightingBosses.length; i++) {
 			//health foreground
-			this.bossStatusBars[i][0].style.width = this.getWidth(this.fightingBosses[i].totalHealth, this.fightingBosses[i].maxTotalHealth);
-			this.bossStatusBars[i][1].innerHTML = StylizeDecimals(this.fightingBosses[i].totalHealth) + "/" + StylizeDecimals(this.fightingBosses[i].maxTotalHealth);
+			this.bossStatusBars[i][0].style.width = this.getWidth(this.fightingBosses[i].totalHealth, this.fightingBosses[i].maxTotalHealth) + "";
+			this.bossStatusBars[i][1].innerHTML = StylizeDecimals(this.fightingBosses[i].totalHealth) + "/" + StylizeDecimals(this.fightingBosses[i].maxTotalHealth) + "";
 			//unit nr foreground
-			this.bossStatusBars[i][2].style.width = this.getWidth(this.fightingBosses[i].units, this.fightingBosses[i].maxUnits);
+			this.bossStatusBars[i][2].style.width = this.getWidth(this.fightingBosses[i].units, this.fightingBosses[i].maxUnits) + "";
 			this.bossStatusBars[i][3].innerHTML = StylizeDecimals(this.fightingBosses[i].units, true) + "/" + StylizeDecimals(this.fightingBosses[i].maxUnits, true);
 			//attack status foreground
-			this.bossStatusBars[i][4].style.width = this.getWidth(this.fightingBosses[i].attackCounter, this.fightingBosses[i].attackTime);
+			this.bossStatusBars[i][4].style.width = this.getWidth(this.fightingBosses[i].attackCounter, this.fightingBosses[i].attackTime) + "";
 			this.bossStatusBars[i][5].innerHTML = StylizeDecimals(this.fightingBosses[i].getTotalAttack());
 		}
 
@@ -811,7 +812,7 @@ class BossFightingPageClass extends PageClass {
 
 		for (let i = 0; i < this.fightingBosses.length; i++) {
 			if (this.fightingBossStatuses[i] == 1) {
-				this.fightingBosses[i].tick(20, this.fightingArmies[0]);
+				this.fightingBosses[i].tick(20);
 				if (this.fightingBosses[i].totalHealth.lte(0.00001)) {
 					this.fightingBossStatuses[i] = 0;
 					this.fightingBosses[i].totalHealth = new Decimal(0);

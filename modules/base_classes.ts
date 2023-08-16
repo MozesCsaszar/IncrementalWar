@@ -78,17 +78,17 @@ export class ItemListClass {
   itemList: never[];
   page: number;
   //container: the container thisect, list_identifier: the identifier by which you can find the list container, the rest will be handled automatically
-  constructor(container_idetifier, element_idetifier, previous_button_identifier, back_button_identifier, next_button_identifier, item_list = []) {
-    this.container = document.querySelector(container_idetifier);
-    this.elements = document.querySelectorAll(container_idetifier + ' > ' + element_idetifier);
+  constructor(containerIdentifier, element_idetifier, previous_buttonIdentifier, back_buttonIdentifier, next_buttonIdentifier, item_list = []) {
+    this.container = document.querySelector(containerIdentifier);
+    this.elements = document.querySelectorAll(containerIdentifier + ' > ' + element_idetifier);
     //for hiding elements and defining if the element is hidden or not
     this.elementsVisible = [];
     for (let i = 0; i < this.elements.length; i++) {
       this.elementsVisible.push(true);
     }
-    this.previousButton = document.querySelector(container_idetifier + ' > .element_list_buttons_container > ' + previous_button_identifier);
-    this.backButton = document.querySelector(container_idetifier + ' > .element_list_buttons_container > ' + back_button_identifier);
-    this.nextButton = document.querySelector(container_idetifier + ' > .element_list_buttons_container > ' + next_button_identifier);
+    this.previousButton = document.querySelector(containerIdentifier + ' > .element_list_buttons_container > ' + previous_buttonIdentifier);
+    this.backButton = document.querySelector(containerIdentifier + ' > .element_list_buttons_container > ' + back_buttonIdentifier);
+    this.nextButton = document.querySelector(containerIdentifier + ' > .element_list_buttons_container > ' + next_buttonIdentifier);
     this.buttonsVisible = [true, true, true];
 
     this.itemList = item_list;
@@ -272,9 +272,9 @@ export class ButtonGroupClass {
   buttonsVisible: never[];
   selectedStyle: any;
   defaultStyle: any;
-  constructor(container_idetifier, button_identifier, selected_style, default_style) {
-    this.container = document.querySelector(container_idetifier);
-    this.buttons = document.querySelectorAll(container_idetifier + ' > ' + button_identifier);
+  constructor(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle) {
+    this.container = document.querySelector(containerIdentifier);
+    this.buttons = document.querySelectorAll(containerIdentifier + ' > ' + buttonIdentifier);
 
     this.selected = 0;
     this.buttonsVisible = [];
@@ -282,8 +282,8 @@ export class ButtonGroupClass {
       this.buttonsVisible.push(true);
     }
 
-    this.selectedStyle = selected_style;
-    this.defaultStyle = default_style;
+    this.selectedStyle = selectedStyle;
+    this.defaultStyle = defaultStyle;
 
     this.initializeEventListeners();
   }
@@ -318,30 +318,30 @@ export class ButtonGroupClass {
     }
   }
 
-  buttonMouseenter(button_nr) { }
-  buttonMouseleave(button_nr) { }
-  selectButton(button_nr) {
+  buttonMouseenter(buttonNr) { }
+  buttonMouseleave(buttonNr) { }
+  selectButton(buttonNr) {
     for (let [key, value] of Object.entries(this.selectedStyle)) {
-      this.buttons[button_nr].style[key] = value;
+      this.buttons[buttonNr].style[key] = value;
     }
-    this.selected = button_nr;
+    this.selected = buttonNr;
   }
 
-  buttonClick(button_nr) {
-    if (button_nr != this.selected) {
+  buttonClick(buttonNr) {
+    if (buttonNr != this.selected) {
       //restore previously selected to default appearance
       for (let [key, value] of Object.entries(this.defaultStyle)) {
         this.buttons[this.selected].style[key] = value;
       }
       //change newly selected to selected appearance
-      this.selectButton(button_nr);
+      this.selectButton(buttonNr);
     }
   }
-  showButton(button_nr) {
-    this.buttonsVisible[button_nr] = true;
+  showButton(buttonNr) {
+    this.buttonsVisible[buttonNr] = true;
   }
-  hideButton(button_nr) {
-    this.buttonsVisible[button_nr] = false;
+  hideButton(buttonNr) {
+    this.buttonsVisible[buttonNr] = false;
   }
 
   //returns save text in which the state of the buttons was saved
