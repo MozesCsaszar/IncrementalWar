@@ -1,235 +1,449 @@
-IsUnlocked = {
-    //the pages 
-    pages : {
-        tower_page : [0],
-        army_page : [0, 0],
-        buy_weapon_page : [0, 0, 0, 0],
-    },
-    towerLevels : {
-        0 : [1, 0, 0, 0, 0, 0, 0,],
-        1 : [0],
-    },
-    tower : {
-        floors : [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    },
-    save() {
-        save_text = 'towerLevels';
-        let i;
-        for(let cat in this.towerLevels) {
-            save_text += '/*/' + cat + '/*/' + this.towerLevels[cat].length;
-            for(i = 0; i < this.towerLevels[cat].length; i++) {
-                save_text += '/*/' + this.towerLevels[cat][i];
+class UnlockConditionClass {
+    constructor(quantity) {
+        this.quantity = quantity;
+        this.conditionCode = undefined;
+    }
+
+    //a function which dictates if the thing can be unlocked;
+    canUnlock() {
+        if(this.quantity.lte(allThingsStatistics.getStatistics(this.getPathInStatistics(), this.level))) {
+            return true;
+        }
+        return false;
+    }
+
+    getPathInStatistics() {
+        return [];
+    }
+
+    //comparison functions based on quantity
+    lt(other) {
+        return this.quantity.lt(other.quantity);
+    }
+    lte(other) {
+        return this.quantity.lte(other.quantity);
+    }
+    gt(other) {
+        return this.quantity.gt(other.quantity);
+    }
+    gte(other) {
+        return this.quantity.gte(other.quantity);
+    }
+};
+
+//logic unlock condition classes
+
+class UnlockConditionLogic {
+    constructor(N) {
+        this.N = N;
+    }
+
+    countTrueConditions(conditions) {
+        let true_conds = 0;
+        for(let i = 0; i < conditions.length; i++) {
+            true_conds += conditions[i].canUnlock();
+        }
+        return true_conds;
+    }   
+};
+
+class AllUCL extends UnlockConditionLogic{
+    constructor(N) {
+        super(N);
+    }
+    canUnlock(conditions) {
+        return this.countTrueConditions(conditions) == conditions.length;
+    }
+}
+
+//returns true if at least N of its conditions are true
+class AtLeastNUCL extends UnlockConditionLogic {
+    constructor(N) {
+        super(N);
+    }
+
+    canUnlock(conditions) {
+        return this.countTrueConditions(conditions) >= this.N;
+    }
+};
+
+//when you only need one thing from a list to get an unlock
+class AtLeastOneUCL extends AtLeastNUCL {
+    constructor() {
+        super(1);
+    }
+}
+
+//returns true if at least N and at most M of its conditions are true
+class AtLeastNAtMostMUCL extends UnlockConditionLogic {
+    constructor(conditions, N, M) {
+        super(conditions, N);
+        this.M = M;
+    }
+
+    canUnlock(conditions) {
+        let true_conds = this.countTrueConditions(conditions);
+        return this.N <= true_conds && true_conds <= this.M;
+    }
+};
+
+//returns true if exactly N of its conditions are true
+class ExactlyNUCL extends UnlockConditionLogic {
+    constructor(conditions, N) {
+        super(conditions, N);
+    }
+
+    canUnlock(conditions) {
+        return this.N == this.countTrueConditions(conditions);
+    }
+};
+
+
+
+//a series of unlock condition classes based on the level at which they check the statistics
+class BaseUnlockConditionClass extends UnlockConditionClass {
+    constructor(quantity) {
+        super(quantity);
+    }
+
+    get level() {
+        return 'overall';
+    }
+
+    get acronym() {
+        return 'B';
+    }
+}
+
+class OverallUnlockConditionClass extends UnlockConditionClass {
+    constructor(quantity) {
+        super(quantity);
+    }
+
+    get level() {
+        return 'overall';
+    }
+
+    get acronym() {
+        return 'O';
+    }
+}
+
+//Specific unlock condition classes come now
+//naming: 1-2 words regarding where it is grouped, then where it looks at(O = overall, B = base), then UC for UnlockCondition
+//category represents the equipment you want to buy(like Human, Knife, Longsword etc.)
+class StorePageOUC extends OverallUnlockConditionClass {
+    constructor(type, category, quantity ) {
+        super(quantity);
+        this.type = type;
+        this.category = category;
+    }
+
+    getPathInStatistics() {
+        return ['StorePage', this.type, this.category];
+    }
+};
+
+class PlayerArmyOUC extends OverallUnlockConditionClass {
+    constructor(quantity, army, stat) {
+        super(quantity);
+        this.army = army;
+        this.stat = stat;
+    }
+
+    getPathInStatistics() {
+        return ['Player', 'armies', this.army, this.stat];
+    }
+};
+
+class TowerLevelOUC extends OverallUnlockConditionClass {
+    constructor(floor, level) {
+        super(new Decimal(1));
+        this.floor = floor;
+        this.level = level;
+    }
+
+    getPathInStatistics() {
+        return ['Tower', this.floor, this.level, 'times_visited'];
+    }
+};
+
+
+//base class for unlock objects; they need the conditions as a list
+class UnlockClass {
+    //conditons = [], 
+    constructor(conditions, condition_logic) {
+        this.conditions = conditions;
+        this.unlocked = 0;
+        this.conditionLogic = condition_logic;
+    }
+
+    canUnlock() {
+        return this.conditionLogic.canUnlock(this.conditions);
+    }
+
+    //unlock type dicatates if you want to unlock(1) or lock(0) the current Unlock
+    //return true for a successfull unlock, false otherwise
+    doUnlock(unlock_type = 1) {
+        if(!this.unlocked == unlock_type) {
+            if(unlock_type == 1) {
+                if (this.canUnlock()) {
+                    this.unlock();
+                    return true;
+                }
+            }
+            else {
+                this.lock();
+            }
+        }
+        return false;
+    }
+
+    //unlock feature
+    unlock() {
+        this.unlocked = 1;
+    }
+
+    //lock feature (needed for loading and losing in-game progress for whatever reason)
+    lock() {
+        this.unlocked = 0;
+    }
+
+    //return a certain condition based on type
+    getCondition(type) {
+        for(let cond of this.conditions) {
+            if(cond.type == type) {
+                return cond;
+            }
+        }
+        return undefined;
+    }
+};
+
+class PageUnlockClass extends UnlockClass {
+    constructor(conditions, condition_logic, button_group, button_nr) {
+        super(conditions, condition_logic);
+        this.buttonGroup = button_group;
+        this.buttonNr = button_nr;
+    }
+
+    unlock() {
+        super.unlock();
+        this.buttonGroup.showButton(this.buttonNr);
+    }
+
+    lock() {
+        super.lock();
+        this.buttonGroup.hideButton(this.buttonNr);
+    }
+};
+
+class NewBuyerUnlockClass extends UnlockClass {
+    constructor(conditions, condition_logic, buyer) {
+        super(conditions, condition_logic);
+        this.buyer = buyer;
+    }
+
+    unlock() {
+        super.unlock();
+        StorePage.buyers[this.buyer.type].push(this.buyer);
+    }
+
+    lock() {
+        super.lock();
+        for(let i = 0; i < StorePage.buyers[this.buyer.type]; i++) {
+            if(StorePage.buyers[this.buyer.type][i].name == this.buyer.name) {
+                StorePage.buyers[this.buyer.type].splice(i, 1);
+            }
+        }
+    }
+}
+
+const allThingsUnlockable = {
+    'creatures' : [],
+    'weapons' : [new NewBuyerUnlockClass([new StorePageOUC('weapons', 'Knife', new Decimal(35))], new AllUCL(), new Buyer('weapons','Dagger')),
+                 new NewBuyerUnlockClass([new StorePageOUC('weapons', 'Dagger', new Decimal(35))], new AllUCL(), new Buyer('weapons','Longsword'))],
+    'pages' : [new PageUnlockClass([new StorePageOUC('creatures', 'Human', new Decimal(5))], new AllUCL(), GB.pageButtons, 1), 
+               new PageUnlockClass([new PlayerArmyOUC(new Decimal(1), 'all', 'Attack')], new AllUCL(), GB.pageButtons, 0),
+               new PageUnlockClass([new StorePageOUC('creatures', 'Human', new Decimal(15))], new AllUCL(), StorePage.subpageButtons, 1)],
+    'towerFloors': [],
+    'towerLevels' : [],
+}
+
+class UnlockHandlerEntryClass {
+    constructor(condition_code) {
+        this.unlocks = [];
+        this.index = 0;
+        this.conditionCode = condition_code;
+    }
+
+    get type() {
+        return 'UnlockHandlerEntryClass';
+    }
+
+    doUnlock(unlock_type = 1) {
+        let go_on = true;
+        let unlocked = false;
+        while(this.index < this.unlocks.length && go_on) {
+            go_on = this.unlocks[this.index].doUnlock(unlock_type);
+            if(go_on) {
+                this.index++;
+                unlocked = true;
+            }
+        }
+        return unlocked;
+    }
+
+    push(obj) {
+        this.unlocks.push(obj);
+    }
+    sort() {
+        let c_obj = this;
+        this.unlocks.sort( function(a,b) {
+            let cond_a, cond_b;
+            for(let cond of a.conditions) {
+                if(cond.conditionCode == c_obj.conditionCode) {
+                    cond_a = cond;
+                    break;
+                }
+            }
+            for(let cond of b.conditions) {
+                if(cond.conditionCode == c_obj.conditionCode) {
+                    cond_b = cond;
+                    break;
+                }
+            }
+            return cond_a.quantity.sub(cond_b.quantity);
+        });
+    }
+    load(index) {
+        let i = 0;
+        for(i; i < index; i++) {
+            if(!this.unlocks[i].unlocked) {
+                this.unlocks[i].unlock();
+            }
+        }
+        for(i; i < this.unlocks.length; i++) {
+            if(this.unlocks[i].unlocked) {
+                this.unlocks[i].lock();
+            }
+        }
+        this.index = index;
+    }
+};
+
+class UnlockHandlerClass {
+    static acronyms = ['B','O'];
+    //a list of lists of all unlocks
+    constructor() {
+        //create each category by path in statistics + unlock level acronym and populate them with the appropriate unlocks
+        this.unlocks = {};
+        this.nextConditionCode = 0;
+        for(let list of Object.values(allThingsUnlockable)) {
+            for(let unlock of list) {
+                for(let cond of unlock.conditions) {
+                    let condition_code = this.addElementToUnlocks(cond.getPathInStatistics(), cond.acronym, unlock);
+                    cond.conditionCode = condition_code;
+                }
+            }
+        }
+        //store each category ascending by requirement
+        this.sortUnlocks(this.unlocks);
+    }
+    addElementToUnlocks(path, acronym, unlock) {
+        //get to the right place in this.unlocks and add parts if they are not yet existent
+        let stats = this.unlocks;
+        for(let elem of path) {
+            if(stats[elem] == undefined) {
+                stats[elem] = {};
+            }
+            stats = stats[elem];
+        }
+        //if the last destination doesn't exist, just add it
+        if(stats[acronym] == undefined) {
+            stats[acronym] = new UnlockHandlerEntryClass(this.nextConditionCode);
+            this.nextConditionCode++;
+        }
+        //add the unlock to correct category
+        stats[acronym].push(unlock);
+        return stats[acronym].conditionCode;
+    }
+    //sorts object by calling sortUnlocks on each key that result in an object and sort on each array found
+    sortUnlocks(obj) {
+        for(let value of Object.values(obj)) {
+            if(obj.type == 'UnlockHandlerEntryClass') {
+                obj.sort();
+            }
+            else {
+                this.sortUnlocks(value);
+            }
+        }
+    }
+    //get an unlock element from this.unlocks
+    getUnlockFromUnlocks(path, acronym) {
+        let stats = this.unlocks;
+        for(let elem of path) {
+            if(stats[elem] == undefined) {
+                return undefined;
+            }
+            stats = stats[elem];
+        }
+        if(stats == undefined) {
+            return stats;
+        }
+        return stats[acronym];
+    }
+
+    doUnlock(path) {
+        for(let acronym of UnlockHandlerClass.acronyms) {
+            let elem = this.getUnlockFromUnlocks(path, acronym);
+            if(elem != undefined) {
+                return elem.doUnlock(1);
+            }
+        }
+    }
+    saveRecursive(obj) {
+        let save_text = String(Object.keys(obj).length);
+        for(let [key, val] of Object.entries(obj)) {
+            if(val.type == 'UnlockHandlerEntryClass') {
+                save_text += '/*/' + key + '/*/' + val.index;
+            }
+            else {
+                save_text += '/*/' + key + '/*/' + this.saveRecursive(val);
             }
         }
         return save_text;
-    },
-    //gets savetext without 'towerLevels'
+    }
+
+    save() {
+        let save_text = String(Object.keys(this.unlocks).length);
+        for(let [key, val] of Object.entries(this.unlocks)) {
+            save_text += '/*/' + key + '/*/' + this.saveRecursive(val);
+        }
+        return save_text;
+    }
+    //returns the value of i (the index in save_text we are currently scrying for information)
+    loadRecursive(save_text, obj, i) {
+        let len = Number(save_text[i]); i++;
+        if(obj.type == 'UnlockHandlerEntryClass') {
+            obj.load(len);
+        }
+        else {
+            for(let ii = 0; ii < len; ii++) {
+                i = this.loadRecursive(save_text, obj[save_text[i]], i + 1);
+            }
+        }
+        return i;
+    }
     load(save_text) {
         save_text = save_text.split('/*/');
-        let i = 0, cat, len, j;
-        while(i < save_text.length) {
-            cat = Number(save_text[i]);
-            i++;
-            len = Number(save_text[i]);
-            i++;
-            for(j = 0; j < len; j++,i++) {
-                if(cat == 0 && j == 0) {
-                    continue;
-                }
-                if(Number(save_text[i]) == 1) {
-                    Unlockables.towerLevels[cat][j].unlock_stuff();
-                }
-                else {
-                    Unlockables.towerLevels[cat][j].lock_stuff();
-                }
-                
-            }
-        }
-        
-    }
-}
-
-/*
-    Unlock types:
-        -quantity: the quantity of something you check is greater or equal to what needs to be checked
-        -unlock: checks previous unlocks
-    How to create:
-    -quantity:
-        Unlock(type, how_much_is_needed, is_it_a_visible_object_on_screen_or_not, firts_thing_and_where_to_find_it_in_UnlockedStuff, second_thing_and_where_to_find_it)
-        firts_thing_and_where_to_find_it_in_UnlockedStuff = page_name, subpage, index
-    -unlock:
-        Unlock(type, [how_much_is_needed, where_is_first_thing_needed_in_IsUnlocked, where_is_second_thing_needed_in_IsUnlocked, ...],
-               is_it_a_visible_object_on_screen_or_not, firts_thing_and_where_to_find_it_in_UnlockedStuff, second_thing_and_where_to_find_it)
-*/
-class Unlock {
-    constructor(type = 'quantity', price = new Decimal(1), isVisible = false, path = ['none','none',0, 'none','none',1]) {
-        this.type = type;
-        this.price = price;
-        this.isVisible = isVisible;
-        this.path = path;
-    }
-
-    can_unlock(value) {
-        switch(this.type) {
-            case 'quantity':
-                if(this.price.lte(value)) {
-                    return true;
-                }
-                return false;
-            case 'unlock' :
-                let sum = 0;
-                for(let i = 1; i < this.price.length; i+=3) {
-                    sum += IsUnlocked[this.price[i]][this.price[i+1]][this.price[i+2]];
-                }
-                if(sum >= this.price[0]) {
-                    return true;
-                }
-                return false;
+        let i = 0;
+        let len = Number(save_text[i]); i++;
+        let obj = this.unlocks;
+        for(let ii = 0; ii < len; ii++) {
+            i = this.loadRecursive(save_text, obj[save_text[i]], i + 1);
         }
     }
-
-    unlock_stuff() {
-        if(IsUnlocked[this.path[0]][this.path[1]][this.path[2]]) {
-            return;
-        }
-        if(Array.isArray(this.isVisible)) {
-            let i;
-            for(i = 0; i < this.isVisible.length; i++) {
-                IsUnlocked[this.path[i*3]][this.path[i*3 + 1]][this.path[i*3 + 2]] = 1;
-                if(this.isVisible[i]) {
-                    UnlockedStuff[this.path[i*3]][this.path[i*3 + 1]][this.path[i*3 + 2]].hidden = false;
-                }
-            }
-        }
-        else {
-            IsUnlocked[this.path[0]][this.path[1]][this.path[2]] = 1;
-            if(this.isVisible) {
-                UnlockedStuff[this.path[0]][this.path[1]][this.path[2]].hidden = false;
-            }
-        }
-        
-    }
-
-    lock_stuff() {
-        if(!IsUnlocked[this.path[0]][this.path[1]][this.path[2]]) {
-            return;
-        }
-        if(Array.isArray(this.isVisible)) {
-            let i;
-            for(i = 0; i < this.isVisible.length; i++) {
-                IsUnlocked[this.path[i*3]][this.path[i*3 + 1]][this.path[i*3 + 2]] = 0;
-                if(this.isVisible[i]) {
-                    UnlockedStuff[this.path[i*3]][this.path[i*3 + 1]][this.path[i*3 + 2]].hidden = true;
-                }
-            }
-        }
-        else {
-            IsUnlocked[this.path[0]][this.path[1]][this.path[2]] = 0;
-        }
-        if(this.isVisible) {
-            UnlockedStuff[this.path[0]][this.path[1]][this.path[2]].hidden = true;
-        }
-    }
-}
-
-
-//a system for unlocking everything you need
-/* 
-    How it works:
-        -first, you specify the page wher to look for something
-        -then you specify the thing you are looking for
-        -then comes a list with Unlocks, which will specify what and how you will unlock stuff
-*/
-//AUTOMATED WAY TO PASS EVERYTHING FROM buyer, army, tower AND towerLevels TO unlockNow SO THAT I WON'T HAVE
-//TO ADD IN AN ENTRY MANUALLY THERE FOR EVERY NEW ITEM!
-Unlockables = {
-    buyer : {
-        'Human' : [new Unlock('quantity', new Decimal(5), true, ['pages','army_page',0]),  new Unlock('quantity', new Decimal(15), true, ['pages','buy_weapon_page',0])],
-        'Knife' : [new Unlock('quantity', new Decimal(35), true, ['pages','buy_weapon_page',1]), ],
-        'Dagger' : [new Unlock('quantity', new Decimal(35), true, ['pages','buy_weapon_page',2]), ],
-    },
-    army : {
-        'power' : [new Unlock('quantity', new Decimal(1), [true], ['pages','tower_page',0])],
-        'size' : [],
-    },
-    towerLevels : {
-        0 : [0, new Unlock('unlock',[1, 'towerLevels', 0, 0], [false, true], ['towerLevels', 0, 1,'pages','army_page',1]), new Unlock('unlock',[1, 'towerLevels', 0, 0] , false, ['towerLevels', 0, 2]), 
-                new Unlock('unlock',[1, 'towerLevels', 0, 1, 'towerLevels', 0, 2], false, ['towerLevels', 0, 3]), 
-                new Unlock('unlock',[1, 'towerLevels', 0, 1] , false, ['towerLevels', 0, 4]), new Unlock('unlock',[1, 'towerLevels', 0, 2] , false, ['towerLevels', 0, 5]),
-                new Unlock('unlock',[1, 'towerLevels', 0, 3] , false, ['towerLevels', 0, 6]), new Unlock('unlock',[1, 'towerLevels', 0, 6] , false, ['towerLevels', 0, 7]),
-                new Unlock('unlock',[1, 'towerLevels', 0, 6] , false, ['towerLevels', 0, 8])],
-        1 : [new Unlock('unlock',[1, 'towerLevels', 0, 4, 'towerLevels', 0, 5], false, ['towerLevels', 1, 0]),],
-    },
-    //THINKING NEEDED
-    tower : {
-        'floors' : [0, 1,]
-    },
-    unlockNow : {
-        buyer : {
-            'Human' : 0,
-            'Knife' : 0,
-            'Dagger' : 0,
-        },
-        army : {
-            'power' : 0,
-            'size' : 0,
-        }
-    },
-    //control unlock function; tries to unlock stuff if it is unlockable
-    unlock(path = ["none","none"], value = new Decimal(0), unlock_nr = undefined) {
-        unlock_nr = (unlock_nr == undefined ? this.unlockNow[path[0]][path[1]] : unlock_nr);
-        if(this[path[0]][path[1]] == undefined) {
-            return;
-        }
-        while(unlock_nr < this[path[0]][path[1]].length && this[path[0]][path[1]][unlock_nr].can_unlock(value)) {
-            this[path[0]][path[1]][unlock_nr].unlock_stuff();
-            unlock_nr++;
-            if(this.unlockNow[path[0]] == undefined || this.unlockNow[path[0]][path[1]] == undefined) {
-                break;
-            }
-        }
-        if(this.unlockNow[path[0]] != undefined && this.unlockNow[path[0]][path[1]] != undefined) {
-            this.unlockNow[path[0]][path[1]] = unlock_nr;
-        }
-        
-    },
-    ///used to save unlocked and unlock now part
-    save() {
-        let save_text = '';
-        //save unlockNow
-        let cat, i, type;
-        for( cat in Unlockables.unlockNow) {
-            for( type in Unlockables.unlockNow[cat]) {
-                save_text += cat + '/*/' + type + '/*/' + Unlockables.unlockNow[cat][type] + '/*/';
-            }
-        }
-        //save tower levels
-        save_text += IsUnlocked.save();
-        return save_text;
-    },
-    //load save text, where there are visible differences, unlock/lock content
-    load(save_text) {
-        //console.log(save_text);
-        save_text = save_text.split('/*/towerLevels/*/');
-        IsUnlocked.load(save_text[1]);
-        save_text = save_text[0].split('/*/');
-        let i = 0, len, type, name, j;
-        //load unlockNow and everything that is unlocked as of yet
-        while(i < save_text.length) {
-            type = save_text[i];
-            name = save_text[i+1];
-            len =  Number(save_text[i+2]);
-            //unlock stuff 
-            for(j = 0; j < len; j++) {
-                Unlockables[type][name][j].unlock_stuff();
-            }
-            while(j < Unlockables[type][name].length && Unlockables[type][name]) {
-                Unlockables[type][name][j].lock_stuff();
-                j++;
-            }
-            Unlockables.unlockNow[type][name] = len;
-            i += 3;
-        }
-        i++;
-    },
 };
+
+let UH = new UnlockHandlerClass();
