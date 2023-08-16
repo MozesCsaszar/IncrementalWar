@@ -74,7 +74,7 @@ class Army {
             return 'Max level reached, cannot upgrade further, sorry. :)';
         }
         return 'Power multiplier: ' + StylizeDecimals(this.level_bonus) + '<span style="color:' +
-            UtilityFunctions.get_compare_color(this.level_bonus, this.level_bonus.mul(Army.level_bonuses[this.level + 1])) + '"> &rightarrow; </span>' +
+            UtilityFunctions.getCompareColor(this.level_bonus, this.level_bonus.mul(Army.level_bonuses[this.level + 1])) + '"> &rightarrow; </span>' +
             StylizeDecimals(this.level_bonus.mul(Army.level_bonuses[this.level + 1]));
     }
     //helper function to change from one item's stats to the other
@@ -139,8 +139,8 @@ class Army {
         }
         //send unlock request after change
         if (unlock_stuff) {
-            allThingsStatistics.setStatisticsToMax(['Player', 'armies', ArmyPage.currentArmy, 'Attack'], this.stats['Attack'].get_plain_power());
-            allThingsStatistics.setStatisticsToMax(['Player', 'armies', 'all', 'Attack'], this.stats['Attack'].get_plain_power());
+            allThingsStatistics.setStatisticsToMax(['Player', 'armies', ArmyPage.currentArmy, 'Attack'], this.stats['Attack'].getPlainPower());
+            allThingsStatistics.setStatisticsToMax(['Player', 'armies', 'all', 'Attack'], this.stats['Attack'].getPlainPower());
         }
         return true;
     }
@@ -285,7 +285,7 @@ class Army {
         if (!Array.isArray(new_army)) {
             new_army = [new_army.size, new_army.stats, new_army.bodyParts];
         }
-        let text = 'Size: ' + StylizeDecimals(this.size, true) + '<span style="color:' + UtilityFunctions.get_compare_color(this.size, new_army[0]) + ';"> &rightarrow; </span>' +
+        let text = 'Size: ' + StylizeDecimals(this.size, true) + '<span style="color:' + UtilityFunctions.getCompareColor(this.size, new_army[0]) + ';"> &rightarrow; </span>' +
             StylizeDecimals(new_army[0], true) + '<br>';
         text += this.stats.getCompareText(new_army[1]) + '<br>';
         text += this.bodyParts.getCompareText(new_army[2]);
@@ -612,7 +612,7 @@ class ArmyPageClass extends PageClass {
                 obj.info.innerHTML = Player.armies[obj.currentArmy].get_level_up_text();
                 obj.partInfo.innerHTML = Player.armies[obj.currentArmy].get_compare_level_text();
                 obj.levelText.innerHTML = 'Level: ' + (Player.armies[obj.currentArmy].level + 1) +
-                    '<span style="color:' + UtilityFunctions.get_compare_color(Player.armies[obj.currentArmy].level, Player.armies[obj.currentArmy].level + 1, false)
+                    '<span style="color:' + UtilityFunctions.getCompareColor(Player.armies[obj.currentArmy].level, Player.armies[obj.currentArmy].level + 1, false)
                     + '"> &rightarrow; </span>' + (Player.armies[obj.currentArmy].level + 2) + '<br>';
             }
         });
@@ -632,7 +632,7 @@ class ArmyPageClass extends PageClass {
                 obj.info.innerHTML = Player.armies[obj.currentArmy].get_level_up_text();
                 obj.partInfo.innerHTML = Player.armies[obj.currentArmy].get_compare_level_text();
                 obj.levelText.innerHTML = 'Level: ' + (Player.armies[obj.currentArmy].level + 1) +
-                    '<span style="color:' + UtilityFunctions.get_compare_color(Player.armies[obj.currentArmy].level, Player.armies[obj.currentArmy].level + 1, false)
+                    '<span style="color:' + UtilityFunctions.getCompareColor(Player.armies[obj.currentArmy].level, Player.armies[obj.currentArmy].level + 1, false)
                     + '">  &rightarrow; </span>' + (Player.armies[obj.currentArmy].level + 2) + '<br>';
                 obj.levelUpCost.innerHTML = 'Cost: ' + StylizeDecimals(Army.level_prices[Player.armies[obj.currentArmy].level]);
             }

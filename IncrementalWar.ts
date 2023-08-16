@@ -68,7 +68,7 @@ let PopupWindow = {
 };
 
 const UtilityFunctions = {
-  get_compare_color(value1, value2, decimal = true) {
+  getCompareColor(value1, value2, decimal = true) {
     if (decimal) {
       if (value1.gt(value2)) {
         return 'red';

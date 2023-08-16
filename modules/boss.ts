@@ -195,7 +195,7 @@ class FightingArmy {
     }
 
     get_total_attack(target) {
-        return this.deployed.mul(this.stats.get_power(target.current_stats, 'Attack', 'Defense')).max(new Decimal(0));
+        return this.deployed.mul(this.stats.getPower(target.current_stats, 'Attack', 'Defense')).max(new Decimal(0));
     }
 
     do_attack(target) {
@@ -290,7 +290,7 @@ class FightingBoss {
     get_total_attack() {
         let attack = new Decimal(0);
         for (let i = 0; i < this.targets.length; i++) {
-            attack = attack.add(this.current_stats.get_power(this.enemies_around[this.targets[i]], 'Attack', 'Defense').max(new Decimal(0)));
+            attack = attack.add(this.current_stats.getPower(this.enemies_around[this.targets[i]], 'Attack', 'Defense').max(new Decimal(0)));
         }
         return attack;
     }
@@ -304,7 +304,7 @@ class FightingBoss {
             if (enemy.is_dead) {
                 continue;
             }
-            let power = this.current_stats.get_power(enemy.stats, 'Attack', 'Defense');
+            let power = this.current_stats.getPower(enemy.stats, 'Attack', 'Defense');
             enemy.lose_health(power);
             if (enemy.is_dead) {
                 //remove enemy from around boss

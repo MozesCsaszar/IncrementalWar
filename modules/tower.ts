@@ -40,12 +40,12 @@ class TowerLevel extends ParentTowerLevel {
     }
 
     get goldPerSecond() {
-        return (Player.armies[this.raiding_army].size.min(this.capacity)).mul(this.gold_per_power).mul(Player.armies[this.raiding_army].stats.get_power(this.stats, 'Attack', 'Defense')).max(new Decimal(0));
+        return (Player.armies[this.raiding_army].size.min(this.capacity)).mul(this.gold_per_power).mul(Player.armies[this.raiding_army].stats.getPower(this.stats, 'Attack', 'Defense')).max(new Decimal(0));
     }
 
     get_color() {
-        let def_power = this.stats.get_power(Player.armies[TowerPage.currentArmy].stats, 'Defense', 'Attack');
-        let atk_power = Player.armies[TowerPage.currentArmy].stats.get_power(this.stats, 'Attack', 'Defense');
+        let def_power = this.stats.getPower(Player.armies[TowerPage.currentArmy].stats, 'Defense', 'Attack');
+        let atk_power = Player.armies[TowerPage.currentArmy].stats.getPower(this.stats, 'Attack', 'Defense');
         if (atk_power.lt(def_power)) {
             return 'var(--disabled-tower-level-background-color)';
         }
@@ -76,8 +76,8 @@ class TowerLevel extends ParentTowerLevel {
                     -1 if ther was no such army
         */
         //get attacking and defensive power respective to this tower level
-        let def_power = this.stats.get_power(Player.armies[TowerPage.currentArmy].stats, 'Defense', 'Attack');
-        let atk_power = Player.armies[TowerPage.currentArmy].stats.get_power(this.stats, 'Attack', 'Defense');
+        let def_power = this.stats.getPower(Player.armies[TowerPage.currentArmy].stats, 'Defense', 'Attack');
+        let atk_power = Player.armies[TowerPage.currentArmy].stats.getPower(this.stats, 'Attack', 'Defense');
         //last level raided by same army
         let last_one = -1;
         if (def_power.lte(atk_power)) {
@@ -142,8 +142,8 @@ class BossFightLevel extends ParentTowerLevel {
     }
 
     get_color() {
-        let def_power = stuff.bosses[this.boss].stats.get_power(Player.armies[TowerPage.currentArmy].stats, 'Defense', 'Attack');
-        let atk_power = Player.armies[TowerPage.currentArmy].stats.get_power(stuff.bosses[this.boss].stats, 'Attack', 'Defense');
+        let def_power = stuff.bosses[this.boss].stats.getPower(Player.armies[TowerPage.currentArmy].stats, 'Defense', 'Attack');
+        let atk_power = Player.armies[TowerPage.currentArmy].stats.getPower(stuff.bosses[this.boss].stats, 'Attack', 'Defense');
         if (atk_power.lt(def_power)) {
             return 'var(--disabled-tower-level-background-color)';;
         }
