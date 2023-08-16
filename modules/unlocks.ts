@@ -44,7 +44,7 @@ class UnlockConditionLogic {
             true_conds += conditions[i].canUnlock();
         }
         return true_conds;
-    }   
+    }
 };
 
 class AllUCL extends UnlockConditionLogic{
@@ -171,7 +171,7 @@ class TowerLevelOUC extends OverallUnlockConditionClass {
 
 //base class for unlock objects; they need the conditions as a list
 class UnlockClass {
-    //conditons = [], 
+    //conditons = [],
     constructor(conditions, condition_logic) {
         this.conditions = conditions;
         this.unlocked = 0;
@@ -263,7 +263,7 @@ const allThingsUnlockable = {
     'creatures' : [],
     'weapons' : [new NewBuyerUnlockClass([new StorePageOUC('weapons', 'Knife', new Decimal(35))], new AllUCL(), new Buyer('weapons','Dagger')),
                  new NewBuyerUnlockClass([new StorePageOUC('weapons', 'Dagger', new Decimal(35))], new AllUCL(), new Buyer('weapons','Longsword'))],
-    'pages' : [new PageUnlockClass([new StorePageOUC('creatures', 'Human', new Decimal(5))], new AllUCL(), GB.pageButtons, 1), 
+    'pages' : [new PageUnlockClass([new StorePageOUC('creatures', 'Human', new Decimal(5))], new AllUCL(), GB.pageButtons, 1),
                new PageUnlockClass([new PlayerArmyOUC(new Decimal(1), 'all', 'Attack')], new AllUCL(), GB.pageButtons, 0),
                new PageUnlockClass([new StorePageOUC('creatures', 'Human', new Decimal(15))], new AllUCL(), StorePage.subpageButtons, 1)],
     'towerFloors': [],
@@ -298,17 +298,17 @@ class UnlockHandlerEntryClass {
         this.unlocks.push(obj);
     }
     sort() {
-        let c_obj = this;
+        let obj = this;
         this.unlocks.sort( function(a,b) {
             let cond_a, cond_b;
             for(let cond of a.conditions) {
-                if(cond.conditionCode == c_obj.conditionCode) {
+                if(cond.conditionCode == obj.conditionCode) {
                     cond_a = cond;
                     break;
                 }
             }
             for(let cond of b.conditions) {
-                if(cond.conditionCode == c_obj.conditionCode) {
+                if(cond.conditionCode == obj.conditionCode) {
                     cond_b = cond;
                     break;
                 }

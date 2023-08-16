@@ -1,11 +1,11 @@
 const downloadToFile = (content, filename = 'GameSave', contentType = 'text/plain') => {
     const a = document.createElement('a');
     const file = new Blob([content], {type: contentType});
-    
+
     a.href= URL.createObjectURL(file);
     a.download = filename;
     a.click();
-  
+
     URL.revokeObjectURL(a.href);
 };
 
@@ -30,7 +30,7 @@ class SettingsPageClass extends PageClass {
                 ['--hover-selected-tower-floor-background-color', 'rgb(156, 116, 13)'],
                 ['--default-tower-floor-color', 'rgb(0, 0, 0)'],
                 ['--default-tower-floor-border-color', 'rgb(0, 0, 0)'],
-                ['--default-tower-level-background-color', 'rgb(222, 184, 135)'], 
+                ['--default-tower-level-background-color', 'rgb(222, 184, 135)'],
                 ['--disabled-tower-level-background-color', 'rgb(70, 66, 61)'],
                 ['--default-selection-list-border-color', 'rgb(128, 0, 128)'],
             ],
@@ -46,7 +46,7 @@ class SettingsPageClass extends PageClass {
                 ['--hover-selected-tower-floor-background-color', 'rgb(156, 116, 13)'],
                 ['--default-tower-floor-color', 'rgb(0, 0, 0)'],
                 ['--default-tower-floor-border-color', 'rgb(24, 23, 32)'],
-                ['--default-tower-level-background-color', 'rgb(199, 156, 99)'], 
+                ['--default-tower-level-background-color', 'rgb(199, 156, 99)'],
                 ['--disabled-tower-level-background-color', 'rgb(54, 52, 49)'],
                 ['--default-selection-list-border-color', 'rgb(112, 5, 112)'],
             ],
@@ -62,7 +62,7 @@ class SettingsPageClass extends PageClass {
                 ['--hover-selected-tower-floor-background-color', 'rgb(73, 9, 9)'],
                 ['--default-tower-floor-color', 'rgb(39, 1, 1)'],
                 ['--default-tower-floor-border-color', 'rgb(41, 0, 0)'],
-                ['--default-tower-level-background-color', 'rgb(184, 21, 62)'], 
+                ['--default-tower-level-background-color', 'rgb(184, 21, 62)'],
                 ['--disabled-tower-level-background-color', 'rgb(73, 27, 27)'],
                 ['--default-selection-list-border-color', 'rgb(128, 0, 128)'],
             ],
@@ -75,12 +75,12 @@ class SettingsPageClass extends PageClass {
     }
 
     initializeEventListeners() {
-        let c_obj = this;
+        let obj = this;
         //Theme button
         this.changeThemeButton.addEventListener('click', function() {
-            c_obj.changeTheme();
+            obj.changeTheme();
         });
-        
+
         //Save your game to file
         this.saveGameButton.addEventListener('click', () => {
             let save_text = Player.save();
@@ -93,11 +93,11 @@ class SettingsPageClass extends PageClass {
             save_text += '*/*' + Date.now();
             downloadToFile(save_text);
         });
-        
+
         //Load in your game from file
         this.loadGameButton.addEventListener('input', () => {
             GM.canSave = false;
-            if(c_obj.loadGameButton.files.length) {
+            if(obj.loadGameButton.files.length) {
                 let file_reader = new FileReader();
                 file_reader.onload = () => {
                     let save_text = file_reader.result;
@@ -111,23 +111,23 @@ class SettingsPageClass extends PageClass {
                     }
                     HidePages(save_text[i]); i++;
                     GM.LoadOfflineProgress(Date.now() - Number(save_text[i])); i++;
-                    
+
                 };
-                file_reader.readAsText(c_obj.loadGameButton.files[0]);
+                file_reader.readAsText(obj.loadGameButton.files[0]);
             }
             GM.canSave = true;
         });
-        
+
         //tutorial button
         this.tutorialButton.addEventListener('click', function() {
             TutorialPage.startTutorial('None', false, 'SettingsPage');
             HidePages('TutorialPage');
         });
-        
+
         //reset button
         document.getElementById('ResetButton').addEventListener('click', function() {
             GM.canSave = false;
-        
+
             window.localStorage.clear();
             location.reload();
         });
@@ -155,7 +155,7 @@ class SettingsPageClass extends PageClass {
         }
         this.timesVisited++;
     }
-    displayEveryTick(c_obj) {
+    displayEveryTick(obj) {
 
     }
     save() {

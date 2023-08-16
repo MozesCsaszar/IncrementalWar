@@ -48,7 +48,7 @@ class TutorialItemListClass extends ItemListClass {
         this.nextButton.style.borderStyle = 'solid';
         this.nextButton.innerHTML = '&gt;'
     }
-    
+
     show() {
         super.show(true);
     }
@@ -83,18 +83,18 @@ class TutorialPageClass extends PageClass {
     }
     //called when page reloads
     initializeEventListeners() {
-        let c_obj = this;
+        let obj = this;
 
         this.previousButton.addEventListener('click', function() {
-            c_obj.showPreviousEntry();
+            obj.showPreviousEntry();
         });
-        
+
         this.nextButton.addEventListener('click', function() {
-            if(c_obj.nextButton.innerHTML == 'Finish') {
-                c_obj.exitTutorial();
+            if(obj.nextButton.innerHTML == 'Finish') {
+                obj.exitTutorial();
             }
             else {
-                c_obj.showNextEntry();
+                obj.showNextEntry();
             }
         });
     }
@@ -105,7 +105,7 @@ class TutorialPageClass extends PageClass {
         this.tutorialList.changePage(0);
     }
     //call when
-    displayEveryTick(c_obj) {}
+    displayEveryTick(obj) {}
     //called when a save text is needed
     save() {
         let save_text = String(this.unlockedTutorials.size);

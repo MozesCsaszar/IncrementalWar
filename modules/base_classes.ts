@@ -42,8 +42,8 @@ class PageClass {
     displayOnLoad() {}
     //called when page gets visible
     display() {}
-    //call when displaying every tick; needs c_obj as self so that it can access stuff in itself
-    displayEveryTick(c_obj) {}
+    //call when displaying every tick; needs obj as self so that it can access stuff in itself
+    displayEveryTick(obj) {}
     //called when a save text is needed
     save() {
         return String(this.timesVisited);
@@ -74,7 +74,7 @@ class ItemListClass {
 
         this.itemList = item_list;
         this.page = 0;
-        
+
         this.initializeEventListeners();
     }
 
@@ -83,49 +83,49 @@ class ItemListClass {
     }
 
     initializeEventListeners() {
-        let c_obj = this;
+        let obj = this;
 
         //item mouse functions (basically call ItemListClass functions for elements that are visible)
         for(let i = 0; i < this.elements.length; i++) {
             this.elements[i].addEventListener('mouseenter', function() {
-                if(c_obj.elementsVisible[i]) {
-                    c_obj.elementMouseenter(i);
+                if(obj.elementsVisible[i]) {
+                    obj.elementMouseenter(i);
                 }
             });
             this.elements[i].addEventListener('mouseleave', function() {
-                if(c_obj.elementsVisible[i]) { 
-                    c_obj.elementMouseleave(i);
+                if(obj.elementsVisible[i]) {
+                    obj.elementMouseleave(i);
                 }
             });
             this.elements[i].addEventListener('click', function() {
-                if(c_obj.elementsVisible[i]) { 
-                    c_obj.elementClick(i);
+                if(obj.elementsVisible[i]) {
+                    obj.elementClick(i);
                 }
             });
         }
         this.previousButton.addEventListener('click', function() {
-            if(c_obj.buttonsVisible[0]) {
-                c_obj.previousButtonClick();
+            if(obj.buttonsVisible[0]) {
+                obj.previousButtonClick();
             }
         });
         this.backButton.addEventListener('mouseenter', function() {
-            if(c_obj.buttonsVisible[1]) {
-                c_obj.backButtonMouseenter();
+            if(obj.buttonsVisible[1]) {
+                obj.backButtonMouseenter();
             }
         });
         this.backButton.addEventListener('mouseleave', function() {
-            if(c_obj.buttonsVisible[1]) {
-                c_obj.backButtonMouseleave();
+            if(obj.buttonsVisible[1]) {
+                obj.backButtonMouseleave();
             }
         });
         this.backButton.addEventListener('click', function() {
-            if(c_obj.buttonsVisible[1]) {
-                c_obj.backButtonClick();
+            if(obj.buttonsVisible[1]) {
+                obj.backButtonClick();
             }
         });
         this.nextButton.addEventListener('click', function() {
-            if(c_obj.buttonsVisible[2]) {
-                c_obj.nextButtonClick();
+            if(obj.buttonsVisible[2]) {
+                obj.nextButtonClick();
             }
         });
     }
@@ -271,23 +271,23 @@ class ButtonGroupClass {
     }
 
     initializeEventListeners() {
-        let c_obj = this;
+        let obj = this;
 
         //button mouse events
         for(let i = 0; i < this.buttons.length; i++) {
             this.buttons[i].addEventListener('mouseenter', function() {
-                if(c_obj.buttonsVisible[i]) {
-                    c_obj.buttonMouseenter(i);
+                if(obj.buttonsVisible[i]) {
+                    obj.buttonMouseenter(i);
                 }
             });
             this.buttons[i].addEventListener('mouseleave', function() {
-                if(c_obj.buttonsVisible[i]) {
-                    c_obj.buttonMouseleave(i);
+                if(obj.buttonsVisible[i]) {
+                    obj.buttonMouseleave(i);
                 }
             });
             this.buttons[i].addEventListener('click', function() {
-                if(c_obj.buttonsVisible[i]) {
-                    c_obj.buttonClick(i);
+                if(obj.buttonsVisible[i]) {
+                    obj.buttonClick(i);
                 }
             });
         }
