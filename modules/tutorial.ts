@@ -83,18 +83,18 @@ class TutorialPageClass extends PageClass {
     }
     //called when page reloads
     initializeEventListeners() {
-        let obj = this;
+        let this = this;
 
         this.previousButton.addEventListener('click', function() {
-            obj.showPreviousEntry();
+            this.showPreviousEntry();
         });
 
         this.nextButton.addEventListener('click', function() {
-            if(obj.nextButton.innerHTML == 'Finish') {
-                obj.exitTutorial();
+            if(this.nextButton.innerHTML == 'Finish') {
+                this.exitTutorial();
             }
             else {
-                obj.showNextEntry();
+                this.showNextEntry();
             }
         });
     }
@@ -105,24 +105,24 @@ class TutorialPageClass extends PageClass {
         this.tutorialList.changePage(0);
     }
     //call when
-    displayEveryTick(obj) {}
+    displayEveryTick(this) {}
     //called when a save text is needed
     save() {
-        let save_text = String(this.unlockedTutorials.size);
+        let saveText = String(this.unlockedTutorials.size);
         for(let elem of this.unlockedTutorials) {
-            save_text += '/*/' + elem;
+            saveText += '/*/' + elem;
         }
-        return save_text;
+        return saveText;
     }
-    //called when you need to get values from a save_text
+    //called when you need to get values from a saveText
     //maybe should call displayOnLoad?
-    load(save_text) {
-        save_text = save_text.split('/*/');
+    load(saveText) {
+        saveText = saveText.split('/*/');
         let i = 0, j = 0;
-        let len = Number(save_text[i]);
+        let len = Number(saveText[i]);
         i++;
         while(j < len) {
-            this.unlockedTutorials.add(save_text[i]);
+            this.unlockedTutorials.add(saveText[i]);
             i++; j++;
         }
     }

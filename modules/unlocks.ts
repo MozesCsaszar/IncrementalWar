@@ -169,7 +169,7 @@ class TowerLevelOUC extends OverallUnlockConditionClass {
 };
 
 
-//base class for unlock objects; they need the conditions as a list
+//base class for unlock thisects; they need the conditions as a list
 class UnlockClass {
     //conditons = [],
     constructor(conditions, condition_logic) {
@@ -294,21 +294,21 @@ class UnlockHandlerEntryClass {
         return unlocked;
     }
 
-    push(obj) {
-        this.unlocks.push(obj);
+    push(this) {
+        this.unlocks.push(this);
     }
     sort() {
-        let obj = this;
+        let this = this;
         this.unlocks.sort( function(a,b) {
             let cond_a, cond_b;
             for(let cond of a.conditions) {
-                if(cond.conditionCode == obj.conditionCode) {
+                if(cond.conditionCode == this.conditionCode) {
                     cond_a = cond;
                     break;
                 }
             }
             for(let cond of b.conditions) {
-                if(cond.conditionCode == obj.conditionCode) {
+                if(cond.conditionCode == this.conditionCode) {
                     cond_b = cond;
                     break;
                 }
@@ -368,11 +368,11 @@ class UnlockHandlerClass {
         stats[acronym].push(unlock);
         return stats[acronym].conditionCode;
     }
-    //sorts object by calling sortUnlocks on each key that result in an object and sort on each array found
-    sortUnlocks(obj) {
-        for(let value of Object.values(obj)) {
-            if(obj.type == 'UnlockHandlerEntryClass') {
-                obj.sort();
+    //sorts thisect by calling sortUnlocks on each key that result in an thisect and sort on each array found
+    sortUnlocks(this) {
+        for(let value of Object.values(this)) {
+            if(this.type == 'UnlockHandlerEntryClass') {
+                this.sort();
             }
             else {
                 this.sortUnlocks(value);
@@ -402,46 +402,46 @@ class UnlockHandlerClass {
             }
         }
     }
-    saveRecursive(obj) {
-        let save_text = String(Object.keys(obj).length);
-        for(let [key, val] of Object.entries(obj)) {
+    saveRecursive(this) {
+        let saveText = String(Object.keys(this).length);
+        for(let [key, val] of Object.entries(this)) {
             if(val.type == 'UnlockHandlerEntryClass') {
-                save_text += '/*/' + key + '/*/' + val.index;
+                saveText += '/*/' + key + '/*/' + val.index;
             }
             else {
-                save_text += '/*/' + key + '/*/' + this.saveRecursive(val);
+                saveText += '/*/' + key + '/*/' + this.saveRecursive(val);
             }
         }
-        return save_text;
+        return saveText;
     }
 
     save() {
-        let save_text = String(Object.keys(this.unlocks).length);
+        let saveText = String(Object.keys(this.unlocks).length);
         for(let [key, val] of Object.entries(this.unlocks)) {
-            save_text += '/*/' + key + '/*/' + this.saveRecursive(val);
+            saveText += '/*/' + key + '/*/' + this.saveRecursive(val);
         }
-        return save_text;
+        return saveText;
     }
-    //returns the value of i (the index in save_text we are currently scrying for information)
-    loadRecursive(save_text, obj, i) {
-        let len = Number(save_text[i]); i++;
-        if(obj.type == 'UnlockHandlerEntryClass') {
-            obj.load(len);
+    //returns the value of i (the index in saveText we are currently scrying for information)
+    loadRecursive(saveText, this, i) {
+        let len = Number(saveText[i]); i++;
+        if(this.type == 'UnlockHandlerEntryClass') {
+            this.load(len);
         }
         else {
             for(let ii = 0; ii < len; ii++) {
-                i = this.loadRecursive(save_text, obj[save_text[i]], i + 1);
+                i = this.loadRecursive(saveText, this[saveText[i]], i + 1);
             }
         }
         return i;
     }
-    load(save_text) {
-        save_text = save_text.split('/*/');
+    load(saveText) {
+        saveText = saveText.split('/*/');
         let i = 0;
-        let len = Number(save_text[i]); i++;
-        let obj = this.unlocks;
+        let len = Number(saveText[i]); i++;
+        let this = this.unlocks;
         for(let ii = 0; ii < len; ii++) {
-            i = this.loadRecursive(save_text, obj[save_text[i]], i + 1);
+            i = this.loadRecursive(saveText, this[saveText[i]], i + 1);
         }
     }
 };

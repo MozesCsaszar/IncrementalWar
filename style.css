@@ -30,7 +30,7 @@ body {
     --default-tower-floor-border-color:
     rgb(41, 0, 0);
     --default-tower-level-background-color:
-    rgb(184, 21, 62); 
+    rgb(184, 21, 62);
     --disabled-tower-level-background-color:
     rgb(73, 27, 27);
     --default-selection-list-border-color:
@@ -102,7 +102,7 @@ a {
     font-size:15px;
     font-weight: bolder;
     border-color:orangered;
-    
+
 }
 
 .element_list {
@@ -237,7 +237,7 @@ a {
     align-self: center;
     align-items: center;
 }
-    
+
 #OfflineGreeting {
     font-size: 60px;
     font-weight: bolder;
@@ -321,7 +321,7 @@ a {
     top: -12px;
     right: 90px;
     transform: skewY(30deg);
-    
+
 }
 
 .tower_top1 {
@@ -531,7 +531,7 @@ a {
     text-align: center;
 }
 
-#BossFightMoveFeed > .boss_fight_move_feed_element {
+#BossFightMoveFeed > .boss_fight_move_feedElement {
     margin:0px;
     text-align: center;
 }
@@ -687,7 +687,7 @@ a {
     left:100px;
     text-align: center;
     font-size: 30;
-    
+
 }
 
 

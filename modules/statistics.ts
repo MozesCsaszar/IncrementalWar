@@ -2,7 +2,7 @@
 
 
 //a class which stores data in a list and conveniently gives access to it as well
-//currently has 
+//currently has
 class StatisticClass {
     static levelToIndex = {'base' : 0};
     constructor() {
@@ -45,24 +45,24 @@ class StatisticClass {
         }
     }
     save() {
-        let save_text = '';
+        let saveText = '';
         for(let i = 0; i < this.stats.length; i++) {
-            save_text += this.stats[i] + '/*/';
+            saveText += this.stats[i] + '/*/';
         }
-        save_text += this.overall;
-        return save_text;
+        saveText += this.overall;
+        return saveText;
     }
     //returns the new i
-    load(save_text, i) {
+    load(saveText, i) {
         for(let ii = 0; ii < this.stats.length; ii++) {
-            this.stats[ii] = new Decimal(save_text[i]); i++;
+            this.stats[ii] = new Decimal(saveText[i]); i++;
         }
-        this.overall = new Decimal(save_text[i]); i++;
+        this.overall = new Decimal(saveText[i]); i++;
         return i;
     }
 };
 
-//an object that stores all statistics under it's stats property
+//an thisect that stores all statistics under it's stats property
 const allThingsStatistics = {
     stats : {
         'StorePage' : {
@@ -111,7 +111,7 @@ const allThingsStatistics = {
             }
         }
     },
-    //a function that returns the StatisticClass object corresponding to path
+    //a function that returns the StatisticClass thisect corresponding to path
     getStatsFromPath(path) {
         let stats = this.stats;
         for(let elem of path) {
@@ -132,45 +132,45 @@ const allThingsStatistics = {
     getStatistics(path, level) {
         return this.getStatsFromPath(path).getStatistics(level);
     },
-    saveRecursive(obj) {
-        let save_text = String(Object.keys(obj).length);
-        for(let [key, val] of Object.entries(obj)) {
+    saveRecursive(this) {
+        let saveText = String(Object.keys(this).length);
+        for(let [key, val] of Object.entries(this)) {
             if(val.type == 'StatisticClass') {
-                save_text += '/*/' + key + '/*/' + val.save();
+                saveText += '/*/' + key + '/*/' + val.save();
             }
             else {
-                save_text += '/*/' + key + '/*/' + this.saveRecursive(val);
+                saveText += '/*/' + key + '/*/' + this.saveRecursive(val);
             }
         }
-        return save_text;
+        return saveText;
     },
     save() {
-        let save_text = String(Object.keys(this.stats).length);
+        let saveText = String(Object.keys(this.stats).length);
         for(let [key, val] of Object.entries(this.stats)) {
-            save_text += '/*/' + key + '/*/' + this.saveRecursive(val);
+            saveText += '/*/' + key + '/*/' + this.saveRecursive(val);
         }
-        return save_text;
+        return saveText;
     },
-    //returns the value of i (the index in save_text we are currently scrying for information)
-    loadRecursive(save_text, obj, i) {
-        if(obj.type == 'StatisticClass') {
-            i = obj.load(save_text, i);
+    //returns the value of i (the index in saveText we are currently scrying for information)
+    loadRecursive(saveText, this, i) {
+        if(this.type == 'StatisticClass') {
+            i = this.load(saveText, i);
         }
         else {
-            let len = Number(save_text[i]); i++;
+            let len = Number(saveText[i]); i++;
             for(let ii = 0; ii < len; ii++) {
-                i = this.loadRecursive(save_text, obj[save_text[i]], i + 1);
+                i = this.loadRecursive(saveText, this[saveText[i]], i + 1);
             }
         }
         return i;
     },
-    load(save_text) {
-        save_text = save_text.split('/*/');
+    load(saveText) {
+        saveText = saveText.split('/*/');
         let i = 0;
-        let len = Number(save_text[i]); i++;
-        let obj = this.stats;
+        let len = Number(saveText[i]); i++;
+        let this = this.stats;
         for(let ii = 0; ii < len; ii++) {
-            i = this.loadRecursive(save_text, obj[save_text[i]], i + 1);
+            i = this.loadRecursive(saveText, this[saveText[i]], i + 1);
         }
     }
 }

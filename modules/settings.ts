@@ -75,45 +75,45 @@ class SettingsPageClass extends PageClass {
     }
 
     initializeEventListeners() {
-        let obj = this;
+        let this = this;
         //Theme button
         this.changeThemeButton.addEventListener('click', function() {
-            obj.changeTheme();
+            this.changeTheme();
         });
 
         //Save your game to file
         this.saveGameButton.addEventListener('click', () => {
-            let save_text = Player.save();
-            save_text += '*/*' + allThingsStatistics.save();
-            save_text += '*/*' + UH.save();
+            let saveText = Player.save();
+            saveText += '*/*' + allThingsStatistics.save();
+            saveText += '*/*' + UH.save();
             for(let page of Object.values(GM.pages)) {
-                save_text += '*/*' + page.save();
+                saveText += '*/*' + page.save();
             }
-            save_text += '*/*' + GM.currentPage;
-            save_text += '*/*' + Date.now();
-            downloadToFile(save_text);
+            saveText += '*/*' + GM.currentPage;
+            saveText += '*/*' + Date.now();
+            downloadToFile(saveText);
         });
 
         //Load in your game from file
         this.loadGameButton.addEventListener('input', () => {
             GM.canSave = false;
-            if(obj.loadGameButton.files.length) {
+            if(this.loadGameButton.files.length) {
                 let file_reader = new FileReader();
                 file_reader.onload = () => {
-                    let save_text = file_reader.result;
-                    save_text = save_text.split('*/*');
+                    let saveText = file_reader.result;
+                    saveText = saveText.split('*/*');
                     let i = 0;
-                    Player.load(save_text[i]); i++;
-                    allThingsStatistics.load(save_text[i]); i++;
-                    UH.load(save_text[i]); i++;
+                    Player.load(saveText[i]); i++;
+                    allThingsStatistics.load(saveText[i]); i++;
+                    UH.load(saveText[i]); i++;
                     for(let page of Object.values(GM.pages)) {
-                        page.load(save_text[i]); i++;
+                        page.load(saveText[i]); i++;
                     }
-                    HidePages(save_text[i]); i++;
-                    GM.LoadOfflineProgress(Date.now() - Number(save_text[i])); i++;
+                    HidePages(saveText[i]); i++;
+                    GM.LoadOfflineProgress(Date.now() - Number(saveText[i])); i++;
 
                 };
-                file_reader.readAsText(obj.loadGameButton.files[0]);
+                file_reader.readAsText(this.loadGameButton.files[0]);
             }
             GM.canSave = true;
         });
@@ -155,19 +155,19 @@ class SettingsPageClass extends PageClass {
         }
         this.timesVisited++;
     }
-    displayEveryTick(obj) {
+    displayEveryTick(this) {
 
     }
     save() {
-        let save_text =  super.save() + '/*/';
-        save_text += String(this.currentTheme - 1);
-        return save_text;
+        let saveText =  super.save() + '/*/';
+        saveText += String(this.currentTheme - 1);
+        return saveText;
     }
-    load(save_text) {
-        save_text = save_text.split('/*/');
+    load(saveText) {
+        saveText = saveText.split('/*/');
         //load base page and start counting from there in save file
-        let i = super.load(save_text);
-        this.currentTheme = Number(save_text[i]) <= -1 ? -1 : Number(save_text[i]);
+        let i = super.load(saveText);
+        this.currentTheme = Number(saveText[i]) <= -1 ? -1 : Number(saveText[i]);
         this.changeTheme();
     }
 };

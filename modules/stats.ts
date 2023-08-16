@@ -2,12 +2,12 @@ import Decimal from "break_infinity.js";
 
 //a class to handle price, created to accept multiple functions across multiple intervals
 export class PriceHandler {
-  stopPoints: Array<Decimal>;
-  coefficients: Array<Decimal>;
-  types: Array<string>;
-  stopPointValues: Array<Decimal>;
+  stopPoints: Decimal[];
+  coefficients: Decimal[];
+  types: string[];
+  stopPointValues: Decimal[];
   //ar = arithmetic increas, ge = geometric increase
-  constructor(stopPoints = [], types = ["ar"], coefficients = [new Decimal(0)], start_price = new Decimal(0)) {
+  constructor(stopPoints: Decimal[] = [], types: string[] = ["ar"], coefficients = [new Decimal(0)], start_price = new Decimal(0)) {
     this.stopPoints = stopPoints;
     this.stopPoints.unshift(new Decimal(0));
     this.stopPoints.push(new Decimal(Infinity));
@@ -114,7 +114,7 @@ class ApplyFunctionForStats extends HashLike {
     return false;
   }
 
-  //apply a logical(comparison) function to all elements of current object that match the condFunc
+  //apply a logical(comparison) function to all elements of current thisect that match the condFunc
   //non-destructive
   applyLogFunction<T>(other: unknown, logFuncName: keyof T): boolean {
     if (this.comparableTypes(other) && other instanceof HashLike) {
@@ -140,7 +140,7 @@ class ApplyFunctionForStats extends HashLike {
     return true;
   }
 
-  //apply a computational function to all elements of current object that match the condFunc
+  //apply a computational function to all elements of current thisect that match the condFunc
   //non-destructive
   applyCompFunction<T>(other: unknown, compFuncName: keyof T, initVal: HashLike,
     condFunc: (t: T, o: unknown) => boolean = () => true): HashLike {
@@ -160,7 +160,7 @@ class ApplyFunctionForStats extends HashLike {
     return initVal;
   }
 
-  //apply a reducer function to all elements of current object that match the condFunc
+  //apply a reducer function to all elements of current thisect that match the condFunc
   //non-destructive
   applyRedFunction<T, V>(initVal: V, reducerFunc: (old: V, curr: T) => V, condFunc: (val: T) => boolean = () => true): V {
     for (const e in this)
@@ -195,13 +195,13 @@ export class SubStats extends ApplyFunctionForStats implements SubStatsKeys<Deci
   eq(other: unknown): boolean {
     return this.applyLogFunction(other, "eq");
   }
-  static eq(first: SubStats, second: SubStats) {
+  static eq(first: SubStats, second: SubStats): boolean {
     return first.eq(second);
   }
   lt(other: unknown): boolean {
     return this.applyLogFunction(other, "lt");
   }
-  static lt(first: SubStats, second: SubStats) {
+  static lt(first: SubStats, second: SubStats): boolean {
     return first.lt(second);
   }
   lte(other: unknown): boolean {
@@ -210,43 +210,43 @@ export class SubStats extends ApplyFunctionForStats implements SubStatsKeys<Deci
   static lte(first: SubStats, second: SubStats) {
     return first.lte(second);
   }
-  gt(other: unknown) {
+  gt(other: unknown): boolean {
     return !this.lte(other);
   }
   static gt(first: SubStats, second: SubStats) {
     return first.gt(second);
   }
-  gte(other: unknown) {
+  gte(other: unknown): boolean {
     return !this.lt(other);
   }
   static gte(first: SubStats, second: SubStats) {
     return first.gte(second);
   }
-  isNull() {
-    return this.applyLogFunction(new Decimal(0), "eq");
+  isNull(): boolean {
+    return this.applyLogFunction(new Decimal(0.00001), "lte");
   }
 
-  add(other: unknown) {
-    return this.applyCompFunction(other, "add", new Stats());
+  add(other: unknown): SubStats {
+    return this.applyCompFunction(other, "add", new Stats()) as SubStats;
   }
   static add(first: SubStats, second: SubStats) {
     return first.add(second);
   }
-  sub(other: unknown) {
-    return this.applyCompFunction(other, "sub", new Stats());
+  sub(other: unknown): SubStats {
+    return this.applyCompFunction(other, "sub", new Stats()) as SubStats;
   }
   static sub(first: SubStats, second: SubStats) {
     return first.sub(second);
   }
-  mul(other: unknown) {
-    return this.applyCompFunction(other, "mul", new Stats());
+  mul(other: unknown): SubStats {
+    return this.applyCompFunction(other, "mul", new Stats()) as SubStats;
   }
   static mul(first: SubStats, second: SubStats) {
     return first.mul(second);
   }
-  div(other: unknown) {
+  div(other: unknown): SubStats {
     const isNotZero = (t: Decimal, o: unknown) => !(o as Decimal).eq(new Decimal(0));
-    return this.applyCompFunction(other, "div", new Stats(), isNotZero);
+    return this.applyCompFunction(other, "div", new Stats(), isNotZero) as SubStats;
   }
   static div(first: SubStats, second: SubStats) {
     return first.div(second);
@@ -265,7 +265,7 @@ export class SubStats extends ApplyFunctionForStats implements SubStatsKeys<Deci
     return t;
   }
   //get the elemental attributly unmodified power of attack or defense
-  getPlainPower() {
+  getPlainPower(): Decimal {
     let pow = new Decimal(0);
     for (const e in this) {
       pow = pow.add(this[e] as Decimal);
@@ -281,49 +281,49 @@ export class SubStats extends ApplyFunctionForStats implements SubStatsKeys<Deci
 */
 export class Stats extends ApplyFunctionForStats {
   //stat names: Attack, Defense (subStats), Health (not implemented yet)
-  constructor(statNames = [], statSubstats = []) {
+  constructor(statNames: string[] = [], statSubstats: Array<SubStats | Decimal> = []) {
     super();
 
     for (let i = 0; i < statNames.length; i++) {
-      this[statNames[i]] = statSubstats[i];
+      this.set(statNames[i], statSubstats[i]);
     }
   }
 
-  eq(other: unknown) {
+  eq(other: unknown): boolean {
     return this.applyLogFunction(other, "eq");
   }
-  lt(other: unknown) {
+  lt(other: unknown): boolean {
     return this.applyLogFunction(other, "lt");
   }
-  lte(other: unknown) {
+  lte(other: unknown): boolean {
     return this.applyLogFunction(other, "lte");
   }
-  gt(other: unknown) {
+  gt(other: unknown): boolean {
     return !this.lte(other);
   }
-  gte(other: unknown) {
+  gte(other: unknown): boolean {
     return !this.lt(other);
   }
-  isNull() {
-    return this.applyLogFunction(new Decimal(0), "eq");
+  isNull(): boolean {
+    return this.applyLogFunction(new Decimal(0.00001), "lte");
   }
 
-  add(other: unknown) {
+  add(other: unknown): Stats {
     const initVal: Stats = new Stats([], []);
-    return this.applyCompFunction(other, "add", initVal);
+    return this.applyCompFunction(other, "add", initVal) as Stats;
   }
-  sub(other: unknown) {
+  sub(other: unknown): Stats {
     const initVal = new Stats([], []);
-    return this.applyCompFunction(other, "sub", initVal);
+    return this.applyCompFunction(other, "sub", initVal) as Stats;
   }
-  mul(other: unknown) {
+  mul(other: unknown): Stats {
     const initVal = new Stats([], []);
-    return this.applyCompFunction(other, "mul", initVal);
+    return this.applyCompFunction(other, "mul", initVal) as Stats;
   }
-  div(other: unknown) {
+  div(other: unknown): Stats {
     const initVal = new Stats([], []);
     const isNotZero = (t: Decimal, o: unknown) => !(o as Decimal | SubStats).eq(new Decimal(0));
-    return this.applyCompFunction(other, "div", initVal, isNotZero);
+    return this.applyCompFunction(other, "div", initVal, isNotZero) as Stats;
   }
 
   /*
@@ -351,7 +351,7 @@ export class Stats extends ApplyFunctionForStats {
   }
 
   /*
-      Get HTML string which represents the result of the comparison to current object.
+      Get HTML string which represents the result of the comparison to current thisect.
   */
   //TODO: Look at getCompareText
   getCompareText(other: Stats | SubStats) {
@@ -417,7 +417,7 @@ export class Stats extends ApplyFunctionForStats {
   }
 
   //get the elemental attributly unmodified power of attack or defense
-  getPlainPower(type = "Attack||Defense") {
+  getPlainPower(type = "Attack||Defense"): Decimal {
     const key = type as keyof Stats;
     if (this[key] instanceof SubStats) {
       return this.get<SubStats>(type).getPlainPower();
@@ -426,7 +426,7 @@ export class Stats extends ApplyFunctionForStats {
   }
 
   //get the elemental attributly modified power of attack or defense
-  getPower(statsB: Stats, typeA = "Attack||Defense", typeB = "Defense||Attack") {
+  getPower(statsB: Stats, typeA = "Attack||Defense", typeB = "Defense||Attack"): Decimal {
     let pow = new Decimal(0);
 
     const subStatsA = this.get<SubStats>(typeA);

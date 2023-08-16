@@ -7,48 +7,9 @@ family or close circle of friends.
 
 */
 
-//For save files: field separator: /*/ ; page separator: '*/*'
-stuff = {
-  //Here are the weapons useable in the game
-  weapons: {
-    'None': new ArmyComponent(),
-    'Knife': new ArmyComponent('Knife', 'A thrustworthy knife, even if it is not the best for your needs. Simple to use and reliable.',
-      new Stats(['Attack'], [new SubStats(new Decimal(1))]), new Stats(['Hands'], [new Decimal(-1)]),
-      new Stats([], []), 'Weapon',
-      new PriceHandler([new Decimal(100), new Decimal(200), new Decimal(1000)], ['ar', 'ar', 'ar', 'ge'], [new Decimal(1), new Decimal(10), new Decimal(250), new Decimal(1.05)], new Decimal(25))),
-    'Dagger': new ArmyComponent('Dagger', 'A bit better than a knife, but pricier too.',
-      new Stats(['Attack'], [new SubStats(new Decimal(1.2))]), new Stats(['Hands'], [new Decimal(-1)]),
-      new Stats([], []), 'Weapon',
-      new PriceHandler([new Decimal(100), new Decimal(300), new Decimal(1000)], ['ar', 'ar', 'ar', 'ge'], [new Decimal(2), new Decimal(15), new Decimal(450), new Decimal(1.07)], new Decimal(150))),
-    'Longsword': new ArmyComponent('Longsword', 'A twohanded sword, strong against unarmored opponents',
-      new Stats(['Attack'], [new SubStats(new Decimal(2.5))]), new Stats(['Hands'], [new Decimal(-2)]),
-      new Stats(['Attack'], [new SubStats(new Decimal(1.1))]), 'Weapon',
-      new PriceHandler([new Decimal(90), new Decimal(270), new Decimal(900)], ['ar', 'ar', 'ar', 'ge'], [new Decimal(5), new Decimal(25), new Decimal(1000), new Decimal(1.1)], new Decimal(500))),
-  },
-  //Here are all the creatures useable in the game
-  creatures: {
-    'None': new ArmyComponent(),
-    'Human': new ArmyComponent('Human', 'A cheap and reliable worker. Not too efficient, but this is the best you will get for your money.',
-      new Stats(['Health', 'Attack'], [new Decimal(10), new SubStats(new Decimal(1))]), new Stats(['Hands'], [new Decimal(2)]),
-      new Stats([], []), 'Creature',
-      new PriceHandler([new Decimal(4), new Decimal(100), new Decimal(500)], ['ar', 'ar', 'ar', 'ar'], [new Decimal(0), new Decimal(1), new Decimal(10), new Decimal(100)], new Decimal(5)))
-  },
-  bosses: {
-    'Slime': new Boss('Slime', 'A giant slime with a giant ego. He is the guardian of the exit of the first floor.',
-      new Stats(['Attack', 'Defense', 'Health'], [new SubStats(new Decimal(90)), new SubStats(new Decimal(25)), new Decimal(10000)]),
-      'Mini', new Decimal(0), new Moveset([
-        [new AttackMove('Basic Attack', 'A normal attack from a normal enemy.(Attack x1, , Targets: 1)', [new Decimal(1)], ['mul']),
-        new AttackMove('Basic Double Attack', 'A normal attack from a normal enemy targeting two beings at once.(Attack x1, , Targets: 2)', [new Decimal(1)], ['mul'], new Decimal(2))],
-        [new AttackMove('Triple Attack', 'A normal attack from a normal enemy targeting three beings at once.(Attack x1, , Targets: 3)', [new Decimal(1)], ['mul'], new Decimal(3)),
-        new CombinedMove('Attack and Defend', 'The enemy takes a stance where defending and attacking is easier.(Attack and Defense x2, Targets: 2)', [new AttackMove('', '', [new Decimal(2)], ['mul'], new Decimal(2)), new DefenseMove('', '', [new Decimal(2)], ['mul'])])],
-        [new AttackMove('Fife-Fold Attack', 'The slime empowers itself, then attacks five enemies at once with slightly increased prowess (Attack x1, Targets: 5).', [new Decimal(1)], ['mul'], new Decimal(5))]
-      ])),
-  }
-}
-
 //A popup window for your inspection needs
-let PopupWindow = {
-  container: document.querySelector('#PopupWindowContainer'),
+const PopupWindow = {
+  container: document.querySelector("#PopupWindowContainer"),
   left: undefined,
   top: undefined,
   show(left, top, content) {
@@ -71,24 +32,24 @@ const UtilityFunctions = {
   getCompareColor(value1, value2, decimal = true) {
     if (decimal) {
       if (value1.gt(value2)) {
-        return 'red';
+        return "red";
       }
       else if (value1.lt(value2)) {
-        return 'green';
+        return "green";
       }
       else {
-        return 'var(--default-color)';
+        return "var(--default-color)";
       }
     }
     else {
       if (value1 == value2) {
-        return 'var(--default-color)';
+        return "var(--default-color)";
       }
       if (value1 > value2) {
-        return 'red';
+        return "red";
       }
       else {
-        return 'green';
+        return "green";
       }
     }
   },
@@ -99,7 +60,7 @@ const UtilityFunctions = {
 //a function to adjust the appearance of decimal numbers (e form and trying to avoid inconsistent numbers messing up the interface, like 48.0000001 instead of 48)
 function StylizeDecimals(decimal, floor = false) {
   if (decimal.exponent >= 6) {
-    return decimal.mantissa.toFixed(2) + 'e' + decimal.exponent;
+    return decimal.mantissa.toFixed(2) + "e" + decimal.exponent;
   }
   if (!floor) {
     if (decimal.exponent > 4) {
@@ -128,57 +89,57 @@ const Player = {
   },
   save() {
     //  save gold
-    let save_text = this.gold + '/*/';
+    let saveText = this.gold + "/*/";
     //save inventory
-    save_text += Object.keys(this.inventory).length;
+    saveText += Object.keys(this.inventory).length;
     for (category in this.inventory) {
-      save_text += '/*/' + category;
-      save_text += '/*/' + Object.keys(this.inventory[category]).length;
+      saveText += "/*/" + category;
+      saveText += "/*/" + Object.keys(this.inventory[category]).length;
       for (item in this.inventory[category]) {
-        save_text += '/*/' + item + '/*/' + this.inventory[category][item];
+        saveText += "/*/" + item + "/*/" + this.inventory[category][item];
       }
     }
     //  save armies
-    save_text += '/*/' + this.armies.length;
+    saveText += "/*/" + this.armies.length;
     for (let i = 0; i < this.armies.length; i++) {
-      save_text += '/*/' + this.armies[i].save();
+      saveText += "/*/" + this.armies[i].save();
     }
 
-    return save_text
+    return saveText
   },
-  load(save_text) {
+  load(saveText) {
     //split and get ready for loading
-    save_text = save_text.split('/*/');
+    saveText = saveText.split("/*/");
     let i = 0;
     //load gold
-    this.gold = new Decimal(save_text[i]);
+    this.gold = new Decimal(saveText[i]);
     i++;
     //  load inventory
     //reset inventory
     delete this.inventory;
     this.inventory = {};
-    let j = new Number(save_text[i]);
+    let j = new Number(saveText[i]);
     let k = 0;
     i++;
     while (j > 0) {
-      let category = save_text[i];
+      const category = saveText[i];
       i++;
-      k = new Number(save_text[i]);
+      k = new Number(saveText[i]);
       i++;
       this.inventory[category] = {};
       while (k > 0) {
-        this.inventory[category][save_text[i]] = new Decimal(save_text[i + 1]);
+        this.inventory[category][saveText[i]] = new Decimal(saveText[i + 1]);
         i += 2;
         k--;
       }
       j--;
     }
     //load armies
-    j = new Number(save_text[i]);
+    j = new Number(saveText[i]);
     i++;
     k = 0;
     while (j > 0) {
-      i = this.armies[k].load(save_text, i, k);
+      i = this.armies[k].load(saveText, i, k);
       k++;
       j--;
     }
@@ -191,18 +152,18 @@ const Player = {
 class GameManagerClass {
   constructor() {
     this.saveInterval = undefined;
-    this.currentPage = 'StorePage';
+    this.currentPage = "StorePage";
     this.pages = {};
     [TowerPage, ArmyPage, StorePage, SettingsPage, BossArmySelectionPage,
       BossFightingPage, BossFightingResultPage, TutorialPage].forEach(
         (p) => { this.pages[p.name] = p }
       )
     this.pages = {
-      'TowerPage': TowerPage, 'ArmyPage': ArmyPage, 'StorePage': StorePage, 'SettingsPage': SettingsPage, 'BossArmySelectionPage': BossArmySelectionPage,
-      'BossFightingPage': BossFightingPage, 'BossFightingResultPage': BossFightingResultPage, 'TutorialPage': TutorialPage,
+      "TowerPage": TowerPage, "ArmyPage": ArmyPage, "StorePage": StorePage, "SettingsPage": SettingsPage, "BossArmySelectionPage": BossArmySelectionPage,
+      "BossFightingPage": BossFightingPage, "BossFightingResultPage": BossFightingResultPage, "TutorialPage": TutorialPage,
     };
     //hide all pages at startup
-    for (let page of Object.values(this.pages)) {
+    for (const page of Object.values(this.pages)) {
       page.hidden = true;
     }
 
@@ -217,36 +178,36 @@ class GameManagerClass {
     clearInterval(this.saveInterval);
   }
   initializeEventListeners() {
-    let obj = this;
+    const this = this;
 
-    window.addEventListener('load', () => {
-      obj.openGame();
-      obj.startSaveInterval();
+    window.addEventListener("load", () => {
+      this.openGame();
+      this.startSaveInterval();
     });
     //save game whenever you switch tabs in browser (close, refresh, go to new/other tab)
-    document.addEventListener('visibilitychange', function () {
-      if (document.visibilityState === 'visible') {
-        obj.loadOfflineProgress(Date.now() - Number(window.localStorage.getItem('lastSavedTime')));
-        obj.startSaveInterval();
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "visible") {
+        this.loadOfflineProgress(Date.now() - Number(window.localStorage.getItem("lastSavedTime")));
+        this.startSaveInterval();
       }
       else {
         if (window.localStorage.length != 0) {
-          obj.saveToLocalStorage();
+          this.saveToLocalStorage();
         }
-        obj.stopSaveInterval();
+        this.stopSaveInterval();
       }
     });
     //save the game before closing
-    window.addEventListener('beforeunload', () => {
-      obj.closeGame()
+    window.addEventListener("beforeunload", () => {
+      this.closeGame()
     });
   }
   loadOfflineProgress(nrMiliseconds = 0) {
-    let nrSeconds = new Decimal(nrMiliseconds / 1000);
+    const nrSeconds = new Decimal(nrMiliseconds / 1000);
     //calculate gold per second
-    let goldPerSecond = TowerPage.Tower.getGoldPerSecond();
+    const goldPerSecond = TowerPage.Tower.getGoldPerSecond();
     //handle gold
-    let totalGold = goldPerSecond.mul(nrSeconds);
+    const totalGold = goldPerSecond.mul(nrSeconds);
     Player.gold = Player.gold.add(totalGold);
   }
   //a function to save game to local storage
@@ -255,41 +216,41 @@ class GameManagerClass {
 
     localStorage.clear();
 
-    localStorage.setItem('Player', Player.save());
-    localStorage.setItem('Statistics', allThingsStatistics.save());
-    localStorage.setItem('Unlocks', UH.save());
+    localStorage.setItem("Player", Player.save());
+    localStorage.setItem("Statistics", allThingsStatistics.save());
+    localStorage.setItem("Unlocks", UH.save());
     Object.entries(this.pages).forEach(
       ([key, page]) => { localStorage.setItem(key, page.save()) }
     );
-    localStorage.setItem('currentPage', this.currentPage);
-    localStorage.setItem('lastSavedTime', Date.now());
+    localStorage.setItem("currentPage", this.currentPage);
+    localStorage.setItem("lastSavedTime", Date.now());
   }
   //a function to load game from local storage
   loadFromLocalStorage() {
-    Player.load(localStorage.getItem('Player'));
-    allThingsStatistics.load(localStorage.getItem('Statistics'));
-    UH.load(localStorage.getItem('Unlocks'));
+    Player.load(localStorage.getItem("Player"));
+    allThingsStatistics.load(localStorage.getItem("Statistics"));
+    UH.load(localStorage.getItem("Unlocks"));
     //load pages
     Object.entries(this.pages).forEach(
       ([key, page]) => { page.load(localStorage.getItem(key)) }
     );
     //load offline progress
     //  shinaningans to get the current page to display correctly (CHANGE THIS?)
-    let a = localStorage.getItem('currentPage');
-    if (a == 'TowerPage') {
+    const a = localStorage.getItem("currentPage");
+    if (a == "TowerPage") {
       GB.pageButtons.selected = 1;
-      this.currentPage = 'ArmyPage';
+      this.currentPage = "ArmyPage";
     }
     else {
       GB.pageButtons.selected = 0;
-      this.currentPage = 'TowerPage';
+      this.currentPage = "TowerPage";
     }
     for (let i = 0; i < GB.pageButtons.buttons.length; i++) {
-      if (GB.pageButtons.buttons[i].getAttribute('page') == a) {
+      if (GB.pageButtons.buttons[i].getAttribute("page") == a) {
         GB.pageButtons.buttonClick(i);
       }
     }
-    this.loadOfflineProgress(Date.now() - Number(localStorage.getItem('lastSavedTime')), a);
+    this.loadOfflineProgress(Date.now() - Number(localStorage.getItem("lastSavedTime")), a);
     return true;
   }
   openGame() {
@@ -320,7 +281,7 @@ class GameManagerClass {
   }
 }
 
-let GM = new GameManagerClass();
+const GM = new GameManagerClass();
 
 let interval = setInterval(function () { SettingsPage.displayEveryTick(SettingsPage) }, 50);
 
@@ -335,14 +296,14 @@ function HidePages(toShow) {
   }
 }
 //          THE INTERPAGE STUFF         \\
-const goldText = document.querySelector('#GoldText');
+const goldText = document.querySelector("#GoldText");
 
 //click event for the continue from offline button
-document.getElementById('ContinueFromOfflineProgress').addEventListener('click', function () {
+document.getElementById("ContinueFromOfflineProgress").addEventListener("click", function () {
   //change current page to be able to use HidePages
-  currentPage = Number(window.localStorage.getItem('currentPage')) ? 0 : 1;
-  document.getElementById('OfflinePageContainer').hidden = true;
-  document.getElementById('PageButtonsContainer').hidden = false;
+  currentPage = Number(window.localStorage.getItem("currentPage")) ? 0 : 1;
+  document.getElementById("OfflinePageContainer").hidden = true;
+  document.getElementById("PageButtonsContainer").hidden = false;
   goldText.parentElement.hidden = false;
   //UNCOMMENT THIS
   HidePages(currentPage);
@@ -405,7 +366,7 @@ document.getElementById('ContinueFromOfflineProgress').addEventListener('click',
 let save_interval;
 
 //load the game on each session when starting up
-window.addEventListener('load', () => {
+window.addEventListener("load", () => {
   GM.openGame();
   // save_interval = setInterval(GM.SaveToLocalStorage,1000);
 });
