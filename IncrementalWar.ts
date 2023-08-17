@@ -96,6 +96,9 @@ export const Player = new PlayerClass();
 //          ALL THE PAGES IN ONE PLACE
 
 class GameManagerClass {
+  LoadOfflineProgress(arg0: number) {
+    throw new Error("Method not implemented.");
+  }
   saveInterval?: number;
   renderInterval?: number;
   currentPage: string = "StorePage";

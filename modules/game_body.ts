@@ -29,4 +29,4 @@ class GameBodyClass {
   }
 }
 
-const GB = new GameBodyClass();
+export const GB = new GameBodyClass();
