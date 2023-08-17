@@ -13,6 +13,7 @@ import { BossFightingResultPage } from "./modules/boss";
 import { ArmyCompsI, StringHashT } from "./modules/types";
 import { PageClass } from "./modules/base_classes";
 import { getHtmlElement, stylizeDecimals } from "./modules/functions";
+import { ArmyPage } from "./modules/pages/army";
 
 //A popup window for your inspection needs
 const PopupWindow = {
@@ -113,13 +114,12 @@ export const Player = new PlayerClass();
 //          ALL THE PAGES IN ONE PLACE
 
 class GameManagerClass {
-  saveInterval: undefined;
-  currentPage: string;
+  saveInterval?: number;
+  renderInterval?: number;
+  currentPage: string = "StorePage;
   pages: StringHashT<PageClass>;
   canSave: boolean;
   constructor() {
-    this.saveInterval = undefined;
-    this.currentPage = "StorePage";
     this.pages = {};
     [TowerPage, ArmyPage, StorePage, SettingsPage, BossArmySelectionPage,
       BossFightingPage, BossFightingResultPage, TutorialPage].forEach(
@@ -139,6 +139,17 @@ class GameManagerClass {
   }
   stopSaveInterval() {
     clearInterval(this.saveInterval);
+  }
+  startRenderInterval(page: string) {
+    this.renderInterval = setInterval(() => { this.pages[page].displayEveryTick() }, 50);
+  }
+  stopRenderInterval() {
+    clearInterval(this.renderInterval);
+    this.renderInterval = undefined;
+  }
+  swapRenderPage(newPage: string) {
+    this.stopRenderInterval();
+    this.startRenderInterval(newPage);
   }
   initializeEventListeners() {
     window.addEventListener("load", () => {
@@ -240,22 +251,21 @@ class GameManagerClass {
   toggleCanSave() {
     this.canSave = !this.canSave;
   }
-}
+  hidePages(toShow: string) {
+    if (toShow != this.currentPage) {
+      clearInterval(interval);
+      this.pages[this.currentPage].hidden = true;
+      this.pages[toShow].hidden = false;
+      this.currentPage = toShow;
 
-const GM = new GameManagerClass();
-
-let interval = setInterval(() => { SettingsPage.displayEveryTick() }, 50);
-
-function HidePages(toShow: string) {
-  if (toShow != GM.currentPage) {
-    clearInterval(interval);
-    GM.pages[GM.currentPage].hidden = true;
-    GM.pages[toShow].hidden = false;
-    GM.currentPage = toShow;
-    interval = setInterval(() => { GM.pages[GM.currentPage].displayEveryTick() }, 50);
-    GM.pages[toShow].display();
+      this.pages[toShow].display();
+    }
   }
 }
+
+export const GM = new GameManagerClass();
+
+let interval = setInterval(() => { SettingsPage.displayEveryTick() }, 50);
 //          THE INTERPAGE STUFF         \\
 const goldText = getHtmlElement("#GoldText");
 
@@ -267,7 +277,7 @@ getHtmlElement("#ContinueFromOfflineProgress").addEventListener("click", () => {
   getHtmlElement("#PageButtonsContainer").hidden = false;
   goldText.parentElement!.hidden = false;
   //UNCOMMENT THIS
-  HidePages(currentPage);
+  GM.hidePages(currentPage);
 });
 
 //a function to save game to local storage
