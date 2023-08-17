@@ -1,75 +1,7 @@
 import Decimal from "break_infinity.js";
 import { getCompareColor, stylizeDecimals } from "./functions";
+import { HashLike } from "./base_classes";
 
-//a class to handle price, created to accept multiple functions across multiple intervals
-export class PriceHandler {
-  stopPoints: Decimal[];
-  coefficients: Decimal[];
-  types: string[];
-  stopPointValues: Decimal[];
-  //ar = arithmetic increas, ge = geometric increase
-  constructor(stopPoints: Decimal[] = [], types: string[] = ["ar"], coefficients = [new Decimal(0)], start_price = new Decimal(0)) {
-    this.stopPoints = stopPoints;
-    this.stopPoints.unshift(new Decimal(0));
-    this.stopPoints.push(new Decimal(Infinity));
-    this.coefficients = coefficients;
-    this.coefficients.unshift(start_price);
-    this.types = types;
-    this.types.unshift("ar");
-    this.stopPointValues = [coefficients[0]];
-    for (let i = 1; i < stopPoints.length; i++) {
-      if (types[i] == "ar") {
-        this.stopPointValues[i] = this.stopPointValues[i - 1].add(this.stopPoints[i].sub(this.stopPoints[i - 1]).mul(this.coefficients[i]));
-      }
-      else if (types[i] == "ge") {
-        this.stopPointValues[i] = this.stopPointValues[i - 1].mul(this.stopPoints[i].sub(this.stopPoints[i - 1]).pow(this.coefficients[i]));
-      }
-    }
-  }
-
-  getPrice(nrOwned: Decimal, toBuy: Decimal): Decimal {
-    let i = 0;
-    while (this.stopPoints[i].lte(nrOwned)) {
-      i++;
-    }
-    //get start price
-    let start_price = this.stopPointValues[i - 1];
-    let new_price = new Decimal(0);
-    //calculate new price
-    while (toBuy.gt(new Decimal(0))) {
-      const upper_border = nrOwned.add(toBuy).gt(this.stopPoints[i]) ? this.stopPoints[i].sub(nrOwned) : toBuy;
-      if (this.types[i] == "ar") {
-        new_price = new_price.add(Decimal.sumArithmeticSeries(upper_border, start_price, this.coefficients[i], nrOwned.sub(this.stopPoints[i - 1])));
-      }
-      else if (this.types[i] == "ge") {
-        new_price = new_price.add(Decimal.sumGeometricSeries(upper_border, start_price, this.coefficients[i], nrOwned.sub(this.stopPoints[i - 1])));
-      }
-      start_price = this.stopPointValues[i];
-      i++;
-      toBuy = toBuy.sub(upper_border);
-      nrOwned = nrOwned.add(upper_border);
-    }
-    return new_price;
-  }
-}
-
-//elemental circle: fire -> nature -> water -> wind -> fire
-
-/*
-    A class which handles subStats, containing values for physical, magic, fire, water, wind and nature.
-    Public variables contain useable strings for creating string representation
-*/
-
-class HashLike {
-  get<T>(key: string): T {
-    return this[key as keyof HashLike] as T;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  set(key: string, value: any) {
-    this[key as keyof HashLike] = value;
-  }
-}
 
 interface SubStatsKeys<T> {
   physical: T;
@@ -171,6 +103,64 @@ class ApplyFunctionForStats extends HashLike {
   }
 }
 
+//a class to handle price, created to accept multiple functions across multiple intervals
+export class PriceHandler {
+  stopPoints: Decimal[];
+  coefficients: Decimal[];
+  types: string[];
+  stopPointValues: Decimal[];
+  //ar = arithmetic increas, ge = geometric increase
+  constructor(stopPoints: Decimal[] = [], types: string[] = ["ar"], coefficients = [new Decimal(0)], start_price = new Decimal(0)) {
+    this.stopPoints = stopPoints;
+    this.stopPoints.unshift(new Decimal(0));
+    this.stopPoints.push(new Decimal(Infinity));
+    this.coefficients = coefficients;
+    this.coefficients.unshift(start_price);
+    this.types = types;
+    this.types.unshift("ar");
+    this.stopPointValues = [coefficients[0]];
+    for (let i = 1; i < stopPoints.length; i++) {
+      if (types[i] == "ar") {
+        this.stopPointValues[i] = this.stopPointValues[i - 1].add(this.stopPoints[i].sub(this.stopPoints[i - 1]).mul(this.coefficients[i]));
+      }
+      else if (types[i] == "ge") {
+        this.stopPointValues[i] = this.stopPointValues[i - 1].mul(this.stopPoints[i].sub(this.stopPoints[i - 1]).pow(this.coefficients[i]));
+      }
+    }
+  }
+
+  getPrice(nrOwned: Decimal, toBuy: Decimal): Decimal {
+    let i = 0;
+    while (this.stopPoints[i].lte(nrOwned)) {
+      i++;
+    }
+    //get start price
+    let start_price = this.stopPointValues[i - 1];
+    let new_price = new Decimal(0);
+    //calculate new price
+    while (toBuy.gt(new Decimal(0))) {
+      const upper_border = nrOwned.add(toBuy).gt(this.stopPoints[i]) ? this.stopPoints[i].sub(nrOwned) : toBuy;
+      if (this.types[i] == "ar") {
+        new_price = new_price.add(Decimal.sumArithmeticSeries(upper_border, start_price, this.coefficients[i], nrOwned.sub(this.stopPoints[i - 1])));
+      }
+      else if (this.types[i] == "ge") {
+        new_price = new_price.add(Decimal.sumGeometricSeries(upper_border, start_price, this.coefficients[i], nrOwned.sub(this.stopPoints[i - 1])));
+      }
+      start_price = this.stopPointValues[i];
+      i++;
+      toBuy = toBuy.sub(upper_border);
+      nrOwned = nrOwned.add(upper_border);
+    }
+    return new_price;
+  }
+}
+
+//elemental circle: fire -> nature -> water -> wind -> fire
+
+/*
+    A class which handles subStats, containing values for physical, magic, fire, water, wind and nature.
+    Public variables contain useable strings for creating string representation
+*/
 export class SubStats extends ApplyFunctionForStats implements SubStatsKeys<Decimal> {
   static textStart = "<span style=\"color:";
   static typeColor = new SubStatsStringFormat("#c06000\">", "#b000b0\">", "#FF0000\">", "#4848ff\">", "#d0FFd0\">", "#20d000\">");

@@ -2,7 +2,7 @@ import Decimal from "break_infinity.js";
 import { Stats, SubStats } from "./stats";
 import { stuff } from "./data";
 import { ArmyCompsI } from "./types";
-import { Player } from "../IncrementalWar";
+import { Player } from "./main";
 import { getCompareColor, stylizeDecimals } from "./functions";
 import { ArmyPage } from "./pages/army";
 

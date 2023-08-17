@@ -1,4 +1,4 @@
-import { GM, Player } from "../../../IncrementalWar";
+import { GM, Player } from "../../main";
 import { PageClass, Fight } from "../../base_classes";
 import { BossSelectArmyButtonsClass } from "../../boss";
 import { stuff } from "../../data";

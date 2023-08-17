@@ -1,4 +1,4 @@
-import { Player, GM } from "../../IncrementalWar";
+import { Player, GM } from "../main";
 import { PageClass } from "../base_classes";
 import { getHtmlElement } from "../functions";
 import { GB } from "../game_body";

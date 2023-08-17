@@ -1,4 +1,4 @@
-import { GM } from '../../IncrementalWar';
+import { GM } from '../main';
 import { ItemListClass, PageClass } from "../base_classes";
 import { getHtmlElement } from "../functions";
 import { TutorialItem } from '../tutorial';

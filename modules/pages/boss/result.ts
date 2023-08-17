@@ -1,4 +1,4 @@
-import { GM } from "../../../IncrementalWar";
+import { GM } from "../../main";
 import { PageClass } from "../../base_classes";
 import { BossFightingPage } from "./fighting";
 

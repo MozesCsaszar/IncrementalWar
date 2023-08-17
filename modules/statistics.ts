@@ -2,7 +2,7 @@
 
 import Decimal from "break_infinity.js";
 import { ArmyCompsI, LevelToIndexT, OverallLevelT, StringHashT } from "./types";
-import { Player } from "../IncrementalWar";
+import { Player } from "./main";
 import { stuff } from "./data";
 import { UH } from "./unlocks";
 import { getObjFromPath } from "./functions";

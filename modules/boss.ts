@@ -3,7 +3,7 @@ import { Stats, SubStats } from "./stats";
 import { NumberHashT } from "./types";
 import { Army } from "./army";
 import { ButtonGroupClass } from "./base_classes";
-import { Player } from "../IncrementalWar";
+import { Player } from "./main";
 import { BossFightingPage } from "./pages/boss/fighting";
 import { BossArmySelectionPage } from "./pages/boss/army_selection";
 

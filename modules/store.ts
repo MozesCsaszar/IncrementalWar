@@ -1,5 +1,5 @@
 import Decimal from "break_infinity.js";
-import { Player } from "../IncrementalWar";
+import { Player } from "./main";
 import { stuff } from "./data";
 import { ArmyPage } from "./pages/army";
 import { allThingsStatistics } from "./statistics";
@@ -24,8 +24,9 @@ export class Buyer {
 
   buy(buyNr: Decimal) {
     const price = stuff[this.type][this.name].getPrice(this.nrBought, buyNr);
-    if (Player[this.currency].gte(price)) {
-      Player[this.currency] = Player[this.currency].sub(price);
+    const currencyAmount = Player.get<Decimal>(this.currency);
+    if (currencyAmount.gte(price)) {
+      Player.set(this.currency, currencyAmount.sub(price));
       //when adding a new element
       if (!Player.inventory[this.type][this.name]) {
         ArmyPage.elementEquipState[this.type][this.name] = 0;

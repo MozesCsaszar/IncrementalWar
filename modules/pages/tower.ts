@@ -1,4 +1,4 @@
-import { Player } from "../../IncrementalWar";
+import { Player } from "../main";
 import { ButtonGroupClass, PageClass } from "../base_classes";
 import { getHtmlElement, getHtmlElementList } from "../functions";
 

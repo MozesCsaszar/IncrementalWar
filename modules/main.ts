@@ -8,30 +8,30 @@ family or close circle of friends.
 */
 
 import Decimal from "break_infinity.js";
-import { Army } from "./modules/army";
-import { ArmyCompsI, StringHashT } from "./modules/types";
-import { PageClass } from "./modules/base_classes";
-import { getHtmlElement, stylizeDecimals } from "./modules/functions";
-import { ArmyPage } from "./modules/pages/army";
-import { BossArmySelectionPage } from "./modules/pages/boss/army_selection";
-import { BossFightingPage } from "./modules/pages/boss/fighting";
-import { BossFightingResultPage } from "./modules/pages/boss/result";
-import { TowerPage } from "./modules/tower_page";
+import { Army } from "./army";
+import { ArmyCompsI, StringHashT } from "./types";
+import { HashLike, PageClass } from "./base_classes";
+import { getHtmlElement, stylizeDecimals } from "./functions";
+import { ArmyPage } from "./pages/army";
+import { BossArmySelectionPage } from "./pages/boss/army_selection";
+import { BossFightingPage } from "./pages/boss/fighting";
+import { BossFightingResultPage } from "./pages/boss/result";
+import { TowerPage } from "./pages/tower";
+import { StorePage } from "./pages/store";
+import { GB } from "./game_body";
+import { SettingsPage } from "./pages/settings";
+import { TutorialPage } from "./pages/tutorial";
+import { allThingsStatistics } from "./statistics";
+import { UH } from "./unlocks";
 
-export class PlayerClass {
-  static save(): string {
-    throw new Error("Method not implemented.");
-  }
-  static load(arg0: string | null) {
-    throw new Error("Method not implemented.");
-  }
+export class PlayerClass extends HashLike {
   gold: Decimal = new Decimal(25);
   armies: [Army, Army, Army] = [new Army(), new Army(), new Army()];
   inventory: ArmyCompsI<StringHashT<Decimal>> = {
     creatures: {},
     weapons: {}
   };
-  static gold: any;
+  static gold: Decimal;
   save() {
     //  save gold
     let saveText = this.gold + "/*/";
@@ -185,8 +185,8 @@ class GameManagerClass {
   //a function to load game from local storage
   loadFromLocalStorage() {
     Player.load(localStorage.getItem("Player")!);
-    allThingsStatistics.load(localStorage.getItem("Statistics"));
-    UH.load(localStorage.getItem("Unlocks"));
+    allThingsStatistics.load(localStorage.getItem("Statistics")!);
+    UH.load(localStorage.getItem("Unlocks")!);
     //load pages
     Object.entries(this.pages).forEach(
       ([key, page]) => { page.load(localStorage.getItem(key)!) }

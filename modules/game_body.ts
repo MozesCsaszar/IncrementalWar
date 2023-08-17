@@ -1,4 +1,4 @@
-import { GM } from "../IncrementalWar";
+import { GM } from "./main";
 import { ButtonGroupClass } from "./base_classes";
 import { getHtmlElement } from "./functions";
 

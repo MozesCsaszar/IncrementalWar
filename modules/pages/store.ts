@@ -1,7 +1,7 @@
 //          BUY CREATURE PAGE
 
 import Decimal from "break_infinity.js";
-import { Player } from "../../IncrementalWar";
+import { Player } from "../main";
 import { ItemListClass, ButtonGroupClass, PageClass } from "../base_classes";
 import { stuff } from "../data";
 import { getHtmlElementList, stylizeDecimals } from "../functions";
@@ -206,7 +206,8 @@ class StorePageClass extends PageClass {
   //returns the number of steps taken
   load(saveText: string) {
     const saveTextArr = saveText.split("/*/");
-    let i = super.load(saveTextArr);
+    let saveI = super.load(saveTextArr);
+    let i = saveI ? saveI : 0;
 
     const page_nr = Number(saveTextArr[i]);
     i++;

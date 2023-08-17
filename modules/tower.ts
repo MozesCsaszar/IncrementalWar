@@ -1,6 +1,6 @@
 import Decimal from "break_infinity.js";
 import { Stats, SubStats } from "./stats";
-import { GM, Player } from "../IncrementalWar";
+import { GM, Player } from "./main";
 import { Fight } from "./base_classes";
 import { stuff } from "./data";
 import { getHtmlElement, stylizeDecimals } from "./functions";

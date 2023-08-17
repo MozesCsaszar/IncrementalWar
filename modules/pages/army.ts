@@ -1,5 +1,5 @@
 import Decimal from "break_infinity.js";
-import { Player } from "../../IncrementalWar";
+import { Player } from "../main";
 import { Army } from "../army";
 import { ButtonGroupClass, ItemListClass, PageClass } from "../base_classes";
 import { stuff } from "../data";

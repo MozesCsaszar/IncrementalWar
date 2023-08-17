@@ -1,8 +1,16 @@
-//FIGHTING RELATED
-//CHANGE THIS PLACEMENT
-
-import { Boss } from "./boss";
 import { getHtmlElement, getHtmlElementList } from "./functions";
+
+//Provides get and set methods
+export class HashLike {
+  get<T>(key: string): T {
+    return this[key as keyof HashLike] as T;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  set(key: string, value: any) {
+    this[key as keyof HashLike] = value;
+  }
+}
 
 /*
     bosses - the names of the bosses from stuff which you need to fight
@@ -62,7 +70,7 @@ export class PageClass {
   //called when you need to get values from a saveText
   //maybe should call displayOnLoad?
   //returns the number of steps taken
-  load(saveText: string) {
+  load(saveText: string | string[]): number | void {
     this.timesVisited = Number(saveText[0]);
     return 1;
   }
