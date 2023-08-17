@@ -18,3 +18,11 @@ export type StuffType = ArmyCompsI<StringHashT<ArmyComponent>>
   & {
     bosses: StringHashT<Boss>,
   }
+
+//for statistics
+export type LevelToIndexT = {
+  'base': 0
+}
+export type OverallLevelT = LevelToIndexT & {
+  'overall': 0
+}

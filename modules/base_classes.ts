@@ -81,7 +81,7 @@ export class ItemListClass<T> {
   //container: the container thisect, list_identifier: the identifier by which you can find the list container, the rest will be handled automatically
   constructor(containerIdentifier: string, elementIdentifier: string,
     previousButtonIdentifier: string, backButtonIdentifier: string,
-    next_buttonIdentifier: string, itemList = []) {
+    next_buttonIdentifier: string, itemList: T[] = []) {
     this.container = $(containerIdentifier).get(0)!;
     this.elements = $(containerIdentifier + ' > ' + elementIdentifier).toArray();
     //for hiding elements and defining if the element is hidden or not

@@ -7,6 +7,7 @@ import { stuff } from "../data";
 import { getHtmlElementList, stylizeDecimals } from "../functions";
 import { ArmyCompsI } from "../types";
 import { Buyer } from "../store";
+import { TutorialPage } from "./tutorial";
 
 class StoreItemListClass extends ItemListClass<Buyer> {
   type: keyof ArmyCompsI<never>;

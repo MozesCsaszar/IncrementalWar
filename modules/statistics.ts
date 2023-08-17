@@ -1,17 +1,11 @@
 /*  A module which will store statistical data of your game, such as equipment bought this run and equipment bought overall */
 
 import Decimal from "break_infinity.js";
-import { ArmyCompsI, NumberHashT, StringHashT } from "./types";
+import { ArmyCompsI, LevelToIndexT, OverallLevelT, StringHashT } from "./types";
 import { Player } from "../IncrementalWar";
 import { stuff } from "./data";
-import { NewExpression } from "typescript";
-
-type LevelToIndexT = {
-  'base': 0
-}
-type OverallLevelT = LevelToIndexT & {
-  'overall': 0
-}
+import { UH } from "./unlocks";
+import { getObjFromPath } from "./functions";
 
 //a class which stores data in a list and conveniently gives access to it as well
 //currently has
@@ -115,23 +109,18 @@ class AllThingsStatisticsClass {
       }
     }
   }
-  //a function that returns the StatisticClass thisect corresponding to path
-  getStatsFromPath(path: string[]) {
-    let strPath = path.join(".");
-    return this.stats[strPath];
-  }
   //functions which change statistics, then unlock new stuff if needed
   //they return the value true if an unlock was made, false otherwise
   addToStatistics(path: string[], amount: Decimal) {
-    this.getStatsFromPath(path).add(amount);
+    getObjFromPath(path, this.stats).add(amount);
     return UH.doUnlock(path);
   }
   setStatisticsToMax(path: string[], amount: Decimal) {
-    this.getStatsFromPath(path).setToMax(amount);
+    getObjFromPath(path, this.stats).setToMax(amount);
     return UH.doUnlock(path);
   }
   getStatistics(path: string[], level: keyof OverallLevelT) {
-    return this.getStatsFromPath(path).getStatistics(level);
+    return getObjFromPath(path, this.stats).getStatistics(level);
   }
   save() {
     let saveText = String(Object.keys(this.stats).length);

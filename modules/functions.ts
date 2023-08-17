@@ -1,4 +1,5 @@
 import Decimal from "break_infinity.js";
+import { StringHashT } from "./types";
 
 export const getCompareColor = (value1: Decimal | number, value2: Decimal | number) => {
   if (value1 instanceof Decimal && value2 instanceof Decimal) {
@@ -49,4 +50,10 @@ export const getHtmlElementList = (identifier: string) => {
 
 export const getHtmlElement = (identifier: string) => {
   return $(identifier).get(0)!;
+}
+export const getPathFromArr = (path: string[]) => path.join(".");
+//a function that returns the StatisticClass thisect corresponding to path
+export const getObjFromPath = <T>(path: string[], object: StringHashT<T>): T => {
+  let strPath = getPathFromArr(path);
+  return object[strPath];
 }
