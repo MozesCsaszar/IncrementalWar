@@ -15,7 +15,7 @@ export class Fight {
   maxSelectibleArmies: number;
   loseSoldiers: boolean;
   selectedArmies: number[];
-  constructor(bosses = [], maxSelectibleArmies: number, loseSoldiers: boolean) {
+  constructor(bosses: string[] = [], maxSelectibleArmies: number, loseSoldiers: boolean) {
     this.bosses = bosses;
     this.maxSelectibleArmies = maxSelectibleArmies;
     this.loseSoldiers = loseSoldiers;

@@ -1,52 +1,61 @@
-class TowerFloor {
-  constructor(levels = [], name = "", desc = "", raided_levels = []) {
-    this.levels = levels;
-    this.name = name;
-    this.desc = desc;
-    this.raided_levels = raided_levels;
-  }
-
-  getText() {
-    return "<b>" + this.name + "</b><br>" +
-      "<br><i>" + this.desc + "</i>";
-  }
-}
+import Decimal from "break_infinity.js";
+import { Stats, SubStats } from "./stats";
+import { GM, Player } from "../IncrementalWar";
+import { Fight } from "./base_classes";
+import { stuff } from "./data";
+import { getHtmlElement, stylizeDecimals } from "./functions";
+import { BossArmySelectionPage } from "./pages/boss/army_selection";
+import { TowerPage } from "./pages/tower";
 
 class ParentTowerLevel {
-  constructor(width, height, top, left, z_index, capacity, unlocks, name, desc, raiding_army) {
+  width: number;
+  height: number;
+  top: number;
+  left: number;
+  capacity: Decimal;
+  raidingArmy: number;
+  name: string;
+  desc: string;
+  zIndex: number;
+  unlocks: [number, number][];
+  unlockedNextLevels: boolean;
+  constructor(width: number, height: number, top: number, left: number, zIndex: number, capacity: Decimal, unlocks: [number, number][], name: string, desc: string, raidingArmy: number) {
     this.width = width;
     this.height = height;
     this.top = top;
     this.left = left;
     this.capacity = capacity;
-    this.raiding_army = raiding_army;
+    this.raidingArmy = raidingArmy;
     this.name = name;
     this.desc = desc;
-    this.z_index = z_index;
+    this.zIndex = zIndex;
     this.unlocks = unlocks;
     //it is to prevent trying to unlock multiple times the unlocks
-    this.unlocked_next_levels = false;
+    this.unlockedNextLevels = false;
   }
 }
 
 //the level class that makes up the tower floors (a floor consists of one or more levels)
 class TowerLevel extends ParentTowerLevel {
-  constructor(width, height, top, left, z_index, stats, capacity, gold_per_power, unlocks = [], name = "", desc = "", raiding_army = -1) {
-    super(width, height, top, left, z_index, capacity, unlocks, name, desc, raiding_army);
+  goldPerPower: Decimal;
+  stats: Stats;
+  type: string;
+  constructor(width: number, height: number, top: number, left: number, zIndex: number, stats: Stats, capacity: Decimal, goldPerPower: Decimal, unlocks: [number, number][] = [], name = "", desc = "", raidingArmy = -1) {
+    super(width, height, top, left, zIndex, capacity, unlocks, name, desc, raidingArmy);
 
-    this.gold_per_power = gold_per_power;
+    this.goldPerPower = goldPerPower;
     this.stats = stats;
     this.type = "Raid";
   }
 
   get goldPerSecond() {
-    return (Player.armies[this.raiding_army].size.min(this.capacity)).mul(this.gold_per_power).mul(Player.armies[this.raiding_army].stats.getPower(this.stats, "Attack", "Defense")).max(new Decimal(0));
+    return (Player.armies[this.raidingArmy].size.min(this.capacity)).mul(this.goldPerPower).mul(Player.armies[this.raidingArmy].stats.getPower(this.stats, "Attack", "Defense")).max(new Decimal(0));
   }
 
-  get_color() {
-    const def_power = this.stats.getPower(Player.armies[TowerPage.currentArmy].stats, "Defense", "Attack");
-    const atk_power = Player.armies[TowerPage.currentArmy].stats.getPower(this.stats, "Attack", "Defense");
-    if (atk_power.lt(def_power)) {
+  getColor() {
+    const defPower = this.stats.getPower(Player.armies[TowerPage.currentArmy].stats, "Defense", "Attack");
+    const atkPower = Player.armies[TowerPage.currentArmy].stats.getPower(this.stats, "Attack", "Defense");
+    if (atkPower.lt(defPower)) {
       return "var(--disabled-tower-level-background-color)";
     }
     else {
@@ -54,59 +63,59 @@ class TowerLevel extends ParentTowerLevel {
     }
   }
 
-  tick(nr_ticks) {
-    Player.gold = Player.gold.add(this.goldPerSecond.div(new Decimal(nr_ticks)));
+  tick(nrTicks: number) {
+    Player.gold = Player.gold.add(this.goldPerSecond.div(nrTicks));
   }
 
-  getText(floor_name) {
-    return "<b>" + floor_name + " - " + this.name + "</b><br>" +
+  getText(floorName: string) {
+    return "<b>" + floorName + " - " + this.name + "</b><br>" +
       "<i>Type: " + this.type + "</i><br>" +
-      "Raided by: " + (this.raiding_army == -1 ? "None" : this.raiding_army + 1) + "<br>" +
-      "Defense: " + this.stats.Defense.getText() + "<br>" +
+      "Raided by: " + (this.raidingArmy == -1 ? "None" : this.raidingArmy + 1) + "<br>" +
+      "Defense: " + this.stats.get<SubStats>("Defense").getText() + "<br>" +
       "Capacity: " + stylizeDecimals(this.capacity, true) +
-      "<br>" + "Gold per power: " + stylizeDecimals(this.gold_per_power) + "<br>" +
-      "Current gold per second: " + (this.raiding_army == -1 ? "None" : stylizeDecimals(this.goldPerSecond)) + "<br>" +
+      "<br>" + "Gold per power: " + stylizeDecimals(this.goldPerPower) + "<br>" +
+      "Current gold per second: " + (this.raidingArmy == -1 ? "None" : stylizeDecimals(this.goldPerSecond)) + "<br>" +
       "<br><i>" + this.desc + "</i>";
   }
 
-  raid(levelNr) {
+  raid(levelNr: number) {
     /*
         Input:  levelNr: the number of the level in the current floor
         Output: the number of the level this army was raiding before this floor
                 -1 if ther was no such army
     */
     //get attacking and defensive power respective to this tower level
-    const def_power = this.stats.getPower(Player.armies[TowerPage.currentArmy].stats, "Defense", "Attack");
-    const atk_power = Player.armies[TowerPage.currentArmy].stats.getPower(this.stats, "Attack", "Defense");
+    const defPower = this.stats.getPower(Player.armies[TowerPage.currentArmy].stats, "Defense", "Attack");
+    const atkPower = Player.armies[TowerPage.currentArmy].stats.getPower(this.stats, "Attack", "Defense");
     //last level raided by same army
-    let last_one = -1;
-    if (def_power.lte(atk_power)) {
+    let lastOne = -1;
+    if (defPower.lte(atkPower)) {
       //if you try to raid level with same army again, remove raiding army from this level
-      if (this.raiding_army == TowerPage.currentArmy) {
-        this.raiding_army = -1;
+      if (this.raidingArmy == TowerPage.currentArmy) {
+        this.raidingArmy = -1;
         Player.armies[TowerPage.currentArmy].raiding = -1;
         //remove the problematic element from the array which stores the raided places
         TowerPage.Tower.removeRaidedLevel(TowerPage.Tower.currentFloor, levelNr);
         //return the same levelNr as this level
-        last_one = levelNr;
+        lastOne = levelNr;
       }
       else {
         //if this army was already raiding, remove previous raid
         if (Player.armies[TowerPage.currentArmy].raiding != -1) {
-          last_one = TowerPage.Tower.removeRaidedLevelByArmy(TowerPage.currentArmy)[1];
+          lastOne = TowerPage.Tower.removeRaidedLevelByArmy(TowerPage.currentArmy)[1];
         }
         //if the level is already raided, remove it
-        if (this.raiding_army != -1) {
+        if (this.raidingArmy != -1) {
           TowerPage.Tower.changeRaidedLevel(TowerPage.Tower.currentFloor, levelNr, TowerPage.currentArmy);
         }
         else {
           TowerPage.Tower.addRaidedLevel(TowerPage.Tower.currentFloor, levelNr, TowerPage.currentArmy);
         }
-        this.raiding_army = TowerPage.currentArmy;
+        this.raidingArmy = TowerPage.currentArmy;
         Player.armies[TowerPage.currentArmy].raiding = levelNr;
       }
       //unlock new levels
-      if (!this.unlocked_next_levels) {
+      if (!this.unlockedNextLevels) {
         for (let j = 0; j < this.unlocks.length; j++) {
           const un = this.unlocks[j];
           //* CHANGE THIS (MOVE IT SOMEWHERE ELSE)
@@ -115,19 +124,21 @@ class TowerLevel extends ParentTowerLevel {
           }
           //*/
         }
-        this.unlocked_next_levels = true;
+        this.unlockedNextLevels = true;
       }
     }
     else {
       return false;
     }
-    return last_one;
+    return lastOne;
   }
 }
 
 class BossFightLevel extends ParentTowerLevel {
-  constructor(width, height, top, left, z_index, boss, capacity, rewards, unlocks = [], name = "", desc = "", raiding_army = -1) {
-    super(width, height, top, left, z_index, capacity, unlocks, name, desc, raiding_army);
+  rewards: any;
+  boss: string;
+  constructor(width: number, height: number, top: number, left: number, zIndex: number, boss: string, capacity: Decimal, rewards: Decimal, unlocks = [], name = "", desc = "", raidingArmy = -1) {
+    super(width, height, top, left, zIndex, capacity, unlocks, name, desc, raidingArmy);
 
     this.rewards = rewards;
     this.boss = boss;
@@ -141,10 +152,10 @@ class BossFightLevel extends ParentTowerLevel {
     return stuff.bosses[this.boss].stats;
   }
 
-  get_color() {
-    const def_power = stuff.bosses[this.boss].stats.getPower(Player.armies[TowerPage.currentArmy].stats, "Defense", "Attack");
-    const atk_power = Player.armies[TowerPage.currentArmy].stats.getPower(stuff.bosses[this.boss].stats, "Attack", "Defense");
-    if (atk_power.lt(def_power)) {
+  getColor() {
+    const defPower = stuff.bosses[this.boss].stats.getPower(Player.armies[TowerPage.currentArmy].stats, "Defense", "Attack");
+    const atkPower = Player.armies[TowerPage.currentArmy].stats.getPower(stuff.bosses[this.boss].stats, "Attack", "Defense");
+    if (atkPower.lt(defPower)) {
       return "var(--disabled-tower-level-background-color)";
     }
     else {
@@ -152,8 +163,8 @@ class BossFightLevel extends ParentTowerLevel {
     }
   }
 
-  getText(floor_name) {
-    return "<b>" + floor_name + " - " + this.name + "</b><br>" +
+  getText(floorName: string) {
+    return "<b>" + floorName + " - " + this.name + "</b><br>" +
       "<i>Type: " + this.type + "</i><br><br>" +
       stuff.bosses[this.boss].name + "<br>" +
       stuff.bosses[this.boss].stats.getText() + "<br>" +
@@ -162,20 +173,41 @@ class BossFightLevel extends ParentTowerLevel {
       "<i>" + this.desc + "</i>";
   }
 
-  tick(nr_ticks) { }
+  tick() { }
 
-  raid(levelNr) {
-    document.querySelector("#PageButtonsContainer").hidden = true;
-    document.querySelector("#PageTopResourcesContainer").hidden = true;
+  raid(levelNr: number) {
+    getHtmlElement("#PageButtonsContainer").hidden = true;
+    getHtmlElement("#PageTopResourcesContainer").hidden = true;
     BossArmySelectionPage.fight = new Fight([this.boss], 1, false)
-    HidePages("BossArmySelectionPage");
+    GM.hidePages("BossArmySelectionPage");
 
     return false;
   }
 
 }
 
+class TowerFloor {
+  levels: ParentTowerLevel[];
+  name: string;
+  desc: string;
+  raidedLevels: [number, number][];
+  constructor(levels: ParentTowerLevel[] = [], name = "", desc = "", raidedLevels: [number, number][] = []) {
+    this.levels = levels;
+    this.name = name;
+    this.desc = desc;
+    this.raidedLevels = raidedLevels;
+  }
+
+  getText() {
+    return "<b>" + this.name + "</b><br>" +
+      "<br><i>" + this.desc + "</i>";
+  }
+}
+
 class TowerClass {
+  floors: TowerFloor[];
+  raidedLevels: [number, number, number][];
+  currentFloor: number;
   constructor() {
     this.floors = [];
     this.raidedLevels = [];
@@ -205,7 +237,7 @@ class TowerClass {
     return goldPerSecond;
   }
 
-  removeRaidedLevel(floorNr, levelNr) {
+  removeRaidedLevel(floorNr: number, levelNr: number) {
     let found = undefined;
     for (let j = 0; j < this.raidedLevels.length; j++) {
       if (this.raidedLevels[j][0] == floorNr && this.raidedLevels[j][1] == levelNr) {
@@ -214,11 +246,11 @@ class TowerClass {
       }
     }
     if (found != undefined) {
-      this.floors[found[0]].levels[found[1]].raiding_army = -1;
+      this.floors[found[0]].levels[found[1]].raidingArmy = -1;
     }
   }
   //returns removed level
-  removeRaidedLevelByArmy(armyNr) {
+  removeRaidedLevelByArmy(armyNr: number) {
     let found = undefined;
 
     for (let j = 0; j < this.raidedLevels.length; j++) {
@@ -228,17 +260,17 @@ class TowerClass {
       }
     }
     if (found != undefined) {
-      this.floors[found[0]].levels[found[1]].raiding_army = -1;
+      this.floors[found[0]].levels[found[1]].raidingArmy = -1;
     }
     return found;
   }
-  addRaidedLevel(floorNr, levelNr, armyNr) {
+  addRaidedLevel(floorNr: number, levelNr: number, armyNr: number) {
     this.raidedLevels.push([floorNr, levelNr, armyNr]);
   }
-  changeRaidedLevel(floorNr, levelNr, newArmy_nr) {
+  changeRaidedLevel(floorNr: number, levelNr: number, newArmyNr: number) {
     for (let j = 0; j < this.raidedLevels.length; j++) {
       if (this.raidedLevels[j][0] == floorNr && this.raidedLevels[j][1] == levelNr) {
-        this.raidedLevels[i][2] - newArmy_nr;
+        this.raidedLevels[j][2] = newArmyNr;
         break;
       }
     }
@@ -252,7 +284,7 @@ class TowerClass {
     return saveText;
   }
   //returns the modified i
-  load(saveText, i) {
+  load(saveText: string[], i: number) {
     this.currentFloor = Number(saveText[i]); i++;
     const len = Number(saveText[i]); i++;
     for (let ii = 0; ii < len; ii++, i += 3) {

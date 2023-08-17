@@ -108,12 +108,12 @@ class TowerPageClass extends PageClass {
       //on click, change army that is raiding it
       this.towerLevels[i].addEventListener("click", () => {
         const level = this.Tower.floors[this.Tower.currentFloor].levels[i];
-        const last_one = level.raid(i);
+        const lastOne = level.raid(i);
         //if raid was successfull, then change appearances around
-        if (!(last_one === false)) {
+        if (!(lastOne === false)) {
           //if there was a last one that this army raided, then remove visuals from that army
-          if (last_one != -1) {
-            this.displayLevel(this.Tower.currentFloor, last_one);
+          if (lastOne != -1) {
+            this.displayLevel(this.Tower.currentFloor, lastOne);
           }
           this.displayLevel(this.Tower.currentFloor, i);
           this.displayLevelText(this.Tower.currentFloor, i);
@@ -128,7 +128,7 @@ class TowerPageClass extends PageClass {
     //set the context text to the value you need on levels raided
     for (let i = 0; i < this.Tower.raidedLevels.length; i++) {
       const path = this.Tower.raidedLevels[i];
-      this.towerLevels[path[1]].setAttribute("contenttext", this.Tower.floors[path[0]].levels[path[1]].raiding_army + 1);
+      this.towerLevels[path[1]].setAttribute("contenttext", this.Tower.floors[path[0]].levels[path[1]].raidingArmy + 1);
     }
   }
   display() {
@@ -197,16 +197,16 @@ class TowerPageClass extends PageClass {
   }
   displayLevel(floorNr: number, levelNr: number) {
     const level = this.Tower.floors[floorNr].levels[levelNr];
-    const content_text = level.raiding_army == -1 ? " " : String(level.raiding_army + 1);
+    const content_text = level.raidingArmy == -1 ? " " : String(level.raidingArmy + 1);
     const htmlLevel = this.towerLevels[levelNr];
     htmlLevel.setAttribute("contenttext", content_text);
     htmlLevel.innerHTML = content_text;
-    htmlLevel.style.background = level.get_color();
+    htmlLevel.style.background = level.getColor();
     htmlLevel.style.width = level.width;
     htmlLevel.style.height = level.height;
     htmlLevel.style.top = level.top;
     htmlLevel.style.left = level.left;
-    htmlLevel.style.zIndex = level.z_index;
+    htmlLevel.style.zIndex = level.zIndex;
   }
   displayLevelText(floorNr: number, levelNr: number) {
     const level = this.Tower.floors[floorNr].levels[levelNr];
