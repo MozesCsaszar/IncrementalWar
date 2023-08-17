@@ -1,53 +1,28 @@
 //          BUY CREATURE PAGE
 
-class Buyer {
-  borderColors = {
-    "gold": "gold",
-  };
+import Decimal from "break_infinity.js";
+import { Player } from "../../IncrementalWar";
+import { ItemListClass, ButtonGroupClass, PageClass } from "../base_classes";
+import { stuff } from "../data";
+import { getHtmlElementList, stylizeDecimals } from "../functions";
+import { ArmyCompsI } from "../types";
+import { Buyer } from "../store";
 
-  constructor(type, name, currency = "gold", nr_bought = new Decimal(0)) {
-    this.type = type;
-    this.name = name;
-    this.nr_bought = nr_bought;
-    this.currency = currency;
-  }
-
-  buy(buy_nr) {
-    const price = stuff[this.type][this.name].getPrice(this.nr_bought, buy_nr);
-    if (Player[this.currency].gte(price)) {
-      Player[this.currency] = Player[this.currency].sub(price);
-      //when adding a new element
-      if (!Player.inventory[this.type][this.name]) {
-        ArmyPage.elementEquipState[this.type][this.name] = 0;
-        Player.inventory[this.type][this.name] = new Decimal(0);
-      }
-      Player.inventory[this.type][this.name] = Player.inventory[this.type][this.name].add(buy_nr);
-      this.nr_bought = this.nr_bought.add(buy_nr);
-      if (allThingsStatistics.addToStatistics(["StorePage", this.type, this.name], buy_nr)) {
-        StorePage.itemList.changePage(StorePage.itemList.page);
-      }
-      return true;
-    }
-    return false;
-  }
-
-  getPrice(buy_nr) {
-    return stuff[this.type][this.name].getPrice(this.nr_bought, buy_nr);
-  }
-}
-
-class StoreItemListClass extends ItemListClass {
+class StoreItemListClass extends ItemListClass<Buyer> {
+  type: keyof ArmyCompsI<never>;
+  buyerRows: [HTMLElement, HTMLElement, HTMLElement][] = [];
   //class names come in form of: .<name> or #<name>
-  constructor(containerIdentifier, elementIdentifier, previousButtonIdentifier, backButtonIdentifier, next_buttonIdentifier, itemList = []) {
+  constructor(containerIdentifier: string, elementIdentifier: string,
+    previousButtonIdentifier: string, backButtonIdentifier: string,
+    next_buttonIdentifier: string, itemList = []) {
     super(containerIdentifier, elementIdentifier, previousButtonIdentifier, backButtonIdentifier, next_buttonIdentifier, itemList);
 
     this.type = "creatures";
 
     //Entry format= nr_available, name, buy_button
-    this.buyerRows = [];
-    const buyer_rows1 = document.querySelectorAll(".nr_name_button_container.page_store > .nr_available_div");
-    const buyer_rows2 = document.querySelectorAll(".nr_name_button_container.page_store > .element_name_div");
-    const buyer_rows3 = document.querySelectorAll(".nr_name_button_container.page_store > .complementary_button");
+    const buyer_rows1 = getHtmlElementList(".nr_name_button_container.page_store > .nr_available_div");
+    const buyer_rows2 = getHtmlElementList(".nr_name_button_container.page_store > .element_name_div");
+    const buyer_rows3 = getHtmlElementList(".nr_name_button_container.page_store > .complementary_button");
     for (let i = 0; i < buyer_rows1.length; i++) {
       this.buyerRows.push([buyer_rows1[i], buyer_rows2[i], buyer_rows3[i]]);
     }
@@ -58,8 +33,6 @@ class StoreItemListClass extends ItemListClass {
     this.initializeEventListenersChild();
   }
   initializeEventListenersChild() {
-    const this = this;
-
     //initialize buyer button's mouse envents
     for (let i = 0; i < this.buyerRows.length; i++) {
       this.buyerRows[i][2].addEventListener("click", () => {
@@ -69,25 +42,31 @@ class StoreItemListClass extends ItemListClass {
       });
     }
   }
-  hideElement(elemNr) {
+  hideElement(elemNr: number) {
     super.hideElement(elemNr);
     this.elements[elemNr].hidden = true;
   }
-  showElement(elemNr) {
+  showElement(elemNr: number) {
     super.showElement(elemNr);
     this.elements[elemNr].hidden = false;
     this.elements[elemNr].style.cursor = "default";
   }
-  elementMouseenter(elemNr) {
-    StorePage.infoText.innerHTML = stuff[StorePage.type][StorePage.buyers[this.type][elemNr].name].getText();
+  elementMouseenter(elemNr: number) {
+    StorePage.infoText.innerHTML = stuff[StorePage.type as keyof ArmyCompsI<never>][StorePage.buyers[this.type][elemNr].name].getText();
   }
-  elementMouseleave(elemNr) {
+  elementMouseleave(elemNr: number) {
     StorePage.infoText.innerHTML = "";
   }
-  populateElement(elemNr) {
+  populateElement(elemNr: number) {
     const name = this.itemList[this.getItemListIndex(elemNr)].name;
     this.buyerRows[elemNr][1].innerHTML = name;
-    this.buyerRows[elemNr][0].innerHTML = (Player.inventory[this.type][name] ? "(" + stylizeDecimals(Player.inventory[this.type][name], true) + ")" : "(0)");
+    const amount = Player.inventory[this.type as keyof ArmyCompsI<never>][name];
+    if (amount) {
+      this.buyerRows[elemNr][0].innerHTML = "(" + stylizeDecimals(amount, true) + ")";
+    }
+    else {
+      this.buyerRows[elemNr][0].innerHTML = "(0)";
+    }
     this.buyerRows[elemNr][2].innerHTML = stylizeDecimals(this.itemList[this.getItemListIndex(elemNr)].getPrice(StorePage.buyNumberValues[StorePage.currentBuyNumberButton[this.type]]));
   }
   hidePreviousButton() {
@@ -111,40 +90,43 @@ class StoreItemListClass extends ItemListClass {
     this.nextButton.innerHTML = "&gt;"
   }
 
-  changeType(type) {
+  changeType(type: keyof ArmyCompsI<never>) {
     this.type = type;
   }
 
-  changeSelection(type, itemList) {
+  changeSelection(type: keyof ArmyCompsI<never>, itemList: Buyer[]) {
     this.changeType(type);
     this.changeItemList(itemList);
+  }
+  changeItemList(itemList: any) {
+    throw new Error("Method not implemented.");
   }
 }
 
 class StoreSubpageButtonGroupClass extends ButtonGroupClass {
-  constructor(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle) {
+  constructor(containerIdentifier: string, buttonIdentifier: string, selectedStyle: Object, defaultStyle: Object) {
     super(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle);
   }
 
-  showButton(buttonNr) {
+  showButton(buttonNr: number) {
     super.showButton(buttonNr);
     this.buttons[buttonNr].hidden = false;
   }
-  hideButton(buttonNr) {
+  hideButton(buttonNr: number) {
     super.hideButton(buttonNr);
     this.buttons[buttonNr].hidden = true;
   }
-  buttonClick(buttonNr) {
+  buttonClick(buttonNr: number) {
     super.buttonClick(buttonNr);
     StorePage.changeSubpage(StorePage.subpageTypes[buttonNr]);
   }
 }
 
 class BuyNrButtonGroupClass extends ButtonGroupClass {
-  constructor(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle) {
+  constructor(containerIdentifier: string, buttonIdentifier: string, selectedStyle: Object, defaultStyle: Object) {
     super(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle);
   }
-  buttonClick(buttonNr) {
+  buttonClick(buttonNr: number) {
     super.buttonClick(buttonNr);
     StorePage.currentBuyNumberButton[StorePage.type] = buttonNr;
     StorePage.display();
@@ -152,7 +134,17 @@ class BuyNrButtonGroupClass extends ButtonGroupClass {
 }
 
 class StorePageClass extends PageClass {
-  constructor(name) {
+  itemList: any;
+  buyers: any;
+  type: any;
+  buyNumberValues: any;
+  currentBuyNumberButton: any;
+  infoText: any;
+  subpageTypes: any;
+  pageButton: any;
+  subpageButtons: StoreSubpageButtonGroupClass;
+  buyNumberButtons: BuyNrButtonGroupClass;
+  constructor(name: string) {
     super(name);
 
     this.buyers = {
@@ -173,12 +165,10 @@ class StorePageClass extends PageClass {
     this.initializeEventListeners();
   }
   //called when page reloads
-  initializeEventListeners() {
-    const this = this;
-  }
+  initializeEventListeners() { }
   //called when new save gets loaded
   displayOnLoad() {
-    this.buyNumberButtons[this.currentBuyNumberButton[this.type]].style.borderColor = "var(--selected-toggle-button-border-color)";
+    this.buyNumberButtons.selectButton(this.currentBuyNumberButton[this.type]);
     this.itemList.changeItemList(this.buyers[this.type]);
   }
   display() {
@@ -192,9 +182,7 @@ class StorePageClass extends PageClass {
     this.itemList.show();
     this.itemList.changePage(this.itemList.page);
   }
-  displayEveryTick(this) {
-
-  }
+  displayEveryTick() { }
   //called when a save text is needed
   save() {
     let saveText = super.save();
@@ -206,7 +194,7 @@ class StorePageClass extends PageClass {
       //save buyer states (bought nr and the like)
       saveText += "/*/" + String(this.buyers[type].length);
       for (let i = 0; i < this.buyers[type].length; i++) {
-        saveText += "/*/" + this.buyers[type][i].nr_bought;
+        saveText += "/*/" + this.buyers[type][i].nrBought;
       }
     }
     saveText += "/*/" + this.subpageButtons.save();
@@ -215,25 +203,26 @@ class StorePageClass extends PageClass {
   }
   //called when you need to get values from a saveText
   //returns the number of steps taken
-  load(saveText) {
-    saveText = saveText.split("/*/");
-    let i = super.load(saveText);
+  load(saveText: string) {
+    const saveTextArr = saveText.split("/*/");
+    let i = super.load(saveTextArr);
 
-    const page_nr = Number(saveText[i]);
+    const page_nr = Number(saveTextArr[i]);
     i++;
     for (let ii = 0; ii < page_nr; ii++) {
-      const type = saveText[i]; i++;
-      this.currentBuyNumberButton[type] = Number(saveText[i]); i++;
-      const buyer_nr = Number(saveText[i]); i++;
+      const type = saveTextArr[i]; i++;
+      this.currentBuyNumberButton[type] = Number(saveTextArr[i]); i++;
+      const buyer_nr = Number(saveTextArr[i]); i++;
       for (let iii = 0; iii < buyer_nr; iii++) {
-        this.buyers[type][iii].nr_bought = new Decimal(saveText[i]);
+        this.buyers[type][iii].nrBought = new Decimal(saveTextArr[i]);
         i++;
       }
     }
-    i += this.subpageButtons.load(saveText, i);
-    i += this.buyNumberButtons.load(saveText, i);
+    i += this.subpageButtons.load(saveTextArr, i);
+    i += this.buyNumberButtons.load(saveTextArr, i);
+    return i;
   }
-  changeSubpage(changeTo) {
+  changeSubpage(changeTo: number) {
     this.type = changeTo;
     this.itemList.changeSelection(this.type, this.buyers[this.type]);
     this.itemList.show(true);
@@ -241,4 +230,4 @@ class StorePageClass extends PageClass {
   }
 }
 
-const StorePage = new StorePageClass("StorePage");
+export const StorePage = new StorePageClass("StorePage");

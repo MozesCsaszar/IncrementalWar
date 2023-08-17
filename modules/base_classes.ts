@@ -354,7 +354,7 @@ export class ButtonGroupClass {
   }
   //will load itself from saveText, starting at index i
   //returns number of steps taken (fields used) in saveText
-  load(saveText: string, i: number) {
+  load(saveText: string[], i: number) {
     this.selected = Number(saveText[i]) == 0 ? 1 : 0;
     this.buttonClick(Number(saveText[i]));
     return 1;
