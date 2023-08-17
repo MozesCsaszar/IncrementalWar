@@ -1,17 +1,19 @@
+import Decimal from "break_infinity.js";
 import { ArmyComponent } from "./army_comps";
 import { Boss } from "./boss";
+import { Stats } from "./stats";
 
-export type StringHash<T> = { [key: string]: T }
-export type NumberHash<T> = { [key: number]: T }
-
+export type StringHashT<T> = { [key: string]: T }
+export type NumberHashT<T> = { [key: number]: T }
+export type NewArmyT = [Decimal, Stats, Stats];
 
 // Data types
 //a type that includes creatures, weapons and more for the future
-export interface IArmyComps<T> {
+export interface ArmyCompsI<T> {
   creatures: T;
   weapons: T;
 }
-export type StuffType = IArmyComps<StringHash<ArmyComponent>>
+export type StuffType = ArmyCompsI<StringHashT<ArmyComponent>>
   & {
-    bosses: StringHash<Boss>,
+    bosses: StringHashT<Boss>,
   }

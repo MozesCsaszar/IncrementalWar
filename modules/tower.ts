@@ -235,10 +235,10 @@ class TowerClass {
   addRaidedLevel(floor_nr, level_nr, armyNr) {
     this.raidedLevels.push([floor_nr, level_nr, armyNr]);
   }
-  changeRaidedLevel(floor_nr, level_nr, new_army_nr) {
+  changeRaidedLevel(floor_nr, level_nr, newArmy_nr) {
     for (let j = 0; j < this.raidedLevels.length; j++) {
       if (this.raidedLevels[j][0] == floor_nr && this.raidedLevels[j][1] == level_nr) {
-        this.raidedLevels[i][2] - new_army_nr;
+        this.raidedLevels[i][2] - newArmy_nr;
         break;
       }
     }

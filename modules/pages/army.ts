@@ -4,7 +4,7 @@ import { Army } from "../army";
 import { ButtonGroupClass, ItemListClass, PageClass } from "../base_classes";
 import { stuff } from "../data";
 import { getCompareColor, getHtmlElement, getHtmlElementList, stylizeDecimals } from "../functions";
-import { IArmyComps, StringHash } from "../types";
+import { ArmyCompsI, StringHashT } from "../types";
 
 class SelectArmyButtonsClass extends ButtonGroupClass {
   constructor(containerIdentifier: string, buttonIdentifier: string, selectedStyle: Object, defaultStyle: Object) {
@@ -17,14 +17,10 @@ class SelectArmyButtonsClass extends ButtonGroupClass {
   }
 }
 
+//TODO: Figure out what kind of ItemList this is
 class SelectionItemListClass extends ItemListClass<string> {
-  type: keyof IArmyComps<never>;
+  type: keyof ArmyCompsI<never>;
   changeIndex: number;
-  elements: any;
-  itemList: any;
-  container: any;
-  previousButton: any;
-  nextButton: any;
   //class names come in form of: .<name> or #<name>
   constructor(containerIdentifier: string, elementIdentifier: string,
     previousButtonIdentifier: string, backButtonIdentifier: string,
@@ -130,7 +126,7 @@ class SelectionItemListClass extends ItemListClass<string> {
   }
 
   changeType(type: string) {
-    this.type = type as keyof IArmyComps<never>;
+    this.type = type as keyof ArmyCompsI<never>;
   }
 
   changeSelection(type: string, itemList: string[]) {
@@ -149,12 +145,12 @@ class ArmyPageClass extends PageClass {
   armySizeInput: HTMLInputElement = getHtmlElement("#ArmySizeInput") as HTMLInputElement;
   partInfo: HTMLElement = getHtmlElement("#ArmyPagePartInfo");
   info: HTMLElement = getHtmlElement("#ArmyPageInfo");
-  selectRows: IArmyComps<[HTMLElement, HTMLElement][]>;
+  selectRows: ArmyCompsI<[HTMLElement, HTMLElement][]>;
   armyManagerContainer: HTMLElement = getHtmlElement(".army_management_container");
   pageButton: HTMLElement = getHtmlElement("#ArmyPageButton");
   selectRowsTypes: string[];
   selectRowsNrs: number[];
-  elementEquipState: IArmyComps<StringHash<number>>;
+  elementEquipState: ArmyCompsI<StringHashT<number>>;
   changeArmyButtons: SelectArmyButtonsClass;
   maxArmySizeButton: HTMLElement = getHtmlElement("#MaxArmySize");
   elementSelectList: SelectionItemListClass;
@@ -180,12 +176,12 @@ class ArmyPageClass extends PageClass {
     const item_rows3 = getHtmlElementList(".complementary_button.page_army");
     //get them selectRows up & running
     let selectRowsI = 0;
-    let row = this.selectRowsTypes[selectRowsI] as keyof IArmyComps<never>;
+    let row = this.selectRowsTypes[selectRowsI] as keyof ArmyCompsI<never>;
     for (let i = 0; i < item_rows1.length; i++) {
       //change to new type if old one ran out
       if (i >= this.selectRowsNrs[selectRowsI]) {
         selectRowsI++;
-        row = this.selectRowsTypes[selectRowsI] as keyof IArmyComps<never>;
+        row = this.selectRowsTypes[selectRowsI] as keyof ArmyCompsI<never>;
       }
       this.selectRows[row].push([item_rows1[i], item_rows3[i]]);
     }
@@ -355,7 +351,7 @@ class ArmyPageClass extends PageClass {
       i++;
       const type = saveText[i]; i++;
       for (let iii = 0; iii < len_kv; iii++) {
-        this.elementEquipState[type as keyof IArmyComps<never>][saveText[i]] = Number(saveText[i + 1]);
+        this.elementEquipState[type as keyof ArmyCompsI<never>][saveText[i]] = Number(saveText[i + 1]);
         i += 2;
       }
     }
@@ -419,7 +415,7 @@ class ArmyPageClass extends PageClass {
       this.armyManagerContainer.hidden = false;
     }
   }
-  equipElementByArmy(type: keyof IArmyComps<never>, element: string, armyNr: number) {
+  equipElementByArmy(type: keyof ArmyCompsI<never>, element: string, armyNr: number) {
     if (element != "None") {
       const nr = 2 ** armyNr;
       if (this.elementEquipState[type][element] == undefined) {
@@ -428,17 +424,17 @@ class ArmyPageClass extends PageClass {
       this.elementEquipState[type][element] += nr;
     }
   }
-  deequipElementByArmy(type: keyof IArmyComps<never>, element: string, armyNr: number) {
+  deequipElementByArmy(type: keyof ArmyCompsI<never>, element: string, armyNr: number) {
     if (element != "None") {
       const nr = 2 ** armyNr;
       this.elementEquipState[type][element] -= nr;
     }
   }
-  isElementEquippedByArmy(type: keyof IArmyComps<never>, element: string, armyNr: number) {
+  isElementEquippedByArmy(type: keyof ArmyCompsI<never>, element: string, armyNr: number) {
     const nr = 2 ** armyNr;
     return Math.floor(this.elementEquipState[type][element] / nr) == 1;
   }
-  generateItemList(type: keyof IArmyComps<never>, armyNr: number) {
+  generateItemList(type: keyof ArmyCompsI<never>, armyNr: number) {
     const list = []
     for (const element of Object.keys(this.elementEquipState[type])) {
       if (!this.isElementEquippedByArmy(type, element, armyNr)) {

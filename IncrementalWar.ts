@@ -10,7 +10,7 @@ family or close circle of friends.
 import Decimal from "break_infinity.js";
 import { Army } from "./modules/army";
 import { BossFightingResultPage } from "./modules/boss";
-import { IArmyComps, StringHash } from "./modules/types";
+import { ArmyCompsI, StringHashT } from "./modules/types";
 import { PageClass } from "./modules/base_classes";
 import { getHtmlElement, stylizeDecimals } from "./modules/functions";
 
@@ -44,7 +44,7 @@ export class PlayerClass {
   }
   gold: Decimal = new Decimal(25);
   armies: [Army, Army, Army] = [new Army(), new Army(), new Army()];
-  inventory: IArmyComps<StringHash<Decimal>> = {
+  inventory: ArmyCompsI<StringHashT<Decimal>> = {
     creatures: {},
     weapons: {}
   };
@@ -55,7 +55,7 @@ export class PlayerClass {
     //save inventory
     saveText += Object.keys(this.inventory).length;
     for (const c in this.inventory) {
-      const category = c as keyof IArmyComps<never>;
+      const category = c as keyof ArmyCompsI<never>;
       saveText += "/*/" + category;
       saveText += "/*/" + Object.keys(this.inventory[category]).length;
       for (const item in this.inventory[category]) {
@@ -84,7 +84,7 @@ export class PlayerClass {
     let k = 0;
     i++;
     while (j > 0) {
-      const category = saveText[i] as keyof IArmyComps<never>;
+      const category = saveText[i] as keyof ArmyCompsI<never>;
       i++;
       k = Number(saveText[i]);
       i++;
@@ -115,7 +115,7 @@ export const Player = new PlayerClass();
 class GameManagerClass {
   saveInterval: undefined;
   currentPage: string;
-  pages: StringHash<PageClass>;
+  pages: StringHashT<PageClass>;
   canSave: boolean;
   constructor() {
     this.saveInterval = undefined;

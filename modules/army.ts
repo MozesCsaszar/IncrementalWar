@@ -1,14 +1,15 @@
 import Decimal from "break_infinity.js";
 import { Stats, SubStats } from "./stats";
 import { stuff } from "./data";
-import { IArmyComps } from "./types";
+import { ArmyCompsI, NewArmyT } from "./types";
 import { Player } from "../IncrementalWar";
 import { ItemListClass, ButtonGroupClass } from "./base_classes";
-import { stylizeDecimals } from "./functions";
+import { getCompareColor, stylizeDecimals } from "./functions";
+import { ArmyPage } from "./pages/army";
 
 
 //regular save divider = '/*/'
-export class Army implements IArmyComps<string[]> {
+export class Army implements ArmyCompsI<string[]> {
   static level_bonuses = [new Decimal(1), new Decimal(1.1), new Decimal(1.2), new Decimal(1.3), new Decimal(1.5), new Decimal(1.7), new Decimal(2)];
   static level_prices = [new Decimal(1000), new Decimal(6000), new Decimal(15000), new Decimal(50000), new Decimal(175000), new Decimal("1e6")];
   creatures: [string];
@@ -89,16 +90,16 @@ export class Army implements IArmyComps<string[]> {
   }
   getLevelUpText() {
     this.levelUpHelper();
-    const new_army = [this.size, this.stats, this.bodyParts]
+    const newArmy: NewArmyT = [this.size, this.stats, this.bodyParts]
     this.levelDown(this.level - 1);
-    return this.getCompareText(new_army);
+    return this.getCompareText(newArmy);
   }
   getCompareLevelText() {
     if (this.level >= Army.level_bonuses.length) {
       return "Max level reached, cannot upgrade further, sorry. :)";
     }
     return "Power multiplier: " + stylizeDecimals(this.level_bonus) + "<span style=\"color:" +
-      UtilityFunctions.getCompareColor(this.level_bonus, this.level_bonus.mul(Army.level_bonuses[this.level + 1])) + "\"> &rightarrow; </span>" +
+      getCompareColor(this.level_bonus, this.level_bonus.mul(Army.level_bonuses[this.level + 1])) + "\"> &rightarrow; </span>" +
       stylizeDecimals(this.level_bonus.mul(Army.level_bonuses[this.level + 1]));
   }
   //helper function to change from one item's stats to the other
@@ -137,7 +138,7 @@ export class Army implements IArmyComps<string[]> {
 
         //and remove elements and refund their costs
         for (let i = this.weapons.length - 1; i > -1; i--) {
-          this.changeElement("weapons", "None", i, unlock_stuff);
+          this.changeElement("weapons", "None", i, unlock_stuff, armyNr);
         }
 
         //change stats from old to new
@@ -155,7 +156,7 @@ export class Army implements IArmyComps<string[]> {
         break;
       case "weapons":
 
-        if (!this.changeElement_helper("weapons", changeTo, changeIndex, unlock_stuff, armyNr)) {
+        if (!this.changeElementHelper("weapons", changeTo, changeIndex, unlock_stuff, armyNr)) {
           console.log("here");
           return false;
         }
@@ -169,28 +170,28 @@ export class Army implements IArmyComps<string[]> {
     return true;
   }
   //CHANGE STUFF TO WORK FOR EVERYTHING TOGETHER, NOT CREATURES AND OTHER STUFF TREATED AS DIFFERENT CASES
-  canChangeElement(type: keyof IArmyComps<never>, element: string, index: number) {
+  canChangeElement(type: keyof ArmyCompsI<never>, element: string, index: number) {
     if (type == "creatures" || element == "None") {
       return true;
     }
     else {
-      let temp_s = undefined;
-      let temp_b = undefined;
+      let tempS = undefined;
+      let tempB = undefined;
       if (this[type][index] != "None") {
         this._stats = this._stats.sub(stuff[type][this[type][index]].stats);
         this._bodyParts = this._bodyParts.sub(stuff[type][this[type][index]].bodyParts);
-        temp_s = this.stats;
-        temp_b = this.bodyParts;
+        tempS = this.stats;
+        tempB = this.bodyParts;
         this._stats = this._stats.add(stuff[type][this[type][index]].stats);
         this._bodyParts = this._bodyParts.add(stuff[type][this[type][index]].bodyParts);
       }
       else {
-        temp_s = this.stats;
-        temp_b = this.bodyParts;
+        tempS = this.stats;
+        tempB = this.bodyParts;
       }
-      if (temp_b.add(stuff[type][element].bodyParts).gte(0)) {
-        if (stuff[type][element].requires.lte(temp_s)) {
-          if (temp_s.get<Decimal>("Health").gt(0)) {
+      if (tempB.add(stuff[type][element].bodyParts).gte(0)) {
+        if (stuff[type][element].requires.lte(tempS)) {
+          if (tempS.get<Decimal>("Health").gt(0)) {
             return true;
           }
         }
@@ -199,7 +200,7 @@ export class Army implements IArmyComps<string[]> {
     }
   }
   //helps to change the stuff that is not creature in your army
-  changeElement_helper(type: keyof IArmyComps<never>, changeTo: string, changeIndex = 0, do_shift = true, armyNr = 0) {
+  changeElementHelper(type: keyof ArmyCompsI<never>, changeTo: string, changeIndex = 0, do_shift = true, armyNr = 0) {
     if (!this.canChangeElement(type, changeTo, changeIndex)) {
       return false;
     }
@@ -240,13 +241,13 @@ export class Army implements IArmyComps<string[]> {
     }
     return true;
   }
-  setSize(new_size) {
+  setSize(newSize: Decimal) {
     //if the creature is 'None', then there can be no army
-    if (this.creature == "None" || new_size.lt(new Decimal(0))) {
+    if (this.creature == "None" || newSize.lt(new Decimal(0))) {
       return;
     }
     //calculate the minimun of the elements which are available
-    let minn = (new_size.sub(this.size)).min(Player.inventory.creatures[this.creature]);
+    let minn = (newSize.sub(this.size)).min(Player.inventory.creatures[this.creature]);
     let i = 0;
     while (this.weapons[i] != "None") {
       minn = minn.min(Player.inventory.weapons[this.weapons[i]]);
@@ -268,7 +269,7 @@ export class Army implements IArmyComps<string[]> {
   get_stats_text() {
     return this.stats.getText() + "<br>" + this.bodyParts.getText(true);
   }
-  get_change_text(type, changeTo, changeIndex = 0) {
+  get_change_text(type: keyof ArmyCompsI<never>, changeTo: string, changeIndex = 0) {
     //if you reset your creature, show this text
     let changed = undefined;
     if (type == "creatures") {
@@ -283,36 +284,36 @@ export class Army implements IArmyComps<string[]> {
     //let size = this._size;
     //change element then change it back to view changes
     if (this.canChangeElement(type, changeTo, changeIndex)) {
-      let new_army = undefined
+      let newArmy: NewArmyT;
       switch (type) {
         case "creatures":
           this.changeStats(type, changeTo, changeIndex);
           this.creature = changeTo;
-          new_army = [this.size.min(Player.inventory[type][changeTo]), this.stats, this.bodyParts];
+          newArmy = [this.size.min(Player.inventory[type][changeTo]), this.stats, this.bodyParts];
           this.changeStats(type, changed, changeIndex);
           this.creature = changed;
           break;
         case "weapons":
           this.changeStats(type, changeTo, changeIndex);
           this[type][changeIndex] = changeTo;
-          new_army = [this.size.min(Player.inventory[type][changeTo]), this.stats, this.bodyParts];
+          newArmy = [this.size.min(Player.inventory[type][changeTo]), this.stats, this.bodyParts];
           this.changeStats(type, changed, changeIndex);
           this[type][changeIndex] = changed;
           break;
       }
-      return this.getCompareText(new_army);
+      return this.getCompareText(newArmy);
     }
     return "Cannot change this element of your army, sorry!";
   }
   //helper function to get_change_text
-  getCompareText(new_army) {
-    if (!Array.isArray(new_army)) {
-      new_army = [new_army.size, new_army.stats, new_army.bodyParts];
+  getCompareText(newArmy: [Decimal, Stats, Stats] | { size: Decimal, stats: Stats, bodyParts: Stats }) {
+    if (!Array.isArray(newArmy)) {
+      newArmy = [newArmy.size, newArmy.stats, newArmy.bodyParts];
     }
-    let text = "Size: " + stylizeDecimals(this.size, true) + "<span style=\"color:" + UtilityFunctions.getCompareColor(this.size, new_army[0]) + ";\"> &rightarrow; </span>" +
-      stylizeDecimals(new_army[0], true) + "<br>";
-    text += this.stats.getCompareText(new_army[1]) + "<br>";
-    text += this.bodyParts.getCompareText(new_army[2]);
+    let text = "Size: " + stylizeDecimals(this.size, true) + "<span style=\"color:" + getCompareColor(this.size, newArmy[0]) + ";\"> &rightarrow; </span>" +
+      stylizeDecimals(newArmy[0], true) + "<br>";
+    text += this.stats.getCompareText(newArmy[1]) + "<br>";
+    text += this.bodyParts.getCompareText(newArmy[2]);
     return text;
   }
 
@@ -336,7 +337,7 @@ export class Army implements IArmyComps<string[]> {
     }
     let text = "";
     text = "Army size: " + stylizeDecimals(this.size, true) + "<br>";
-    text += "Collective health: " + stylizeDecimals(this.size.mul(this.stats["Health"]), true) + "<br>";
+    text += "Collective health: " + stylizeDecimals(this.size.mul(this.stats.get<Decimal>("Health")), true) + "<br>";
     text += this.stats.getText();
     return text;
   }
@@ -356,36 +357,34 @@ export class Army implements IArmyComps<string[]> {
     saveText += "/*/" + this.level + "/*/" + this.level_bonus;
     return saveText;
   }
-  load(saveText, i = 0, armyNr = 0) {
+  load(saveText: string, i = 0, armyNr = 0) {
     //split the text by the '/*/'
-    if (typeof (saveText) == "string") {
-      saveText = saveText.split("/*/");
-    }
+    const saveTextArr = saveText.split("/*/");
 
     //  load the components of the army
     //load the creature
-    this.changeElement("creatures", saveText[i], 0, false, armyNr);
+    this.changeElement("creatures", saveTextArr[i], 0, false, armyNr);
     i++;
-    let j = new Number(saveText[i]);
+    let j = Number(saveTextArr[i]);
     i++;
     let k = 0;
     //load the weapons
     while (j > 0) {
-      this.changeStats("weapons", saveText[i], k);
-      this.weapons[k] = saveText[i];
+      this.changeStats("weapons", saveTextArr[i], k);
+      this.weapons[k] = saveTextArr[i];
 
       j--;
       i++;
       k++;
     }
     //  load the size
-    this.size = new Decimal(saveText[i]);
+    this.size = new Decimal(saveTextArr[i]);
     i++;
-    this.raiding = Number(saveText[i]);
+    this.raiding = Number(saveTextArr[i]);
     i++;
-    this.level = Number(saveText[i]);
+    this.level = Number(saveTextArr[i]);
     i++;
-    this.level_bonus = new Decimal(saveText[i]);
+    this.level_bonus = new Decimal(saveTextArr[i]);
     i++;
     return i;
   }

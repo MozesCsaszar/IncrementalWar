@@ -1,7 +1,7 @@
 import Decimal from "break_infinity.js";
 import { stuff } from "./data";
 import { Stats, SubStats } from "./stats";
-import { NumberHash } from "./types";
+import { NumberHashT } from "./types";
 import { Army } from "./army";
 import { ButtonGroupClass, PageClass, Fight } from "./base_classes";
 
@@ -115,8 +115,8 @@ export class AttackDefenseMove extends CombatMove implements IAttackMove, IDefen
 */
 export class Moveset {
   static nameTextStart = "<span style=\"color:";
-  static moveRarities: NumberHash<string> = { 0: "Common", 1: "Uncommon", 2: "Rare", 3: "Special", 4: "Super", 5: "Ultra" }
-  static rarityColors: NumberHash<string> = { 0: "aliceblue", 1: "#20d000", 2: "#4848ff", 3: "#b000b0", 4: "#FF0000", 5: "#FF0000" }
+  static moveRarities: NumberHashT<string> = { 0: "Common", 1: "Uncommon", 2: "Rare", 3: "Special", 4: "Super", 5: "Ultra" }
+  static rarityColors: NumberHashT<string> = { 0: "aliceblue", 1: "#20d000", 2: "#4848ff", 3: "#b000b0", 4: "#FF0000", 5: "#FF0000" }
   static colorSpanEnd = "\">";
   static nameTextEnd = "</span>"
   moves: CombatMove[][];
