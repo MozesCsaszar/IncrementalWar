@@ -7,23 +7,23 @@ class TutorialItem {
 
 class TutorialItemListClass extends ItemListClass {
   //class names come in form of: .<name> or #<name>
-  constructor(containerIdentifier, element_idetifier, previous_buttonIdentifier, back_buttonIdentifier, next_buttonIdentifier, item_list) {
-    super(containerIdentifier, element_idetifier, previous_buttonIdentifier, back_buttonIdentifier, next_buttonIdentifier, item_list);
+  constructor(containerIdentifier, elementIdentifier, previousButtonIdentifier, backButtonIdentifier, next_buttonIdentifier, itemList) {
+    super(containerIdentifier, elementIdentifier, previousButtonIdentifier, backButtonIdentifier, next_buttonIdentifier, itemList);
   }
-  hideElement(elem_nr) {
-    super.hideElement(elem_nr);
-    this.elements[elem_nr].innerHTML = '';
-    this.elements[elem_nr].style.borderStyle = 'none';
+  hideElement(elemNr) {
+    super.hideElement(elemNr);
+    this.elements[elemNr].innerHTML = '';
+    this.elements[elemNr].style.borderStyle = 'none';
   }
-  showElement(elem_nr) {
-    super.showElement(elem_nr);
-    this.elements[elem_nr].style.borderStyle = 'solid';
+  showElement(elemNr) {
+    super.showElement(elemNr);
+    this.elements[elemNr].style.borderStyle = 'solid';
   }
-  elementClick(elem_nr) {
-    TutorialPage.startTutorial(TutorialPage.tutorialList.elements[elem_nr].innerHTML, false, 'SettingsPage');
+  elementClick(elemNr) {
+    TutorialPage.startTutorial(TutorialPage.tutorialList.elements[elemNr].innerHTML, false, 'SettingsPage');
   }
-  populateElement(elem_nr) {
-    this.elements[elem_nr].innerHTML = this.itemList[this.getItemListIndex(elem_nr)];
+  populateElement(elemNr) {
+    this.elements[elemNr].innerHTML = this.itemList[this.getItemListIndex(elemNr)];
   }
   backButtonClick() {
     TutorialPage.exitTutorial();
@@ -85,11 +85,11 @@ class TutorialPageClass extends PageClass {
   initializeEventListeners() {
         let this = this;
 
-    this.previousButton.addEventListener('click', function () {
+    this.previousButton.addEventListener('click', () => {
       this.showPreviousEntry();
     });
 
-    this.nextButton.addEventListener('click', function () {
+    this.nextButton.addEventListener('click', () => {
       if (this.nextButton.innerHTML == 'Finish') {
         this.exitTutorial();
       }

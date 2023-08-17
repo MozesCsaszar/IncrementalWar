@@ -1,12 +1,13 @@
 import Decimal from "break_infinity.js";
-import { Stats } from "./stats";
+import { Stats, SubStats } from "./stats";
 import { stuff } from "./data";
+import { IArmyComps } from "./types";
 
 //regular save divider = '/*/'
-export class Army {
+export class Army implements IArmyComps<string[]> {
   static level_bonuses = [new Decimal(1), new Decimal(1.1), new Decimal(1.2), new Decimal(1.3), new Decimal(1.5), new Decimal(1.7), new Decimal(2)];
   static level_prices = [new Decimal(1000), new Decimal(6000), new Decimal(15000), new Decimal(50000), new Decimal(175000), new Decimal("1e6")];
-  creature: string;
+  creatures: [string];
   weapons: string[];
   _stats: Stats;
   _bodyParts: Stats;
@@ -17,7 +18,7 @@ export class Army {
   power: Decimal;
 
   constructor(creature = "None", weapons = ["None", "None", "None", "None", "None", "None", "None", "None"], stats = new Stats(), bodyParts = new Stats(), size = new Decimal(0)) {
-    this.creature = creature;
+    this.creatures = [creature];
     this.weapons = weapons;
     this._stats = stats;
     this._bodyParts = bodyParts;
@@ -27,6 +28,12 @@ export class Army {
     this.raiding = -1;
 
     this.power = new Decimal(1);
+  }
+  get creature(): string {
+    return this.creatures[0];
+  }
+  set creature(other: string) {
+    this.creatures[0] = other;
   }
 
   get stats() {
@@ -86,9 +93,9 @@ export class Army {
     if (this.level >= Army.level_bonuses.length) {
       return "Max level reached, cannot upgrade further, sorry. :)";
     }
-    return "Power multiplier: " + StylizeDecimals(this.level_bonus) + "<span style=\"color:" +
+    return "Power multiplier: " + stylizeDecimals(this.level_bonus) + "<span style=\"color:" +
       UtilityFunctions.getCompareColor(this.level_bonus, this.level_bonus.mul(Army.level_bonuses[this.level + 1])) + "\"> &rightarrow; </span>" +
-      StylizeDecimals(this.level_bonus.mul(Army.level_bonuses[this.level + 1]));
+      stylizeDecimals(this.level_bonus.mul(Army.level_bonuses[this.level + 1]));
   }
   //helper function to change from one item's stats to the other
   changeStats(type: string, changeTo: string, changeIndex: number) {
@@ -152,13 +159,13 @@ export class Army {
     }
     //send unlock request after change
     if (unlock_stuff) {
-      allThingsStatistics.setStatisticsToMax(["Player", "armies", ArmyPage.currentArmy, "Attack"], this.stats["Attack"].getPlainPower());
-      allThingsStatistics.setStatisticsToMax(["Player", "armies", "all", "Attack"], this.stats["Attack"].getPlainPower());
+      allThingsStatistics.setStatisticsToMax(["Player", "armies", ArmyPage.currentArmy, "Attack"], this.stats.get<SubStats>("Attack").getPlainPower());
+      allThingsStatistics.setStatisticsToMax(["Player", "armies", "all", "Attack"], this.stats.get<SubStats>("Attack").getPlainPower());
     }
     return true;
   }
   //CHANGE STUFF TO WORK FOR EVERYTHING TOGETHER, NOT CREATURES AND OTHER STUFF TREATED AS DIFFERENT CASES
-  can_changeElement(type, element, index) {
+  canChangeElement(type: keyof IArmyComps<never>, element: string, index: number) {
     if (type == "creatures" || element == "None") {
       return true;
     }
@@ -179,7 +186,7 @@ export class Army {
       }
       if (temp_b.add(stuff[type][element].bodyParts).gte(0)) {
         if (stuff[type][element].requires.lte(temp_s)) {
-          if (temp_s["Health"].gt(0)) {
+          if (temp_s.get<Decimal>("Health").gt(0)) {
             return true;
           }
         }
@@ -188,8 +195,8 @@ export class Army {
     }
   }
   //helps to change the stuff that is not creature in your army
-  changeElement_helper(type, changeTo, changeIndex = 0, do_shift = true, army_nr = 0) {
-    if (!this.can_changeElement(type, changeTo, changeIndex)) {
+  changeElement_helper(type: keyof IArmyComps<never>, changeTo: string, changeIndex = 0, do_shift = true, army_nr = 0) {
+    if (!this.canChangeElement(type, changeTo, changeIndex)) {
       return false;
     }
     if (this[type][changeIndex] != "None") {
@@ -252,7 +259,7 @@ export class Army {
     }
     //give visual feedback on what you have here
 
-    ArmyPage.armySizeInput.value = StylizeDecimals(this.size, true);
+    ArmyPage.armySizeInput.value = stylizeDecimals(this.size, true);
   }
   get_stats_text() {
     return this.stats.getText() + "<br>" + this.bodyParts.getText(true);
@@ -271,7 +278,7 @@ export class Army {
     }
     //let size = this._size;
     //change element then change it back to view changes
-    if (this.can_changeElement(type, changeTo, changeIndex)) {
+    if (this.canChangeElement(type, changeTo, changeIndex)) {
       let new_army = undefined
       switch (type) {
         case "creatures":
@@ -298,8 +305,8 @@ export class Army {
     if (!Array.isArray(new_army)) {
       new_army = [new_army.size, new_army.stats, new_army.bodyParts];
     }
-    let text = "Size: " + StylizeDecimals(this.size, true) + "<span style=\"color:" + UtilityFunctions.getCompareColor(this.size, new_army[0]) + ";\"> &rightarrow; </span>" +
-      StylizeDecimals(new_army[0], true) + "<br>";
+    let text = "Size: " + stylizeDecimals(this.size, true) + "<span style=\"color:" + UtilityFunctions.getCompareColor(this.size, new_army[0]) + ";\"> &rightarrow; </span>" +
+      stylizeDecimals(new_army[0], true) + "<br>";
     text += this.stats.getCompareText(new_army[1]) + "<br>";
     text += this.bodyParts.getCompareText(new_army[2]);
     return text;
@@ -311,7 +318,7 @@ export class Army {
     }
     let text = "";
     if (with_size == true) {
-      text = "Army size: " + StylizeDecimals(this.size, true) + "<br>";
+      text = "Army size: " + stylizeDecimals(this.size, true) + "<br>";
     }
     else {
       text += "<br>";
@@ -324,8 +331,8 @@ export class Army {
       return "No army to be seen here.";
     }
     let text = "";
-    text = "Army size: " + StylizeDecimals(this.size, true) + "<br>";
-    text += "Collective health: " + StylizeDecimals(this.size.mul(this.stats["Health"]), true) + "<br>";
+    text = "Army size: " + stylizeDecimals(this.size, true) + "<br>";
+    text += "Collective health: " + stylizeDecimals(this.size.mul(this.stats["Health"]), true) + "<br>";
     text += this.stats.getText();
     return text;
   }
@@ -389,40 +396,40 @@ class SelectionItemListClass extends ItemListClass {
   previousButton: any;
   nextButton: any;
   //class names come in form of: .<name> or #<name>
-  constructor(containerIdentifier, element_idetifier, previous_buttonIdentifier, back_buttonIdentifier, next_buttonIdentifier, item_list = []) {
-    super(containerIdentifier, element_idetifier, previous_buttonIdentifier, back_buttonIdentifier, next_buttonIdentifier, item_list);
+  constructor(containerIdentifier, elementIdentifier, previousButtonIdentifier, backButtonIdentifier, next_buttonIdentifier, itemList = []) {
+    super(containerIdentifier, elementIdentifier, previousButtonIdentifier, backButtonIdentifier, next_buttonIdentifier, itemList);
 
     this.type = "creatures";
     this.changeIndex = 0;
   }
-  hideElement(elem_nr) {
-    super.hideElement(elem_nr);
-    this.elements[elem_nr].innerHTML = "";
-    this.elements[elem_nr].style.borderStyle = "none";
+  hideElement(elemNr) {
+    super.hideElement(elemNr);
+    this.elements[elemNr].innerHTML = "";
+    this.elements[elemNr].style.borderStyle = "none";
   }
-  showElement(elem_nr) {
-    super.showElement(elem_nr);
-    this.elements[elem_nr].style.borderStyle = "solid";
+  showElement(elemNr) {
+    super.showElement(elemNr);
+    this.elements[elemNr].style.borderStyle = "solid";
   }
-  elementMouseenter(elem_nr) {
-    if (this.itemList[elem_nr] == "None") {
+  elementMouseenter(elemNr) {
+    if (this.itemList[elemNr] == "None") {
       ArmyPage.partInfo.innerHTML = "None";
     }
     else {
-      ArmyPage.partInfo.innerHTML = stuff[this.type][this.itemList[elem_nr]].getText();
+      ArmyPage.partInfo.innerHTML = stuff[this.type][this.itemList[elemNr]].getText();
     }
-    ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_change_text(this.type, this.itemList[elem_nr], this.changeIndex);
+    ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].get_change_text(this.type, this.itemList[elemNr], this.changeIndex);
   }
-  elementMouseleave(elem_nr) {
+  elementMouseleave(elemNr) {
     ArmyPage.partInfo.innerHTML = "";
     ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].getText();
   }
-  elementClick(elem_nr) {
-    if (!Player.armies[ArmyPage.currentArmy].changeElement(this.type, this.elements[elem_nr].innerHTML, this.changeIndex, true, ArmyPage.currentArmy)) {
+  elementClick(elemNr) {
+    if (!Player.armies[ArmyPage.currentArmy].changeElement(this.type, this.elements[elemNr].innerHTML, this.changeIndex, true, ArmyPage.currentArmy)) {
       return;
     }
     ArmyPage.info.innerHTML = Player.armies[ArmyPage.currentArmy].getText();
-    ArmyPage.selectRows[this.type][this.changeIndex][1].innerHTML = this.elements[elem_nr].innerHTML;
+    ArmyPage.selectRows[this.type][this.changeIndex][1].innerHTML = this.elements[elemNr].innerHTML;
     if (this.type == "creatures") {
       //hide select rows for weapons and the like
       for (let j = Player.armies[ArmyPage.currentArmy].weapons.length - 1; j > -1; j--) {
@@ -456,8 +463,8 @@ class SelectionItemListClass extends ItemListClass {
     //show management item
     ArmyPage.armyManagerContainer.hidden = false;
   }
-  populateElement(elem_nr) {
-    this.elements[elem_nr].innerHTML = this.itemList[this.getItemListIndex(elem_nr)];
+  populateElement(elemNr) {
+    this.elements[elemNr].innerHTML = this.itemList[this.getItemListIndex(elemNr)];
   }
   backButtonMouseenter() {
     ArmyPage.partInfo.innerHTML = "Take me back, baby!";
@@ -494,9 +501,9 @@ class SelectionItemListClass extends ItemListClass {
     this.type = type;
   }
 
-  changeSelection(type, item_list) {
+  changeSelection(type, itemList) {
     this.changeType(type);
-    this.changeItemList(item_list);
+    this.changeItemList(itemList);
   }
 
   show() {
@@ -591,7 +598,7 @@ class ArmyPageClass extends PageClass {
     for (const type in this.selectRows) {
       if (type == "creatures") {
         //select click
-        this.selectRows.creatures[0][1].addEventListener("click", function () {
+        this.selectRows.creatures[0][1].addEventListener("click", () => {
           if (this.elementSelectList.hidden) {
             this.elementSelectList.changeType(type);
             this.elementSelectList.changeItemList(this.generateItemList(type, this.currentArmy));
@@ -603,10 +610,10 @@ class ArmyPageClass extends PageClass {
           }
         });
         //selects' parent mouseenter and mouseleave
-        this.selectRows.creatures[0][1].addEventListener("mouseenter", function () {
+        this.selectRows.creatures[0][1].addEventListener("mouseenter", () => {
           this.partInfo.innerHTML = stuff.creatures[Player.armies[this.currentArmy].creature].getText();
         });
-        this.selectRows.creatures[0][1].addEventListener("mouseleave", function () {
+        this.selectRows.creatures[0][1].addEventListener("mouseleave", () => {
           this.partInfo.innerHTML = "";
         });
       }
@@ -614,7 +621,7 @@ class ArmyPageClass extends PageClass {
         //selects and their parents
         for (let i = 0; i < 8; i++) {
           //select click
-          this.selectRows[type][i][1].addEventListener("click", function () {
+          this.selectRows[type][i][1].addEventListener("click", () => {
             if (this.elementSelectList.hidden) {
               this.elementSelectList.changeType(type);
               this.elementSelectList.changeItemList(this.generateItemList(type, this.currentArmy));
@@ -627,10 +634,10 @@ class ArmyPageClass extends PageClass {
             }
           });
           //selects' parent mouseenter and mouseleave
-          this.selectRows[type][i][1].addEventListener("mouseenter", function () {
+          this.selectRows[type][i][1].addEventListener("mouseenter", () => {
             this.partInfo.innerHTML = stuff.weapons[Player.armies[this.currentArmy].weapons[i]].getText();
           });
-          this.selectRows[type][i][1].addEventListener("mouseleave", function () {
+          this.selectRows[type][i][1].addEventListener("mouseleave", () => {
             this.partInfo.innerHTML = "";
           });
         }
@@ -645,7 +652,7 @@ class ArmyPageClass extends PageClass {
       Player.armies[this.currentArmy].setSize(new Decimal(Infinity));
     });
 
-    this.levelUpButton.addEventListener("mouseenter", function () {
+    this.levelUpButton.addEventListener("mouseenter", () => {
       if (Player.armies[this.currentArmy].level < Army.level_prices.length) {
         this.info.innerHTML = Player.armies[this.currentArmy].getLevelUpText();
         this.partInfo.innerHTML = Player.armies[this.currentArmy].getCompareLevelText();
@@ -655,13 +662,13 @@ class ArmyPageClass extends PageClass {
       }
     });
 
-    this.levelUpButton.addEventListener("mouseleave", function () {
+    this.levelUpButton.addEventListener("mouseleave", () => {
       this.info.innerHTML = Player.armies[this.currentArmy].getText();
       this.levelText.innerHTML = "Level: " + (Player.armies[this.currentArmy].level + 1) + (Player.armies[this.currentArmy].level >= Army.level_prices.length ? " (Max)" : "");
       this.partInfo.innerHTML = "";
     });
 
-    this.levelUpButton.addEventListener("click", function () {
+    this.levelUpButton.addEventListener("click", () => {
       Player.armies[this.currentArmy].levelUp();
       this.info.innerHTML = Player.armies[this.currentArmy].getText();
 
@@ -672,7 +679,7 @@ class ArmyPageClass extends PageClass {
         this.levelText.innerHTML = "Level: " + (Player.armies[this.currentArmy].level + 1) +
           "<span style=\"color:" + UtilityFunctions.getCompareColor(Player.armies[this.currentArmy].level, Player.armies[this.currentArmy].level + 1, false)
           + "\">  &rightarrow; </span>" + (Player.armies[this.currentArmy].level + 2) + "<br>";
-        this.levelUpCost.innerHTML = "Cost: " + StylizeDecimals(Army.level_prices[Player.armies[this.currentArmy].level]);
+        this.levelUpCost.innerHTML = "Cost: " + stylizeDecimals(Army.level_prices[Player.armies[this.currentArmy].level]);
       }
       else {
         this.partInfo.innerHTML = "";
@@ -685,7 +692,7 @@ class ArmyPageClass extends PageClass {
   //called when new save gets loaded
   displayOnLoad() {
     this.info.innerHTML = Player.armies[this.currentArmy].getText();
-    this.armySizeInput.value = StylizeDecimals(Player.armies[this.currentArmy].size, true);
+    this.armySizeInput.value = stylizeDecimals(Player.armies[this.currentArmy].size, true);
   }
   display() {
     //this.changeArmyButtons[this.currentArmy].buttonClick();
@@ -697,9 +704,9 @@ class ArmyPageClass extends PageClass {
     this.timesVisited++;
   }
   displayEveryTick(this) {
-    this.selectRows.creatures[0][0].innerHTML = (Player.armies[this.currentArmy].creature == "None" ? "(&infin;)" : "(" + StylizeDecimals(Player.inventory.creatures[Player.armies[this.currentArmy].creature], true) + ")");
+    this.selectRows.creatures[0][0].innerHTML = (Player.armies[this.currentArmy].creature == "None" ? "(&infin;)" : "(" + stylizeDecimals(Player.inventory.creatures[Player.armies[this.currentArmy].creature], true) + ")");
     for (i = 0; i < 8; i++) {
-      this.selectRows.weapons[i][0].innerHTML = (Player.armies[this.currentArmy].weapons[i] == "None" ? "(&infin;)" : "(" + StylizeDecimals(Player.inventory.weapons[Player.armies[this.currentArmy].weapons[i]], true) + ")");
+      this.selectRows.weapons[i][0].innerHTML = (Player.armies[this.currentArmy].weapons[i] == "None" ? "(&infin;)" : "(" + stylizeDecimals(Player.inventory.weapons[Player.armies[this.currentArmy].weapons[i]], true) + ")");
     }
   }
   //called when a save text is needed
@@ -778,11 +785,11 @@ class ArmyPageClass extends PageClass {
     }
     //          set the info and other stuff
     this.info.innerHTML = Player.armies[changeTo].getText();
-    this.armySizeInput.value = StylizeDecimals(Player.armies[changeTo].size, true);
+    this.armySizeInput.value = stylizeDecimals(Player.armies[changeTo].size, true);
     //set level text
     this.levelText.innerHTML = "Level: " + (Player.armies[this.currentArmy].level + 1);
     if (Player.armies[this.currentArmy].level < Army.level_prices.length) {
-      this.levelUpCost.innerHTML = "Cost: " + StylizeDecimals(Army.level_prices[Player.armies[this.currentArmy].level]);
+      this.levelUpCost.innerHTML = "Cost: " + stylizeDecimals(Army.level_prices[Player.armies[this.currentArmy].level]);
 
       //show level up stuff
       this.levelUpButton.hidden = false;

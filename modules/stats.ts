@@ -1,4 +1,5 @@
 import Decimal from "break_infinity.js";
+import { getCompareColor, stylizeDecimals } from "./functions";
 
 //a class to handle price, created to accept multiple functions across multiple intervals
 export class PriceHandler {
@@ -110,7 +111,7 @@ class ApplyFunctionForStats extends HashLike {
   }
 
   finalType(other: unknown) {
-    if(other instanceof Decimal) return true;
+    if (other instanceof Decimal) return true;
     return false;
   }
 
@@ -126,7 +127,7 @@ class ApplyFunctionForStats extends HashLike {
         }
       }
     }
-    else if(this.finalType(other)) {
+    else if (this.finalType(other)) {
       for (const ss in this) {
         const valThis = this.get<T>(ss);
         if (!(valThis[logFuncName] as (o: unknown) => boolean)(other)) {
@@ -151,7 +152,7 @@ class ApplyFunctionForStats extends HashLike {
         if (condFunc(valThis, valOther)) initVal.set(ss, (valThis[compFuncName] as (o: unknown) => T)(valOther));
       }
     }
-    else if(this.finalType(other)) {
+    else if (this.finalType(other)) {
       for (const ss in this) {
         const valThis = this.get<T>(ss);
         if (condFunc(valThis, other)) initVal.set(ss, (valThis[compFuncName] as (o: unknown) => boolean)(other));
@@ -259,7 +260,7 @@ export class SubStats extends ApplyFunctionForStats implements SubStatsKeys<Deci
     }
     for (const ss in this) {
       if (this[ss] != 0) {
-        t += SubStats.textStart + SubStats.typeColor.get<string>(ss) + StylizeDecimals(this.get<Decimal>(ss)) + SubStats.typeEnd.get<string>(ss) + "&nbsp";
+        t += SubStats.textStart + SubStats.typeColor.get<string>(ss) + stylizeDecimals(this.get<Decimal>(ss)) + SubStats.typeEnd.get<string>(ss) + "&nbsp";
       }
     }
     return t;
@@ -341,9 +342,9 @@ export class Stats extends ApplyFunctionForStats {
           t += ss + ":&nbsp" + entry.getText() + "<br>";
         }
       }
-      else {
-        if (entry != 0 || showZeros) {
-          t += ss + ":&nbsp" + StylizeDecimals(entry) + "<br>";
+      else if (entry instanceof Decimal) {
+        if (entry.neq_tolerance(0, 0.00001) || showZeros) {
+          t += ss + ":&nbsp" + stylizeDecimals(entry) + "<br>";
         }
       }
     }
@@ -373,7 +374,7 @@ export class Stats extends ApplyFunctionForStats {
             t += "0 &rightarrow; " + otherEntry.getText();
           }
           else {
-            t += "0 &rightarrow; " + StylizeDecimals(otherEntry);
+            t += "0 &rightarrow; " + stylizeDecimals(otherEntry as Decimal);
           }
         }
       }
@@ -388,7 +389,7 @@ export class Stats extends ApplyFunctionForStats {
             t += thisEntry.getText() + " &rightarrow; 0";
           }
           else {
-            t += StylizeDecimals(thisEntry) + " &rightarrow; 0";
+            t += stylizeDecimals(thisEntry as Decimal) + " &rightarrow; 0";
           }
         }
 
@@ -400,13 +401,13 @@ export class Stats extends ApplyFunctionForStats {
         }
         else {
           t += ss + ":&nbsp";
-          const colored_arrow = "<span style=\"color:" + UtilityFunctions.getCompareColor(thisEntry, otherEntry, false)
+          const colored_arrow = "<span style=\"color:" + getCompareColor(thisEntry as Decimal, otherEntry as Decimal)
             + "\">  &rightarrow; </span>";
           if (otherEntry instanceof SubStats) {
             // t += thisEntry.getText() + colored_arrow + otherEntry.getText();
           }
           else {
-            t += StylizeDecimals(thisEntry) + colored_arrow + StylizeDecimals(otherEntry);
+            t += stylizeDecimals(thisEntry as Decimal) + colored_arrow + stylizeDecimals(otherEntry as Decimal);
           }
         }
 

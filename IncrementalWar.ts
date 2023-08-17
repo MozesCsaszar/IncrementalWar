@@ -7,19 +7,25 @@ family or close circle of friends.
 
 */
 
+import Decimal from "break_infinity.js";
+import { Army } from "./modules/army";
+import { BossFightingResultPage } from "./modules/boss";
+import { IArmyComps, StringHash } from "./modules/types";
+import { PageClass } from "./modules/base_classes";
+
 //A popup window for your inspection needs
 const PopupWindow = {
-  container: document.querySelector("#PopupWindowContainer"),
-  left: undefined,
-  top: undefined,
-  show(left, top, content) {
+  container: $("#PopupWindowContainer").get(0)!,
+  left: -1000,
+  top: -1000,
+  show(left: number, top: number, content: string) {
     PopupWindow.container.hidden = false;
     PopupWindow.container.innerHTML = content;
     PopupWindow.move(left, top);
   },
-  move(left, top) {
-    PopupWindow.container.style.left = left + 5;
-    PopupWindow.container.style.top = top + 5;
+  move(left: number, top: number) {
+    PopupWindow.container.style.left = left + "5";
+    PopupWindow.container.style.top = top + "5";
     PopupWindow.left = left;
     PopupWindow.top = top;
   },
@@ -28,65 +34,20 @@ const PopupWindow = {
   },
 };
 
-const UtilityFunctions = {
-  getCompareColor(value1, value2, decimal = true) {
-    if (decimal) {
-      if (value1.gt(value2)) {
-        return "red";
-      }
-      else if (value1.lt(value2)) {
-        return "green";
-      }
-      else {
-        return "var(--default-color)";
-      }
-    }
-    else {
-      if (value1 == value2) {
-        return "var(--default-color)";
-      }
-      if (value1 > value2) {
-        return "red";
-      }
-      else {
-        return "green";
-      }
-    }
-  },
-}
-
-
-
-//a function to adjust the appearance of decimal numbers (e form and trying to avoid inconsistent numbers messing up the interface, like 48.0000001 instead of 48)
-function StylizeDecimals(decimal, floor = false) {
-  if (decimal.exponent >= 6) {
-    return decimal.mantissa.toFixed(2) + "e" + decimal.exponent;
+export class Player {
+  static save(): string {
+    throw new Error("Method not implemented.");
   }
-  if (!floor) {
-    if (decimal.exponent > 4) {
-      return (decimal.mantissa * Math.pow(10, decimal.exponent)).toFixed(0);
-    }
-    else {
-      return (decimal.mantissa * Math.pow(10, decimal.exponent)).toFixed(Math.min(5 - decimal.exponent, 2), 2);
-    }
+  static load(arg0: string | null) {
+    throw new Error("Method not implemented.");
   }
-  else {
-    return (decimal.mantissa * Math.pow(10, decimal.exponent)).toFixed(0);
-  }
-
-}
-
-const Player = {
-  gold: new Decimal(25),
-  armies: [new Army(), new Army(), new Army()],
-  inventory: {
-    creatures: {
-
-    },
-    weapons: {
-
-    }
-  },
+  gold: Decimal = new Decimal(25);
+  armies: [Army, Army, Army] = [new Army(), new Army(), new Army()];
+  inventory: IArmyComps<StringHash<Decimal>> = {
+    creatures: {},
+    weapons: {}
+  };
+  static gold: any;
   save() {
     //  save gold
     let saveText = this.gold + "/*/";
@@ -106,7 +67,7 @@ const Player = {
     }
 
     return saveText
-  },
+  }
   load(saveText) {
     //split and get ready for loading
     saveText = saveText.split("/*/");
@@ -143,13 +104,16 @@ const Player = {
       k++;
       j--;
     }
-
   }
 }
 
 //          ALL THE PAGES IN ONE PLACE
 
 class GameManagerClass {
+  saveInterval: undefined;
+  currentPage: string;
+  pages: StringHash<PageClass>;
+  canSave: boolean;
   constructor() {
     this.saveInterval = undefined;
     this.currentPage = "StorePage";
@@ -158,13 +122,9 @@ class GameManagerClass {
       BossFightingPage, BossFightingResultPage, TutorialPage].forEach(
         (p) => { this.pages[p.name] = p }
       )
-    this.pages = {
-      "TowerPage": TowerPage, "ArmyPage": ArmyPage, "StorePage": StorePage, "SettingsPage": SettingsPage, "BossArmySelectionPage": BossArmySelectionPage,
-      "BossFightingPage": BossFightingPage, "BossFightingResultPage": BossFightingResultPage, "TutorialPage": TutorialPage,
-    };
     //hide all pages at startup
-    for (const page of Object.values(this.pages)) {
-      page.hidden = true;
+    for (const page of Object.keys(this.pages)) {
+      this.pages[page].hidden = true;
     }
 
     this.canSave = true;
@@ -178,14 +138,12 @@ class GameManagerClass {
     clearInterval(this.saveInterval);
   }
   initializeEventListeners() {
-    const this = this;
-
     window.addEventListener("load", () => {
       this.openGame();
       this.startSaveInterval();
     });
     //save game whenever you switch tabs in browser (close, refresh, go to new/other tab)
-    document.addEventListener("visibilitychange", function () {
+    document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
         this.loadOfflineProgress(Date.now() - Number(window.localStorage.getItem("lastSavedTime")));
         this.startSaveInterval();
@@ -283,7 +241,7 @@ class GameManagerClass {
 
 const GM = new GameManagerClass();
 
-let interval = setInterval(function () { SettingsPage.displayEveryTick(SettingsPage) }, 50);
+let interval = setInterval(() => { SettingsPage.displayEveryTick(SettingsPage) }, 50);
 
 function HidePages(toShow) {
   if (toShow != GM.currentPage) {
@@ -291,7 +249,7 @@ function HidePages(toShow) {
     GM.pages[GM.currentPage].hidden = true;
     GM.pages[toShow].hidden = false;
     GM.currentPage = toShow;
-    interval = setInterval(function () { GM.pages[GM.currentPage].displayEveryTick(GM.pages[GM.currentPage]) }, 50);
+    interval = setInterval(() => { GM.pages[GM.currentPage].displayEveryTick(GM.pages[GM.currentPage]) }, 50);
     GM.pages[toShow].display();
   }
 }
@@ -299,7 +257,7 @@ function HidePages(toShow) {
 const goldText = document.querySelector("#GoldText");
 
 //click event for the continue from offline button
-document.getElementById("ContinueFromOfflineProgress").addEventListener("click", function () {
+document.getElementById("ContinueFromOfflineProgress").addEventListener("click", () => {
   //change current page to be able to use HidePages
   currentPage = Number(window.localStorage.getItem("currentPage")) ? 0 : 1;
   document.getElementById("OfflinePageContainer").hidden = true;
@@ -388,7 +346,7 @@ window.addEventListener("load", () => {
 // window.addEventListener('beforeunload', () => {CloseGame()});
 
 function tick() {
-  goldText.innerHTML = StylizeDecimals(Player.gold);
+  goldText.innerHTML = stylizeDecimals(Player.gold);
   for (i = 0; i < TowerPage.Tower.raidedLevels.length; i++) {
     TowerPage.Tower.floors[TowerPage.Tower.raidedLevels[i][0]].levels[TowerPage.Tower.raidedLevels[i][1]].tick(20);
   }

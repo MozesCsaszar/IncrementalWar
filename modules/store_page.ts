@@ -38,8 +38,8 @@ class Buyer {
 
 class StoreItemListClass extends ItemListClass {
   //class names come in form of: .<name> or #<name>
-  constructor(containerIdentifier, element_idetifier, previous_buttonIdentifier, back_buttonIdentifier, next_buttonIdentifier, item_list = []) {
-    super(containerIdentifier, element_idetifier, previous_buttonIdentifier, back_buttonIdentifier, next_buttonIdentifier, item_list);
+  constructor(containerIdentifier, elementIdentifier, previousButtonIdentifier, backButtonIdentifier, next_buttonIdentifier, itemList = []) {
+    super(containerIdentifier, elementIdentifier, previousButtonIdentifier, backButtonIdentifier, next_buttonIdentifier, itemList);
 
     this.type = "creatures";
 
@@ -69,26 +69,26 @@ class StoreItemListClass extends ItemListClass {
       });
     }
   }
-  hideElement(elem_nr) {
-    super.hideElement(elem_nr);
-    this.elements[elem_nr].hidden = true;
+  hideElement(elemNr) {
+    super.hideElement(elemNr);
+    this.elements[elemNr].hidden = true;
   }
-  showElement(elem_nr) {
-    super.showElement(elem_nr);
-    this.elements[elem_nr].hidden = false;
-    this.elements[elem_nr].style.cursor = "default";
+  showElement(elemNr) {
+    super.showElement(elemNr);
+    this.elements[elemNr].hidden = false;
+    this.elements[elemNr].style.cursor = "default";
   }
-  elementMouseenter(elem_nr) {
-    StorePage.infoText.innerHTML = stuff[StorePage.type][StorePage.buyers[this.type][elem_nr].name].getText();
+  elementMouseenter(elemNr) {
+    StorePage.infoText.innerHTML = stuff[StorePage.type][StorePage.buyers[this.type][elemNr].name].getText();
   }
-  elementMouseleave(elem_nr) {
+  elementMouseleave(elemNr) {
     StorePage.infoText.innerHTML = "";
   }
-  populateElement(elem_nr) {
-    const name = this.itemList[this.getItemListIndex(elem_nr)].name;
-    this.buyerRows[elem_nr][1].innerHTML = name;
-    this.buyerRows[elem_nr][0].innerHTML = (Player.inventory[this.type][name] ? "(" + StylizeDecimals(Player.inventory[this.type][name], true) + ")" : "(0)");
-    this.buyerRows[elem_nr][2].innerHTML = StylizeDecimals(this.itemList[this.getItemListIndex(elem_nr)].getPrice(StorePage.buyNumberValues[StorePage.currentBuyNumberButton[this.type]]));
+  populateElement(elemNr) {
+    const name = this.itemList[this.getItemListIndex(elemNr)].name;
+    this.buyerRows[elemNr][1].innerHTML = name;
+    this.buyerRows[elemNr][0].innerHTML = (Player.inventory[this.type][name] ? "(" + stylizeDecimals(Player.inventory[this.type][name], true) + ")" : "(0)");
+    this.buyerRows[elemNr][2].innerHTML = stylizeDecimals(this.itemList[this.getItemListIndex(elemNr)].getPrice(StorePage.buyNumberValues[StorePage.currentBuyNumberButton[this.type]]));
   }
   hidePreviousButton() {
     super.hidePreviousButton();
@@ -115,9 +115,9 @@ class StoreItemListClass extends ItemListClass {
     this.type = type;
   }
 
-  changeSelection(type, item_list) {
+  changeSelection(type, itemList) {
     this.changeType(type);
-    this.changeItemList(item_list);
+    this.changeItemList(itemList);
   }
 }
 

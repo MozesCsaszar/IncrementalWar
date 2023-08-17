@@ -18,6 +18,7 @@ class PageButtonsClass extends ButtonGroupClass {
 }
 
 class GameBodyClass {
+  pageButtons: any;
   constructor() {
     this.pageButtons = new PageButtonsClass("#AllPageButtons", ".page_button", { "borderColor": "var(--selected-page-button-border-color)" }, { "borderColor": "var(--default-page-button-border-color)" })
     this.resourceContainer = document.querySelector("#PageTopResourcesContainer");

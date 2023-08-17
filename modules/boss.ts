@@ -748,26 +748,26 @@ class BossFightingPageClass extends PageClass {
     for (let i = 0; i < this.fightingArmies.length; i++) {
       //health foreground
       this.armyStatusBars[i][0].style.width = this.getWidth(this.fightingArmies[i].totalHealth, this.fightingArmies[i].maxTotalHealth) + "";
-      this.armyStatusBars[i][1].innerHTML = StylizeDecimals(this.fightingArmies[i].totalHealth) + "/" + StylizeDecimals(this.fightingArmies[i].maxTotalHealth);
+      this.armyStatusBars[i][1].innerHTML = stylizeDecimals(this.fightingArmies[i].totalHealth) + "/" + stylizeDecimals(this.fightingArmies[i].maxTotalHealth);
       //unit nr foreground
       this.armyStatusBars[i][2].style.width = this.getWidth(this.fightingArmies[i].units, this.fightingArmies[i].maxUnits) + "";
-      this.armyStatusBars[i][3].innerHTML = StylizeDecimals(this.fightingArmies[i].units, true) + "/" + StylizeDecimals(this.fightingArmies[i].maxUnits, true) +
-        " (" + StylizeDecimals(this.fightingArmies[i].deployed, true) + ")";
+      this.armyStatusBars[i][3].innerHTML = stylizeDecimals(this.fightingArmies[i].units, true) + "/" + stylizeDecimals(this.fightingArmies[i].maxUnits, true) +
+        " (" + stylizeDecimals(this.fightingArmies[i].deployed, true) + ")";
       //attack status foreground
       this.armyStatusBars[i][4].style.width = this.getWidth(this.fightingArmies[i].attackCounter, this.fightingArmies[i].attackTime) + "";
-      this.armyStatusBars[i][5].innerHTML = StylizeDecimals(this.fightingArmies[i].getTotalAttack(this.fightingBosses[0]));
+      this.armyStatusBars[i][5].innerHTML = stylizeDecimals(this.fightingArmies[i].getTotalAttack(this.fightingBosses[0]));
     }
 
     for (let i = 0; i < this.fightingBosses.length; i++) {
       //health foreground
       this.bossStatusBars[i][0].style.width = this.getWidth(this.fightingBosses[i].totalHealth, this.fightingBosses[i].maxTotalHealth) + "";
-      this.bossStatusBars[i][1].innerHTML = StylizeDecimals(this.fightingBosses[i].totalHealth) + "/" + StylizeDecimals(this.fightingBosses[i].maxTotalHealth) + "";
+      this.bossStatusBars[i][1].innerHTML = stylizeDecimals(this.fightingBosses[i].totalHealth) + "/" + stylizeDecimals(this.fightingBosses[i].maxTotalHealth) + "";
       //unit nr foreground
       this.bossStatusBars[i][2].style.width = this.getWidth(this.fightingBosses[i].units, this.fightingBosses[i].maxUnits) + "";
-      this.bossStatusBars[i][3].innerHTML = StylizeDecimals(this.fightingBosses[i].units, true) + "/" + StylizeDecimals(this.fightingBosses[i].maxUnits, true);
+      this.bossStatusBars[i][3].innerHTML = stylizeDecimals(this.fightingBosses[i].units, true) + "/" + stylizeDecimals(this.fightingBosses[i].maxUnits, true);
       //attack status foreground
       this.bossStatusBars[i][4].style.width = this.getWidth(this.fightingBosses[i].attackCounter, this.fightingBosses[i].attackTime) + "";
-      this.bossStatusBars[i][5].innerHTML = StylizeDecimals(this.fightingBosses[i].getTotalAttack());
+      this.bossStatusBars[i][5].innerHTML = stylizeDecimals(this.fightingBosses[i].getTotalAttack());
     }
 
     if (this.doFight()) {
@@ -881,7 +881,7 @@ class BossFightingResultPageClass extends PageClass {
   }
   initializeEventListeners() {
     //Back to tower page button
-    this.backButton.addEventListener("click", function () {
+    this.backButton.addEventListener("click", () => {
       //get resource bar and page buttons back
       const pageButtonsContainer = $("#PageButtonsContainer").get(0)!;
       pageButtonsContainer.hidden = false;

@@ -2,6 +2,7 @@
 //CHANGE THIS PLACEMENT
 
 import { Boss } from "./boss";
+import { getHtmlElement, getHtmlElementList } from "./functions";
 
 /*
     bosses - the names of the bosses from stuff which you need to fight
@@ -29,11 +30,11 @@ export class Fight {
 //A base Page class which has all the functions and values necessary for it to work
 export class PageClass {
   name: string;
-  container: HTMLElement | null;
+  container: HTMLElement;
   timesVisited: number;
   constructor(name: string) {
     this.name = name;
-    this.container = document.getElementById(name + 'Container');
+    this.container = $(name + 'Container').get(0)!;
     this.timesVisited = 0;
 
     //call initializeEventListeners here
@@ -53,7 +54,7 @@ export class PageClass {
   //called when page gets visible
   display() { }
   //call when displaying every tick; needs this as self so that it can access stuff in itself
-  displayEveryTick(this) { }
+  displayEveryTick() { }
   //called when a save text is needed
   save() {
     return String(this.timesVisited);
@@ -61,37 +62,42 @@ export class PageClass {
   //called when you need to get values from a saveText
   //maybe should call displayOnLoad?
   //returns the number of steps taken
-  load(saveText) {
+  load(saveText: string) {
     this.timesVisited = Number(saveText[0]);
     return 1;
   }
 };
 
-export class ItemListClass {
-  container: any;
-  elements: NodeListOf<Element>;
-  elementsVisible: never[];
-  previousButton: any;
-  backButton: any;
-  nextButton: any;
+export class ItemListClass<T> {
+  container: HTMLElement;
+  elements: HTMLElement[];
+  elementsVisible: boolean[];
+  previousButton: HTMLElement;
+  backButton: HTMLElement;
+  nextButton: HTMLElement;
   buttonsVisible: boolean[];
-  itemList: never[];
+  itemList: T[];
   page: number;
   //container: the container thisect, list_identifier: the identifier by which you can find the list container, the rest will be handled automatically
-  constructor(containerIdentifier, element_idetifier, previous_buttonIdentifier, back_buttonIdentifier, next_buttonIdentifier, item_list = []) {
-    this.container = document.querySelector(containerIdentifier);
-    this.elements = document.querySelectorAll(containerIdentifier + ' > ' + element_idetifier);
+  constructor(containerIdentifier: string, elementIdentifier: string,
+    previousButtonIdentifier: string, backButtonIdentifier: string,
+    next_buttonIdentifier: string, itemList = []) {
+    this.container = $(containerIdentifier).get(0)!;
+    this.elements = $(containerIdentifier + ' > ' + elementIdentifier).toArray();
     //for hiding elements and defining if the element is hidden or not
     this.elementsVisible = [];
     for (let i = 0; i < this.elements.length; i++) {
       this.elementsVisible.push(true);
     }
-    this.previousButton = document.querySelector(containerIdentifier + ' > .element_list_buttons_container > ' + previous_buttonIdentifier);
-    this.backButton = document.querySelector(containerIdentifier + ' > .element_list_buttons_container > ' + back_buttonIdentifier);
-    this.nextButton = document.querySelector(containerIdentifier + ' > .element_list_buttons_container > ' + next_buttonIdentifier);
+    const prevButtonId = containerIdentifier + ' > .element_list_buttons_container > ' + previousButtonIdentifier;
+    const backButtonId = containerIdentifier + ' > .element_list_buttons_container > ' + backButtonIdentifier
+    const nextButtonId = containerIdentifier + ' > .element_list_buttons_container > ' + next_buttonIdentifier
+    this.previousButton = getHtmlElement(prevButtonId);
+    this.backButton = getHtmlElement(backButtonId);
+    this.nextButton = getHtmlElement(nextButtonId);
     this.buttonsVisible = [true, true, true];
 
-    this.itemList = item_list;
+    this.itemList = itemList;
     this.page = 0;
 
     this.initializeEventListeners();
@@ -102,60 +108,58 @@ export class ItemListClass {
   }
 
   initializeEventListeners() {
-        let this = this;
-
     //item mouse functions (basically call ItemListClass functions for elements that are visible)
     for (let i = 0; i < this.elements.length; i++) {
-      this.elements[i].addEventListener('mouseenter', function () {
+      this.elements[i].addEventListener('mouseenter', () => {
         if (this.elementsVisible[i]) {
           this.elementMouseenter(i);
         }
       });
-      this.elements[i].addEventListener('mouseleave', function () {
+      this.elements[i].addEventListener('mouseleave', () => {
         if (this.elementsVisible[i]) {
           this.elementMouseleave(i);
         }
       });
-      this.elements[i].addEventListener('click', function () {
+      this.elements[i].addEventListener('click', () => {
         if (this.elementsVisible[i]) {
           this.elementClick(i);
         }
       });
     }
-    this.previousButton.addEventListener('click', function () {
+    this.previousButton.addEventListener('click', () => {
       if (this.buttonsVisible[0]) {
         this.previousButtonClick();
       }
     });
-    this.backButton.addEventListener('mouseenter', function () {
+    this.backButton.addEventListener('mouseenter', () => {
       if (this.buttonsVisible[1]) {
         this.backButtonMouseenter();
       }
     });
-    this.backButton.addEventListener('mouseleave', function () {
+    this.backButton.addEventListener('mouseleave', () => {
       if (this.buttonsVisible[1]) {
         this.backButtonMouseleave();
       }
     });
-    this.backButton.addEventListener('click', function () {
+    this.backButton.addEventListener('click', () => {
       if (this.buttonsVisible[1]) {
         this.backButtonClick();
       }
     });
-    this.nextButton.addEventListener('click', function () {
+    this.nextButton.addEventListener('click', () => {
       if (this.buttonsVisible[2]) {
         this.nextButtonClick();
       }
     });
   }
   //calculates and returns the item's list index based on the current element and the current page
-  getItemListIndex(elem_nr) {
-    return this.page * this.elements.length + elem_nr;
+  getItemListIndex(elemNr: number) {
+    return this.page * this.elements.length + elemNr;
   }
-  changeItemList(item_list) {
-    this.itemList = item_list;
+  changeItemList(itemList: T[]) {
+    this.itemList = itemList;
   }
-  changePage(pageNr) {
+  changePage(pageNr: number) {
     this.page = pageNr;
     for (let i = 0; i < this.elements.length; i++) {
       //if index is alright, populate and display element
@@ -176,8 +180,8 @@ export class ItemListClass {
     this.changePage(0);
   }
   //show and hide list
-  show(do_reset) {
-    if (do_reset) {
+  show(doReset: boolean) {
+    if (doReset) {
       this.reset();
     }
     this.container.hidden = false;
@@ -186,20 +190,20 @@ export class ItemListClass {
     this.container.hidden = true;
   }
   //mouse events for individual elements on the list
-  elementMouseenter(elem_nr) { }
-  elementMouseleave(elem_nr) { }
-  elementClick(elem_nr) { }
+  elementMouseenter(elemNr: number) { }
+  elementMouseleave(elemNr: number) { }
+  elementClick(elemNr: number) { }
   //show/hide an element (can be done by using hidden, just disabling border and innerHTML = '' or anything else)
-  showElement(elem_nr) {
-    this.elementsVisible[elem_nr] = true;
-    this.elements[elem_nr].style.cursor = 'pointer';
+  showElement(elemNr: number) {
+    this.elementsVisible[elemNr] = true;
+    this.elements[elemNr].style.cursor = 'pointer';
   }
-  hideElement(elem_nr) {
-    this.elementsVisible[elem_nr] = false;
-    this.elements[elem_nr].style.cursor = 'default';
+  hideElement(elemNr: number) {
+    this.elementsVisible[elemNr] = false;
+    this.elements[elemNr].style.cursor = 'default';
   }
   //populate an element with data
-  populateElement(elem_nr) { }
+  populateElement(elemNr: number) { }
   //back button events
   backButtonMouseenter() { }
   backButtonMouseleave() { }
@@ -266,15 +270,15 @@ export class ItemListClass {
 
 //style is an thisect with keys naming the style thisect(like borderColor, width etc.) and value is the value it needs to be substituted with
 export class ButtonGroupClass {
-  container: any;
-  buttons: NodeListOf<Element>;
+  container: HTMLElement;
+  buttons: HTMLElement[];
   selected: number;
-  buttonsVisible: never[];
-  selectedStyle: any;
-  defaultStyle: any;
-  constructor(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle) {
-    this.container = document.querySelector(containerIdentifier);
-    this.buttons = document.querySelectorAll(containerIdentifier + ' > ' + buttonIdentifier);
+  buttonsVisible: boolean[];
+  selectedStyle: Object;
+  defaultStyle: Object;
+  constructor(containerIdentifier: string, buttonIdentifier: string, selectedStyle: Object, defaultStyle: Object) {
+    this.container = getHtmlElement(containerIdentifier);
+    this.buttons = getHtmlElementList(containerIdentifier + ' > ' + buttonIdentifier);
 
     this.selected = 0;
     this.buttonsVisible = [];
@@ -296,21 +300,19 @@ export class ButtonGroupClass {
   }
 
   initializeEventListeners() {
-        let this = this;
-
     //button mouse events
     for (let i = 0; i < this.buttons.length; i++) {
-      this.buttons[i].addEventListener('mouseenter', function () {
+      this.buttons[i].addEventListener('mouseenter', () => {
         if (this.buttonsVisible[i]) {
           this.buttonMouseenter(i);
         }
       });
-      this.buttons[i].addEventListener('mouseleave', function () {
+      this.buttons[i].addEventListener('mouseleave', () => {
         if (this.buttonsVisible[i]) {
           this.buttonMouseleave(i);
         }
       });
-      this.buttons[i].addEventListener('click', function () {
+      this.buttons[i].addEventListener('click', () => {
         if (this.buttonsVisible[i]) {
           this.buttonClick(i);
         }
@@ -318,29 +320,29 @@ export class ButtonGroupClass {
     }
   }
 
-  buttonMouseenter(buttonNr) { }
-  buttonMouseleave(buttonNr) { }
-  selectButton(buttonNr) {
-    for (let [key, value] of Object.entries(this.selectedStyle)) {
-      this.buttons[buttonNr].style[key] = value;
+  buttonMouseenter(buttonNr: number) { }
+  buttonMouseleave(buttonNr: number) { }
+  selectButton(buttonNr: number) {
+    for (let key in this.selectedStyle) {
+      // this.buttons[buttonNr].style[key as keyof CSSStyleDeclaration] = this.selectedStyle[key as keyof Object];
     }
     this.selected = buttonNr;
   }
 
-  buttonClick(buttonNr) {
+  buttonClick(buttonNr: number) {
     if (buttonNr != this.selected) {
       //restore previously selected to default appearance
-      for (let [key, value] of Object.entries(this.defaultStyle)) {
-        this.buttons[this.selected].style[key] = value;
-      }
+      // for (let [key, value] of Object.entries(this.defaultStyle)) {
+      //   this.buttons[this.selected].style[key] = value;
+      // }
       //change newly selected to selected appearance
       this.selectButton(buttonNr);
     }
   }
-  showButton(buttonNr) {
+  showButton(buttonNr: number) {
     this.buttonsVisible[buttonNr] = true;
   }
-  hideButton(buttonNr) {
+  hideButton(buttonNr: number) {
     this.buttonsVisible[buttonNr] = false;
   }
 
@@ -352,7 +354,7 @@ export class ButtonGroupClass {
   }
   //will load itself from saveText, starting at index i
   //returns number of steps taken (fields used) in saveText
-  load(saveText, i) {
+  load(saveText: string, i: number) {
     this.selected = Number(saveText[i]) == 0 ? 1 : 0;
     this.buttonClick(Number(saveText[i]));
     return 1;
