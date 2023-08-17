@@ -5,7 +5,6 @@ import { Stats } from "./stats";
 
 export type StringHashT<T> = { [key: string]: T }
 export type NumberHashT<T> = { [key: number]: T }
-export type NewArmyT = [Decimal, Stats, Stats];
 
 // Data types
 //a type that includes creatures, weapons and more for the future
