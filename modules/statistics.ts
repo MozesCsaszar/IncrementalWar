@@ -1,10 +1,24 @@
 /*  A module which will store statistical data of your game, such as equipment bought this run and equipment bought overall */
 
+import Decimal from "break_infinity.js";
+import { ArmyCompsI, NumberHashT, StringHashT } from "./types";
+import { Player } from "../IncrementalWar";
+import { stuff } from "./data";
+import { NewExpression } from "typescript";
+
+type LevelToIndexT = {
+  'base': 0
+}
+type OverallLevelT = LevelToIndexT & {
+  'overall': 0
+}
 
 //a class which stores data in a list and conveniently gives access to it as well
 //currently has
 class StatisticClass {
-  static levelToIndex = { 'base': 0 };
+  static levelToIndex: LevelToIndexT = { 'base': 0 };
+  stats: [Decimal];
+  overall: Decimal;
   constructor() {
     //each index corresponds to a different level of resets, starting from base to the latest
     this.stats = [new Decimal(0)];
@@ -13,20 +27,20 @@ class StatisticClass {
   get type() {
     return 'StatisticClass';
   }
-  add(amount) {
+  add(amount: Decimal) {
     for (let i = 0; i < this.stats.length; i++) {
       this.stats[i] = this.stats[i].add(amount);
     }
     this.overall = this.overall.add(amount);
   }
-  setToMax(amount) {
+  setToMax(amount: Decimal) {
     for (let i = 0; i < this.stats.length; i++) {
       this.stats[i] = this.stats[i].max(amount);
     }
     this.overall = this.overall.max(amount);
   }
   //levels: base, overall
-  getStatistics(level) {
+  getStatistics(level: keyof OverallLevelT) {
     if (level == 'overall') {
       return this.overall;
     }
@@ -35,7 +49,7 @@ class StatisticClass {
     }
   }
   //reset everything except overall number to 0
-  reset(level) {
+  reset(level: keyof OverallLevelT) {
     let len = level == 'overall' ? this.stats.length : StatisticClass.levelToIndex[level] + 1;
     for (let i = 0; i < len; i++) {
       this.stats[i] = new Decimal(0);
@@ -53,7 +67,7 @@ class StatisticClass {
     return saveText;
   }
   //returns the new i
-  load(saveText, i) {
+  load(saveText: string[], i: number) {
     for (let ii = 0; ii < this.stats.length; ii++) {
       this.stats[ii] = new Decimal(saveText[i]); i++;
     }
@@ -63,116 +77,78 @@ class StatisticClass {
 };
 
 //an thisect that stores all statistics under it's stats property
-const allThingsStatistics = {
-  stats: {
-    'StorePage': {
-      'creatures': {
-        'Human': new StatisticClass(),
-      },
-      'weapons': {
-        'Knife': new StatisticClass(),
-        'Dagger': new StatisticClass(),
-        'Longsword': new StatisticClass(),
-      },
-    },
-    'Player': {
-      'armies': {
-        0: {
-          'Attack': new StatisticClass(),
-        },
-        1: {
-          'Attack': new StatisticClass(),
-        },
-        2: {
-          'Attack': new StatisticClass(),
-        },
-        'all': {
-          'Attack': new StatisticClass(),
+class AllThingsStatisticsClass {
+  stats: StringHashT<StatisticClass> = {}
+  constructor() {
+    this.buildStats();
+  }
+  setEnd(base: string, elements: []) {
+    for (const e in elements) {
+      this.stats[base + e] = new StatisticClass();
+    }
+  }
+  buildStats() {
+    let base = "StorePage";
+    for (const k in Object.keys(stuff)) {
+      const key = k as keyof ArmyCompsI<never>;
+      for (const subkey in stuff[key]) {
+        const finalKey = base + "." + key + "." + subkey;
+        this.stats[finalKey] = new StatisticClass();
+      }
+    }
+    base = "Player";
+    for (const k in [...Array(Player.armies.length).keys(), 'all']) {
+      for (const sk in ["Attack"]) {
+        const finalKey = base + ".armies." + k + "." + sk;
+        this.stats[finalKey] = new StatisticClass();
+      }
+    }
+    base = "Tower";
+    let nrFloors = 2;
+    let levelsPerFloor = [9, 12];
+    for (let i = 0; i < nrFloors; i++) {
+      for (let j = 0; j < levelsPerFloor[i]; j++) {
+        for (let k in ["timesVisited"]) {
+          const finalKey = base + "." + i + "." + j + "." + k;
+          this.stats[finalKey] = new StatisticClass();
         }
       }
-    },
-    'Tower': [],
-  },
-  buildTowerLevel(floorNr, levelNr) {
-    this.stats['Tower'][floorNr][levelNr] = {};
-    let level = this.stats['Tower'][floorNr][levelNr];
-    let level_stats = ['times_visited'];
-    for (let i = 0; i < level_stats.length; i++) {
-      level[level_stats[i]] = new StatisticClass();
     }
-  },
-  buildTowerStats() {
-    let nr_floors = 1;
-    let levels_per_floor = [9];
-    for (let i = 0; i < nr_floors; i++) {
-      this.stats['Tower'].push([]);
-      for (let j = 0; j < levels_per_floor[i]; j++) {
-        this.buildTowerLevel(i, j);
-      }
-    }
-  },
+  }
   //a function that returns the StatisticClass thisect corresponding to path
-  getStatsFromPath(path) {
-    let stats = this.stats;
-    for (let elem of path) {
-      stats = stats[elem];
-    }
-    return stats;
-  },
+  getStatsFromPath(path: string[]) {
+    let strPath = path.join(".");
+    return this.stats[strPath];
+  }
   //functions which change statistics, then unlock new stuff if needed
   //they return the value true if an unlock was made, false otherwise
-  addToStatistics(path, amount) {
+  addToStatistics(path: string[], amount: Decimal) {
     this.getStatsFromPath(path).add(amount);
     return UH.doUnlock(path);
-  },
-  setStatisticsToMax(path, amount) {
+  }
+  setStatisticsToMax(path: string[], amount: Decimal) {
     this.getStatsFromPath(path).setToMax(amount);
     return UH.doUnlock(path);
-  },
-  getStatistics(path, level) {
+  }
+  getStatistics(path: string[], level: keyof OverallLevelT) {
     return this.getStatsFromPath(path).getStatistics(level);
-  },
-  saveRecursive(this) {
-    let saveText = String(Object.keys(this).length);
-    for (let [key, val] of Object.entries(this)) {
-      if (val.type == 'StatisticClass') {
-        saveText += '/*/' + key + '/*/' + val.save();
-      }
-      else {
-        saveText += '/*/' + key + '/*/' + this.saveRecursive(val);
-      }
-    }
-    return saveText;
-  },
+  }
   save() {
     let saveText = String(Object.keys(this.stats).length);
     for (let [key, val] of Object.entries(this.stats)) {
-      saveText += '/*/' + key + '/*/' + this.saveRecursive(val);
+      saveText += '/*/' + key + '/*/' + val.save();
     }
     return saveText;
-  },
-  //returns the value of i (the index in saveText we are currently scrying for information)
-  loadRecursive(saveText, this, i) {
-    if (this.type == 'StatisticClass') {
-      i = this.load(saveText, i);
-    }
-    else {
-      let len = Number(saveText[i]); i++;
-      for (let ii = 0; ii < len; ii++) {
-        i = this.loadRecursive(saveText, this[saveText[i]], i + 1);
-      }
+  }
+  load(saveText: string) {
+    const saveTextArr = saveText.split('/*/');
+    let i = 0;
+    let len = Number(saveTextArr[i]); i++;
+    let stats = this.stats;
+    for (let ii = 0; ii < len; ii++) {
+      i = stats[saveTextArr[i]].load(saveTextArr, i + 1)
     }
     return i;
-  },
-  load(saveText) {
-    saveText = saveText.split('/*/');
-    let i = 0;
-    let len = Number(saveText[i]); i++;
-        let this = this.stats;
-    for (let ii = 0; ii < len; ii++) {
-      i = this.loadRecursive(saveText, this[saveText[i]], i + 1);
-    }
   }
 }
-
-allThingsStatistics.buildTowerStats();
+export const allThingsStatistics = new AllThingsStatisticsClass();

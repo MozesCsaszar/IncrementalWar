@@ -1,7 +1,5 @@
-import Decimal from "break_infinity.js";
 import { ArmyComponent } from "./army_comps";
 import { Boss } from "./boss";
-import { Stats } from "./stats";
 
 export type StringHashT<T> = { [key: string]: T }
 export type NumberHashT<T> = { [key: number]: T }
