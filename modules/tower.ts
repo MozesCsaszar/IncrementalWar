@@ -218,11 +218,11 @@ class TowerClass {
     }
   }
   //returns removed level
-  removeRaidedLevelByArmy(army_nr) {
+  removeRaidedLevelByArmy(armyNr) {
     let found = undefined;
 
     for (let j = 0; j < this.raidedLevels.length; j++) {
-      if (this.raidedLevels[j][2] == army_nr) {
+      if (this.raidedLevels[j][2] == armyNr) {
         found = this.raidedLevels.splice(j, 1)[0];
         break;
       }
@@ -232,8 +232,8 @@ class TowerClass {
     }
     return found;
   }
-  addRaidedLevel(floor_nr, level_nr, army_nr) {
-    this.raidedLevels.push([floor_nr, level_nr, army_nr]);
+  addRaidedLevel(floor_nr, level_nr, armyNr) {
+    this.raidedLevels.push([floor_nr, level_nr, armyNr]);
   }
   changeRaidedLevel(floor_nr, level_nr, new_army_nr) {
     for (let j = 0; j < this.raidedLevels.length; j++) {

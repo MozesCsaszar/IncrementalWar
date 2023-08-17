@@ -12,6 +12,7 @@ import { Army } from "./modules/army";
 import { BossFightingResultPage } from "./modules/boss";
 import { IArmyComps, StringHash } from "./modules/types";
 import { PageClass } from "./modules/base_classes";
+import { getHtmlElement, stylizeDecimals } from "./modules/functions";
 
 //A popup window for your inspection needs
 const PopupWindow = {
@@ -34,7 +35,7 @@ const PopupWindow = {
   },
 };
 
-export class Player {
+export class PlayerClass {
   static save(): string {
     throw new Error("Method not implemented.");
   }
@@ -53,10 +54,11 @@ export class Player {
     let saveText = this.gold + "/*/";
     //save inventory
     saveText += Object.keys(this.inventory).length;
-    for (category in this.inventory) {
+    for (const c in this.inventory) {
+      const category = c as keyof IArmyComps<never>;
       saveText += "/*/" + category;
       saveText += "/*/" + Object.keys(this.inventory[category]).length;
-      for (item in this.inventory[category]) {
+      for (const item in this.inventory[category]) {
         saveText += "/*/" + item + "/*/" + this.inventory[category][item];
       }
     }
@@ -68,24 +70,23 @@ export class Player {
 
     return saveText
   }
-  load(saveText) {
+  load(saveText: string) {
     //split and get ready for loading
-    saveText = saveText.split("/*/");
+    const saveTextArr = saveText.split("/*/");
     let i = 0;
     //load gold
     this.gold = new Decimal(saveText[i]);
     i++;
     //  load inventory
     //reset inventory
-    delete this.inventory;
-    this.inventory = {};
-    let j = new Number(saveText[i]);
+    this.inventory = { creatures: {}, weapons: {} };
+    let j = Number(saveText[i]);
     let k = 0;
     i++;
     while (j > 0) {
-      const category = saveText[i];
+      const category = saveText[i] as keyof IArmyComps<never>;
       i++;
-      k = new Number(saveText[i]);
+      k = Number(saveText[i]);
       i++;
       this.inventory[category] = {};
       while (k > 0) {
@@ -96,7 +97,7 @@ export class Player {
       j--;
     }
     //load armies
-    j = new Number(saveText[i]);
+    j = Number(saveText[i]);
     i++;
     k = 0;
     while (j > 0) {
@@ -106,6 +107,8 @@ export class Player {
     }
   }
 }
+
+export const Player = new PlayerClass();
 
 //          ALL THE PAGES IN ONE PLACE
 
@@ -181,16 +184,16 @@ class GameManagerClass {
       ([key, page]) => { localStorage.setItem(key, page.save()) }
     );
     localStorage.setItem("currentPage", this.currentPage);
-    localStorage.setItem("lastSavedTime", Date.now());
+    localStorage.setItem("lastSavedTime", Date.now() + "");
   }
   //a function to load game from local storage
   loadFromLocalStorage() {
-    Player.load(localStorage.getItem("Player"));
+    Player.load(localStorage.getItem("Player")!);
     allThingsStatistics.load(localStorage.getItem("Statistics"));
     UH.load(localStorage.getItem("Unlocks"));
     //load pages
     Object.entries(this.pages).forEach(
-      ([key, page]) => { page.load(localStorage.getItem(key)) }
+      ([key, page]) => { page.load(localStorage.getItem(key)!) }
     );
     //load offline progress
     //  shinaningans to get the current page to display correctly (CHANGE THIS?)
@@ -208,7 +211,7 @@ class GameManagerClass {
         GB.pageButtons.buttonClick(i);
       }
     }
-    this.loadOfflineProgress(Date.now() - Number(localStorage.getItem("lastSavedTime")), a);
+    this.loadOfflineProgress(Date.now() - Number(localStorage.getItem("lastSavedTime")));
     return true;
   }
   openGame() {
@@ -241,28 +244,28 @@ class GameManagerClass {
 
 const GM = new GameManagerClass();
 
-let interval = setInterval(() => { SettingsPage.displayEveryTick(SettingsPage) }, 50);
+let interval = setInterval(() => { SettingsPage.displayEveryTick() }, 50);
 
-function HidePages(toShow) {
+function HidePages(toShow: string) {
   if (toShow != GM.currentPage) {
     clearInterval(interval);
     GM.pages[GM.currentPage].hidden = true;
     GM.pages[toShow].hidden = false;
     GM.currentPage = toShow;
-    interval = setInterval(() => { GM.pages[GM.currentPage].displayEveryTick(GM.pages[GM.currentPage]) }, 50);
+    interval = setInterval(() => { GM.pages[GM.currentPage].displayEveryTick() }, 50);
     GM.pages[toShow].display();
   }
 }
 //          THE INTERPAGE STUFF         \\
-const goldText = document.querySelector("#GoldText");
+const goldText = getHtmlElement("#GoldText");
 
 //click event for the continue from offline button
-document.getElementById("ContinueFromOfflineProgress").addEventListener("click", () => {
+getHtmlElement("#ContinueFromOfflineProgress").addEventListener("click", () => {
   //change current page to be able to use HidePages
-  currentPage = Number(window.localStorage.getItem("currentPage")) ? 0 : 1;
-  document.getElementById("OfflinePageContainer").hidden = true;
-  document.getElementById("PageButtonsContainer").hidden = false;
-  goldText.parentElement.hidden = false;
+  const currentPage = window.localStorage.getItem("currentPage")!;
+  getHtmlElement("#OfflinePageContainer").hidden = true;
+  getHtmlElement("#PageButtonsContainer").hidden = false;
+  goldText.parentElement!.hidden = false;
   //UNCOMMENT THIS
   HidePages(currentPage);
 });
@@ -347,7 +350,7 @@ window.addEventListener("load", () => {
 
 function tick() {
   goldText.innerHTML = stylizeDecimals(Player.gold);
-  for (i = 0; i < TowerPage.Tower.raidedLevels.length; i++) {
+  for (let i = 0; i < TowerPage.Tower.raidedLevels.length; i++) {
     TowerPage.Tower.floors[TowerPage.Tower.raidedLevels[i][0]].levels[TowerPage.Tower.raidedLevels[i][1]].tick(20);
   }
 }
