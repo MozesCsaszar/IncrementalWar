@@ -1,37 +1,46 @@
-/*
-
-Created by: Császár Mózes (mozescsaszar@gmail.com)
-Code use is only permitted for personal, non-commercial or non-commercial cases. Please don't
-use or reuse part of the project in an application released to target audiences greater than
-family or close circle of friends.
-
-*/
-
 import Decimal from "break_infinity.js";
 import { Army } from "./army";
-import { ArmyCompsI, StringHashT } from "./types";
 import { HashLike, PageClass } from "./base_classes";
-import { getHtmlElement, stylizeDecimals } from "./functions";
-import { ArmyPage } from "./pages/army";
-import { BossArmySelectionPage } from "./pages/boss/army_selection";
-import { BossFightingPage } from "./pages/boss/fighting";
-import { BossFightingResultPage } from "./pages/boss/result";
-import { TowerPage } from "./pages/tower";
-import { StorePage } from "./pages/store";
-import { GB } from "./game_body";
-import { SettingsPage } from "./pages/settings";
-import { TutorialPage } from "./pages/tutorial";
+import { ArmyCompsI, StringHashT } from "./types";
 import { allThingsStatistics } from "./statistics";
 import { UH } from "./unlocks";
+import { TowerPageClass } from "./pages/tower";
+import { ArmyPageClass } from "./pages/army";
+import { BossArmySelectionPageClass } from "./pages/boss/army_selection";
+import { BossFightingPageClass } from "./pages/boss/fighting";
+import { BossFightingResultPageClass } from "./pages/boss/result";
+import { TutorialPageClass } from "./pages/tutorial";
+import { SettingsPageClass } from "./pages/settings";
+import { StorePageClass } from "./pages/store";
+import { GameBodyClass } from "./game_body";
 
-export class PlayerClass extends HashLike {
+export const localStorage = window.localStorage;
+
+class PlayerClass extends HashLike {
   gold: Decimal = new Decimal(25);
-  armies: [Army, Army, Army] = [new Army(), new Army(), new Army()];
+  armies: Army[] = [];
   inventory: ArmyCompsI<StringHashT<Decimal>> = {
     creatures: {},
     weapons: {}
   };
-  static gold: Decimal;
+
+  constructor(gM: GameManagerClass) {
+    super();
+
+    for (let i = 0; i < 3; i++) {
+      this.armies.push(new Army(gM));
+    }
+  }
+
+  getElementCount(type: keyof ArmyCompsI<never>, name: string): Decimal {
+    return this.inventory[type][name];
+  }
+  setElementCount(type: keyof ArmyCompsI<never>, name: string, newAmount: Decimal): void {
+    this.inventory[type][name] = newAmount;
+  }
+  getArmy(index: number): Army {
+    return this.armies[index];
+  }
   save() {
     //  save gold
     let saveText = this.gold + "/*/";
@@ -58,64 +67,75 @@ export class PlayerClass extends HashLike {
     const saveTextArr = saveText.split("/*/");
     let i = 0;
     //load gold
-    this.gold = new Decimal(saveText[i]);
+    this.gold = new Decimal(saveTextArr[i]);
     i++;
     //  load inventory
     //reset inventory
     this.inventory = { creatures: {}, weapons: {} };
-    let j = Number(saveText[i]);
+    let j = Number(saveTextArr[i]);
     let k = 0;
     i++;
     while (j > 0) {
-      const category = saveText[i] as keyof ArmyCompsI<never>;
+      const category = saveTextArr[i] as keyof ArmyCompsI<never>;
       i++;
-      k = Number(saveText[i]);
+      k = Number(saveTextArr[i]);
       i++;
       this.inventory[category] = {};
       while (k > 0) {
-        this.inventory[category][saveText[i]] = new Decimal(saveText[i + 1]);
+        this.inventory[category][saveTextArr[i]] = new Decimal(saveTextArr[i + 1]);
         i += 2;
         k--;
       }
       j--;
     }
     //load armies
-    j = Number(saveText[i]);
+    j = Number(saveTextArr[i]);
     i++;
     k = 0;
     while (j > 0) {
-      i = this.armies[k].load(saveText, i, k);
+      i = this.armies[k].load(saveTextArr[i], i, k);
       k++;
       j--;
     }
   }
 }
 
-export const Player = new PlayerClass();
-
-//          ALL THE PAGES IN ONE PLACE
-
 class GameManagerClass {
-  LoadOfflineProgress(arg0: number) {
-    throw new Error("Method not implemented.");
-  }
-  saveInterval?: number;
-  renderInterval?: number;
+  saveInterval?: NodeJS.Timeout;
+  renderInterval?: NodeJS.Timeout;
   currentPage: string = "StorePage";
   pages: StringHashT<PageClass>;
   canSave: boolean;
+  Player: PlayerClass;
+  TowerPage = new TowerPageClass("TowerPage", this);
+  ArmyPage: ArmyPageClass = new ArmyPageClass("ArmyPage", this);
+  StorePage: StorePageClass = new StorePageClass("StorePage", this);
+  SettingsPage = new SettingsPageClass('SettingsPage', this);
+  BossArmySelectionPage = new BossArmySelectionPageClass("BossArmySelectionPage", this);
+  BossFightingPage = new BossFightingPageClass("BossFightingPage", this);
+  BossFightingResultPage = new BossFightingResultPageClass("BossFightingResultPage", this);
+  TutorialPage: TutorialPageClass = new TutorialPageClass("TutorialPage", this);
+  GB: GameBodyClass = new GameBodyClass(this);
   constructor() {
-    this.pages = {};
-    [TowerPage, ArmyPage, StorePage, SettingsPage, BossArmySelectionPage,
-      BossFightingPage, BossFightingResultPage, TutorialPage].forEach(
-        (p) => { this.pages[p.name] = p }
-      )
+    this.pages = {
+      "TowerPage": this.TowerPage,
+      "ArmyPage": this.ArmyPage,
+      "StorePage": this.StorePage,
+      "SettingsPage": this.SettingsPage,
+      "BossArmySelectionPage": this.BossArmySelectionPage,
+      "BossFightingPage": this.BossFightingPage,
+      "BossFightingResultPage": this.BossFightingResultPage,
+      "TutorialPage": this.TutorialPage,
+    };
     //hide all pages at startup
     for (const page of Object.keys(this.pages)) {
       this.pages[page].hidden = true;
     }
 
     this.canSave = true;
+
+    this.Player = new PlayerClass(this);
+
 
     this.initializeEventListeners();
   }
@@ -144,11 +164,11 @@ class GameManagerClass {
     //save game whenever you switch tabs in browser (close, refresh, go to new/other tab)
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
-        this.loadOfflineProgress(Date.now() - Number(window.localStorage.getItem("lastSavedTime")));
+        this.loadOfflineProgress(Date.now() - Number(localStorage.getItem("lastSavedTime")));
         this.startSaveInterval();
       }
       else {
-        if (window.localStorage.length != 0) {
+        if (localStorage.length != 0) {
           this.saveToLocalStorage();
         }
         this.stopSaveInterval();
@@ -162,10 +182,10 @@ class GameManagerClass {
   loadOfflineProgress(nrMiliseconds = 0) {
     const nrSeconds = new Decimal(nrMiliseconds / 1000);
     //calculate gold per second
-    const goldPerSecond = TowerPage.Tower.getGoldPerSecond();
+    const goldPerSecond = this.TowerPage.Tower.getGoldPerSecond();
     //handle gold
     const totalGold = goldPerSecond.mul(nrSeconds);
-    Player.gold = Player.gold.add(totalGold);
+    this.Player.gold = this.Player.gold.add(totalGold);
   }
   //a function to save game to local storage
   saveToLocalStorage() {
@@ -173,7 +193,7 @@ class GameManagerClass {
 
     localStorage.clear();
 
-    localStorage.setItem("Player", Player.save());
+    localStorage.setItem("Player", this.Player.save());
     localStorage.setItem("Statistics", allThingsStatistics.save());
     localStorage.setItem("Unlocks", UH.save());
     Object.entries(this.pages).forEach(
@@ -184,7 +204,7 @@ class GameManagerClass {
   }
   //a function to load game from local storage
   loadFromLocalStorage() {
-    Player.load(localStorage.getItem("Player")!);
+    this.Player.load(localStorage.getItem("Player")!);
     allThingsStatistics.load(localStorage.getItem("Statistics")!);
     UH.load(localStorage.getItem("Unlocks")!);
     //load pages
@@ -195,23 +215,23 @@ class GameManagerClass {
     //  shinaningans to get the current page to display correctly (CHANGE THIS?)
     const a = localStorage.getItem("currentPage");
     if (a == "TowerPage") {
-      GB.pageButtons.selected = 1;
+      this.GB.pageButtons.selected = 1;
       this.currentPage = "ArmyPage";
     }
     else {
-      GB.pageButtons.selected = 0;
+      this.GB.pageButtons.selected = 0;
       this.currentPage = "TowerPage";
     }
-    for (let i = 0; i < GB.pageButtons.buttons.length; i++) {
-      if (GB.pageButtons.buttons[i].getAttribute("page") == a) {
-        GB.pageButtons.buttonClick(i);
+    for (let i = 0; i < this.GB.pageButtons.buttons.length; i++) {
+      if (this.GB.pageButtons.buttons[i].getAttribute("page") == a) {
+        this.GB.pageButtons.buttonClick(i);
       }
     }
     this.loadOfflineProgress(Date.now() - Number(localStorage.getItem("lastSavedTime")));
     return true;
   }
   openGame() {
-    if (window.localStorage.length != 0) {
+    if (localStorage.length != 0) {
       this.loadFromLocalStorage();
     }
     else {
@@ -228,7 +248,7 @@ class GameManagerClass {
   }
   resetLocalStorage() {
     this.stopSaveInterval();
-    window.localStorage.clear();
+    localStorage.clear();
     this.saveToLocalStorage();
     this.loadFromLocalStorage();
     this.startSaveInterval();
@@ -238,7 +258,7 @@ class GameManagerClass {
   }
   hidePages(toShow: string) {
     if (toShow != this.currentPage) {
-      clearInterval(interval);
+      clearInterval(this.renderInterval);
       this.pages[this.currentPage].hidden = true;
       this.pages[toShow].hidden = false;
       this.currentPage = toShow;
@@ -249,48 +269,3 @@ class GameManagerClass {
 }
 
 export const GM = new GameManagerClass();
-
-let interval = setInterval(() => { SettingsPage.displayEveryTick() }, 50);
-//          THE INTERPAGE STUFF         \\
-const goldText = getHtmlElement("#GoldText");
-
-//click event for the continue from offline button
-getHtmlElement("#ContinueFromOfflineProgress").addEventListener("click", () => {
-  //change current page to be able to use HidePages
-  const currentPage = window.localStorage.getItem("currentPage")!;
-  getHtmlElement("#OfflinePageContainer").hidden = true;
-  getHtmlElement("#PageButtonsContainer").hidden = false;
-  goldText.parentElement!.hidden = false;
-  //UNCOMMENT THIS
-  GM.hidePages(currentPage);
-});
-
-//load the game on each session when starting up
-window.addEventListener("load", () => {
-  GM.openGame();
-});
-//save game whenever you switch tabs in browser (close, refresh, go to new/other tab)
-// document.addEventListener('visibilitychange', function() {
-//     if (document.visibilityState === 'visible') {
-//         let a = Number(window.localStorage.getItem('currentPage'));
-//         LoadOfflineProgress(Date.now() - Number(window.localStorage.getItem('lastSavedTime')), a);
-//         save_interval = setInterval(SaveToLocalStorage,1000);
-//     } else {
-//         if(window.localStorage.length != 0) {
-//             SaveToLocalStorage();
-//         }
-
-//         clearInterval(save_interval);
-//     }
-// });
-//save the game before closing
-// window.addEventListener('beforeunload', () => {CloseGame()});
-
-function tick() {
-  goldText.innerHTML = stylizeDecimals(Player.gold);
-  for (let i = 0; i < TowerPage.Tower.raidedLevels.length; i++) {
-    TowerPage.Tower.floors[TowerPage.Tower.raidedLevels[i][0]].levels[TowerPage.Tower.raidedLevels[i][1]].tick(20);
-  }
-}
-
-setInterval(tick, 50);

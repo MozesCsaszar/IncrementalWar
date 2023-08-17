@@ -5,7 +5,7 @@ import { StuffType } from "./types";
 import { Boss, Moveset, AttackMove, AttackDefenseMove, DefenseMove } from "./boss";
 
 //For save files: field separator: /*/ ; page separator: '*/*'
-export const stuff: StuffType = {
+export const stuff: StuffType<ArmyComponent, Boss> = {
   //Here are the weapons useable in the game
   weapons: {
     "None": new ArmyComponent(),

@@ -2,10 +2,7 @@ import Decimal from "break_infinity.js";
 import { Stats, SubStats } from "./stats";
 import { NumberHashT } from "./types";
 import { Army } from "./army";
-import { ButtonGroupClass } from "./base_classes";
-import { Player } from "./main";
 import { BossFightingPage } from "./pages/boss/fighting";
-import { BossArmySelectionPage } from "./pages/boss/army_selection";
 
 class CombatMove {
   name: string;
@@ -441,76 +438,5 @@ export class FightingBoss {
 
   deployUnitAround(army: FightingArmy) {
     this.enemiesAround.push(new FightingUnit(army));
-  }
-}
-
-export class BossSelectArmyButtonsClass extends ButtonGroupClass {
-  number: number;
-  selected: number;
-  buttons: any;
-  constructor(containerIdentifier: string, buttonIdentifier: string, selectedStyle: Object, defaultStyle: Object, number: number) {
-    containerIdentifier += ".n" + String(number);
-    super(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle);
-
-    this.number = number;
-    this.selected = -1;
-  }
-  showButton(buttonNr: number) {
-    super.showButton(buttonNr);
-    this.buttons[buttonNr].hidden = false;
-  }
-  hideButton(buttonNr: number) {
-    super.hideButton(buttonNr);
-    this.buttons[buttonNr].hidden = true;
-  }
-  deselect() {
-    if (this.selected != -1) {
-      for (const key in this.defaultStyle) {
-        //TODO: Investigate Styles
-        // this.buttons[this.selected].style[key] = this.defaultStyle[key];
-      }
-      this.selected = -1;
-    }
-  }
-
-  buttonClick(buttonNr: number) {
-    //reset old armies
-    if (BossArmySelectionPage.fight!.selectedArmies[this.number] != -1) {
-      for (let k = 0; k < BossArmySelectionPage.nrArmySelects; k++) {
-        if (this.number != k) {
-          BossArmySelectionPage.armySelects[k].showButton(buttonNr);
-        }
-      }
-    }
-    //if you select the same army again
-    if (buttonNr == this.selected) {
-      BossArmySelectionPage.fight!.selectedArmies[this.number] = -1;
-      BossArmySelectionPage.armyInfos[this.number].innerHTML = "No army to be seen here.";
-    }
-    //if you selected a new army
-    else {
-      BossArmySelectionPage.fight!.selectedArmies[this.number] = buttonNr;
-      BossArmySelectionPage.armyInfos[this.number].innerHTML = Player.armies[buttonNr].get_fighting_stats_text();
-      for (let k = 0; k < BossArmySelectionPage.nrArmySelects; k++) {
-        if (k != this.number) {
-          BossArmySelectionPage.armySelects[k].hideButton(buttonNr);
-        }
-      }
-    }
-
-    //do button group things
-    if (this.selected == buttonNr) {
-      this.deselect();
-    }
-    else {
-      if (this.selected != -1) {
-        for (const key in this.defaultStyle) {
-          //TODO: Investigate Styles
-          // this.buttons[this.selected].style[key] = this.defaultStyle[key];
-        }
-      }
-      this.selectButton(buttonNr);
-    }
-    BossArmySelectionPage.showHideFightButton();
   }
 }

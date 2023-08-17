@@ -1,10 +1,84 @@
-import { GM, Player } from "../../main";
-import { PageClass, Fight } from "../../base_classes";
-import { BossSelectArmyButtonsClass } from "../../boss";
+import { PageClass, Fight, ButtonGroupClass } from "../../base_classes";
 import { stuff } from "../../data";
 import { BossFightingPage } from "./fighting";
+import { TowerPage } from "../tower";
+import { TutorialPage } from "../tutorial";
+import { GM, Player } from "../../variables";
+import { GameManagerClass } from "../../declared_classes";
 
-class BossArmySelectionPageClass extends PageClass {
+class BossSelectArmyButtonsClass extends ButtonGroupClass {
+  number: number;
+  selected: number;
+  buttons: any;
+  constructor(containerIdentifier: string, buttonIdentifier: string, selectedStyle: Object, defaultStyle: Object, number: number) {
+    containerIdentifier += ".n" + String(number);
+    super(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle);
+
+    this.number = number;
+    this.selected = -1;
+  }
+  showButton(buttonNr: number) {
+    super.showButton(buttonNr);
+    this.buttons[buttonNr].hidden = false;
+  }
+  hideButton(buttonNr: number) {
+    super.hideButton(buttonNr);
+    this.buttons[buttonNr].hidden = true;
+  }
+  deselect() {
+    if (this.selected != -1) {
+      for (const key in this.defaultStyle) {
+        //TODO: Investigate Styles
+        // this.buttons[this.selected].style[key] = this.defaultStyle[key];
+      }
+      this.selected = -1;
+    }
+  }
+
+  buttonClick(buttonNr: number) {
+    //reset old armies
+    if (BossArmySelectionPage.fight!.selectedArmies[this.number] != -1) {
+      for (let k = 0; k < BossArmySelectionPage.nrArmySelects; k++) {
+        if (this.number != k) {
+          BossArmySelectionPage.armySelects[k].showButton(buttonNr);
+        }
+      }
+    }
+    //if you select the same army again
+    if (buttonNr == this.selected) {
+      BossArmySelectionPage.fight!.selectedArmies[this.number] = -1;
+      BossArmySelectionPage.armyInfos[this.number].innerHTML = "No army to be seen here.";
+    }
+    //if you selected a new army
+    else {
+      BossArmySelectionPage.fight!.selectedArmies[this.number] = buttonNr;
+      BossArmySelectionPage.armyInfos[this.number].innerHTML = Player.armies[buttonNr].getFightingStatsText();
+      for (let k = 0; k < BossArmySelectionPage.nrArmySelects; k++) {
+        if (k != this.number) {
+          BossArmySelectionPage.armySelects[k].hideButton(buttonNr);
+        }
+      }
+    }
+
+    //do button group things
+    if (this.selected == buttonNr) {
+      this.deselect();
+    }
+    else {
+      if (this.selected != -1) {
+        for (const key in this.defaultStyle) {
+          //TODO: Investigate Styles
+          // this.buttons[this.selected].style[key] = this.defaultStyle[key];
+        }
+      }
+      this.selectButton(buttonNr);
+    }
+    BossArmySelectionPage.showHideFightButton();
+  }
+}
+
+
+export class BossArmySelectionPageClass extends PageClass {
   fight?: Fight;
   nrArmySelects: number;
   armySelects: BossSelectArmyButtonsClass[];
@@ -15,8 +89,8 @@ class BossArmySelectionPageClass extends PageClass {
   backButton: HTMLElement;
   startFightButton: HTMLElement;
   timesVisited: number = 0;
-  constructor(name: string) {
-    super(name);
+  constructor(name: string, gM: GameManagerClass) {
+    super(name, gM);
 
     this.nrArmies = 3;
     this.nrArmySelects = 3;
@@ -110,5 +184,3 @@ class BossArmySelectionPageClass extends PageClass {
     }
   }
 }
-
-export const BossArmySelectionPage = new BossArmySelectionPageClass("BossArmySelectionPage");

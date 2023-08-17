@@ -1,6 +1,5 @@
 import Decimal from "break_infinity.js";
 import { GB } from "./game_body";
-import { StorePage } from "./pages/store";
 import { allThingsStatistics } from "./statistics";
 import { Buyer } from "./store";
 import { OverallLevelT, StringHashT } from "./types";

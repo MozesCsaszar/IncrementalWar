@@ -1,10 +1,8 @@
 import Decimal from "break_infinity.js";
-import { Player } from "./main";
 import { stuff } from "./data";
-import { ArmyPage } from "./pages/army";
 import { allThingsStatistics } from "./statistics";
 import { ArmyCompsI } from "./types";
-import { StorePage } from "./pages/store";
+import { GameManagerClass } from "./base_classes";
 
 export class Buyer {
   borderColors = {
@@ -22,27 +20,28 @@ export class Buyer {
     this.currency = currency;
   }
 
-  buy(buyNr: Decimal) {
+  buy(buyNr: Decimal, gM: GameManagerClass): boolean {
     const price = stuff[this.type][this.name].getPrice(this.nrBought, buyNr);
-    const currencyAmount = Player.get<Decimal>(this.currency);
+    const currencyAmount = gM.Player.get<Decimal>(this.currency);
     if (currencyAmount.gte(price)) {
-      Player.set(this.currency, currencyAmount.sub(price));
+      gM.Player.set(this.currency, currencyAmount.sub(price));
       //when adding a new element
-      if (!Player.inventory[this.type][this.name]) {
-        ArmyPage.elementEquipState[this.type][this.name] = 0;
-        Player.inventory[this.type][this.name] = new Decimal(0);
+      if (!gM.Player.getElementCount(this.type, this.name)) {
+        gM.ArmyPage.setElementEquipState(this.type, this.name, 0);
+        gM.Player.setElementCount(this.type, this.name, new Decimal(0));
       }
-      Player.inventory[this.type][this.name] = Player.inventory[this.type][this.name].add(buyNr);
+      const newAmount = gM.Player.getElementCount(this.type, this.name).add(buyNr);
+      gM.Player.setElementCount(this.type, this.name, newAmount);
       this.nrBought = this.nrBought.add(buyNr);
       if (allThingsStatistics.addToStatistics(["StorePage", this.type, this.name], buyNr)) {
-        StorePage.itemList.changePage(StorePage.itemList.page);
+        gM.StorePage.itemList.changePage(gM.StorePage.itemList.page);
       }
       return true;
     }
     return false;
   }
 
-  getPrice(buyNr: Decimal) {
+  getPrice(buyNr: Decimal): Decimal {
     return stuff[this.type][this.name].getPrice(this.nrBought, buyNr);
   }
 }

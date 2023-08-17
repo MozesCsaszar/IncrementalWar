@@ -2,16 +2,16 @@ import Decimal from "break_infinity.js";
 import { Stats, SubStats } from "./stats";
 import { stuff } from "./data";
 import { ArmyCompsI } from "./types";
-import { Player } from "./main";
 import { getCompareColor, stylizeDecimals } from "./functions";
-import { ArmyPage } from "./pages/army";
+import { allThingsStatistics } from "./statistics";
+import { GameManagerClass, PlayerClass } from "./base_classes";
 
 export type NewArmyT = [Decimal, Stats, Stats];
 
 //regular save divider = '/*/'
 export class Army implements ArmyCompsI<string[]> {
   static level_bonuses = [new Decimal(1), new Decimal(1.1), new Decimal(1.2), new Decimal(1.3), new Decimal(1.5), new Decimal(1.7), new Decimal(2)];
-  static level_prices = [new Decimal(1000), new Decimal(6000), new Decimal(15000), new Decimal(50000), new Decimal(175000), new Decimal("1e6")];
+  static levelPrices = [new Decimal(1000), new Decimal(6000), new Decimal(15000), new Decimal(50000), new Decimal(175000), new Decimal("1e6")];
   creatures: [string];
   weapons: string[];
   _stats: Stats;
@@ -21,8 +21,11 @@ export class Army implements ArmyCompsI<string[]> {
   level_bonus: Decimal;
   raiding: number;
   power: Decimal;
+  gM: GameManagerClass;
 
-  constructor(creature = "None", weapons = ["None", "None", "None", "None", "None", "None", "None", "None"], stats = new Stats(), bodyParts = new Stats(), size = new Decimal(0)) {
+  constructor(gM: GameManagerClass, creature = "None",
+    weapons = ["None", "None", "None", "None", "None", "None", "None", "None"], stats = new Stats(),
+    bodyParts = new Stats(), size = new Decimal(0)) {
     this.creatures = [creature];
     this.weapons = weapons;
     this._stats = stats;
@@ -33,6 +36,8 @@ export class Army implements ArmyCompsI<string[]> {
     this.raiding = -1;
 
     this.power = new Decimal(1);
+
+    this.gM = gM;
   }
   get creature(): string {
     return this.creatures[0];
@@ -44,7 +49,6 @@ export class Army implements ArmyCompsI<string[]> {
   get stats() {
     return this._stats.mul(this.level_bonus);
   }
-
   set stats(other: Stats) {
     this._stats = other;
   }
@@ -52,7 +56,6 @@ export class Army implements ArmyCompsI<string[]> {
   get size() {
     return this._size;
   }
-
   set size(value) {
     this._size = value;
   }
@@ -60,7 +63,6 @@ export class Army implements ArmyCompsI<string[]> {
   get bodyParts() {
     return this._bodyParts;
   }
-
   set bodyParts(value) {
     this._bodyParts = value;
   }
@@ -71,8 +73,8 @@ export class Army implements ArmyCompsI<string[]> {
 
   //the function that decides what to do when a level up is requested
   levelUp() {
-    if (this.level < Army.level_prices.length && Army.level_prices[this.level].lt(Player.gold)) {
-      Player.gold = Player.gold.sub(Army.level_prices[this.level]);
+    if (this.level < Army.levelPrices.length && Army.levelPrices[this.level].lt(this.gM.Player.gold)) {
+      this.gM.Player.gold = this.gM.Player.gold.sub(Army.levelPrices[this.level]);
       this.levelUpHelper();
     }
   }
@@ -129,7 +131,7 @@ export class Army implements ArmyCompsI<string[]> {
     }
   }
   //REVAMP FROM HERE
-  changeElement(type: string, changeTo: string, changeIndex = 0, unlock_stuff = true, armyNr: number) {
+  changeElement(type: string, changeTo: string, changeIndex = 0, unlockStuff = true, armyNr: number) {
     //if we are talking about a creature, then the change is big
     switch (type) {
       case "creatures":
@@ -138,33 +140,32 @@ export class Army implements ArmyCompsI<string[]> {
 
         //and remove elements and refund their costs
         for (let i = this.weapons.length - 1; i > -1; i--) {
-          this.changeElement("weapons", "None", i, unlock_stuff, armyNr);
+          this.changeElement("weapons", "None", i, unlockStuff, armyNr);
         }
 
         //change stats from old to new
         this.changeStats(type, changeTo, changeIndex);
 
         //Deequip creature from army
-        ArmyPage.deequipElementByArmy(type, this.creature, armyNr)
+        this.gM.ArmyPage.deequipElementByArmy(type, this.creature, armyNr)
 
         //change the stats of the army
         this.creature = changeTo;
 
         //equip on ArmyPage
 
-        ArmyPage.equipElementByArmy(type, changeTo, armyNr);
+        this.gM.ArmyPage.equipElementByArmy(type, changeTo, armyNr);
         break;
       case "weapons":
 
-        if (!this.changeElementHelper("weapons", changeTo, changeIndex, unlock_stuff, armyNr)) {
-          console.log("here");
+        if (!this.changeElementHelper("weapons", changeTo, changeIndex, unlockStuff, armyNr)) {
           return false;
         }
         break;
     }
     //send unlock request after change
-    if (unlock_stuff) {
-      allThingsStatistics.setStatisticsToMax(["Player", "armies", ArmyPage.currentArmy, "Attack"], this.stats.get<SubStats>("Attack").getPlainPower());
+    if (unlockStuff) {
+      allThingsStatistics.setStatisticsToMax(["Player", "armies", this.gM.ArmyPage.currentArmy + "", "Attack"], this.stats.get<SubStats>("Attack").getPlainPower());
       allThingsStatistics.setStatisticsToMax(["Player", "armies", "all", "Attack"], this.stats.get<SubStats>("Attack").getPlainPower());
     }
     return true;
@@ -205,27 +206,29 @@ export class Army implements ArmyCompsI<string[]> {
       return false;
     }
     if (this[type][changeIndex] != "None") {
-      Player.inventory[type][this[type][changeIndex]] = Player.inventory[type][this[type][changeIndex]].add(this.size);
+      const newValue = this.gM.Player.getElementCount(type, this[type][changeIndex]).add(this.size);
+      this.gM.Player.setElementCount(type, this[type][changeIndex], newValue);
     }
     //change stats from old to new
     this.changeStats(type, changeTo, changeIndex);
 
     //Deequip element from army
-    ArmyPage.deequipElementByArmy(type, this[type][changeIndex], armyNr)
+    this.gM.ArmyPage.deequipElementByArmy(type, this[type][changeIndex], armyNr)
 
     //add in the new one
     this[type][changeIndex] = changeTo;
 
     //equip element in army
-    ArmyPage.equipElementByArmy(type, changeTo, armyNr)
+    this.gM.ArmyPage.equipElementByArmy(type, changeTo, armyNr)
 
     //maybe display (/ remove the ones you cannot) just the ones you can use (handcount and the stuff)
     if (changeTo != "None") {
       //set new size of the army to if the number of this item is less than the size of the army min(size, number of new item)
-      Player.inventory[type][changeTo] = Player.inventory[type][changeTo].sub(this.size);
+      const newValue = this.gM.Player.getElementCount(type, changeTo).sub(this.size);
+      this.gM.Player.setElementCount(type, changeTo, newValue);
 
-      if (this.size > Player.inventory[type][changeTo]) {
-        this.setSize(this.size.add(Player.inventory[type][changeTo]));
+      if (this.size > this.gM.Player.getElementCount(type, changeTo)) {
+        this.setSize(this.size.add(this.gM.Player.getElementCount(type, changeTo)));
       }
     }
 
@@ -247,29 +250,31 @@ export class Army implements ArmyCompsI<string[]> {
       return;
     }
     //calculate the minimun of the elements which are available
-    let minn = (newSize.sub(this.size)).min(Player.inventory.creatures[this.creature]);
+    let minn = (newSize.sub(this.size)).min(this.gM.Player.getElementCount("creatures", this.creature));
     let i = 0;
     while (this.weapons[i] != "None") {
-      minn = minn.min(Player.inventory.weapons[this.weapons[i]]);
+      minn = minn.min(this.gM.Player.getElementCount("weapons", this.weapons[i]));
       i++;
     }
     //set new size
     this.size = minn.add(this.size);
     //set new values for the inventory of items used
-    Player.inventory.creatures[this.creature] = Player.inventory.creatures[this.creature].sub(minn);
+    let newValue = this.gM.Player.getElementCount("creatures", this.creature).sub(minn);
+    this.gM.Player.setElementCount("creatures", this.creature, newValue);
     i = 0;
     while (this.weapons[i] != "None") {
-      Player.inventory.weapons[this.weapons[i]] = Player.inventory.weapons[this.weapons[i]].sub(minn);
+      newValue = this.gM.Player.getElementCount("weapons", this.weapons[i]).sub(minn);
+      this.gM.Player.setElementCount("weapons", this.weapons[i], newValue);
       i++;
     }
     //give visual feedback on what you have here
 
-    ArmyPage.armySizeInput.value = stylizeDecimals(this.size, true);
+    this.gM.ArmyPage.armySizeInput.value = stylizeDecimals(this.size, true);
   }
-  get_stats_text() {
+  getStatsText() {
     return this.stats.getText() + "<br>" + this.bodyParts.getText(true);
   }
-  get_change_text(type: keyof ArmyCompsI<never>, changeTo: string, changeIndex = 0) {
+  getChangeText(type: keyof ArmyCompsI<never>, changeTo: string, changeIndex = 0) {
     //if you reset your creature, show this text
     let changed = undefined;
     if (type == "creatures") {
@@ -289,14 +294,14 @@ export class Army implements ArmyCompsI<string[]> {
         case "creatures":
           this.changeStats(type, changeTo, changeIndex);
           this.creature = changeTo;
-          newArmy = [this.size.min(Player.inventory[type][changeTo]), this.stats, this.bodyParts];
+          newArmy = [this.size.min(this.gM.Player.getElementCount(type, changeTo)), this.stats, this.bodyParts];
           this.changeStats(type, changed, changeIndex);
           this.creature = changed;
           break;
         case "weapons":
           this.changeStats(type, changeTo, changeIndex);
           this[type][changeIndex] = changeTo;
-          newArmy = [this.size.min(Player.inventory[type][changeTo]), this.stats, this.bodyParts];
+          newArmy = [this.size.min(this.gM.Player.getElementCount(type, changeTo)), this.stats, this.bodyParts];
           this.changeStats(type, changed, changeIndex);
           this[type][changeIndex] = changed;
           break;
@@ -305,7 +310,7 @@ export class Army implements ArmyCompsI<string[]> {
     }
     return "Cannot change this element of your army, sorry!";
   }
-  //helper function to get_change_text
+  //helper function to getChangeText
   getCompareText(newArmy: [Decimal, Stats, Stats] | { size: Decimal, stats: Stats, bodyParts: Stats }) {
     if (!Array.isArray(newArmy)) {
       newArmy = [newArmy.size, newArmy.stats, newArmy.bodyParts];
@@ -328,10 +333,10 @@ export class Army implements ArmyCompsI<string[]> {
     else {
       text += "<br>";
     }
-    text += this.get_stats_text() + "<br>";
+    text += this.getStatsText() + "<br>";
     return text;
   }
-  get_fighting_stats_text() {
+  getFightingStatsText() {
     if (this.creature == "None") {
       return "No army to be seen here.";
     }

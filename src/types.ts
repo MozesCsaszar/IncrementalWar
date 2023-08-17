@@ -1,6 +1,4 @@
 import Decimal from "break_infinity.js";
-import { ArmyComponent } from "./army_comps";
-import { Boss } from "./boss";
 
 export type StringHashT<T> = { [key: string]: T }
 export type NumberHashT<T> = { [key: number]: T }
@@ -14,9 +12,9 @@ export interface ArmyCompsI<T> {
 export interface CurrencyTypesI {
   gold: Decimal
 }
-export type StuffType = ArmyCompsI<StringHashT<ArmyComponent>>
+export type StuffType<T, B> = ArmyCompsI<StringHashT<T>>
   & {
-    bosses: StringHashT<Boss>,
+    bosses: StringHashT<B>,
   }
 
 //for statistics

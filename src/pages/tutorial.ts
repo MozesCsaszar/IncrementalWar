@@ -1,16 +1,18 @@
-import { GM } from '../main';
 import { ItemListClass, PageClass } from "../base_classes";
 import { getHtmlElement } from "../functions";
 import { TutorialItem } from '../tutorial';
 import { StringHashT } from "../types";
+import { GameManagerClass } from "../base_classes";
 
 
 class TutorialItemListClass extends ItemListClass<string> {
+  gM: GameManagerClass;
   //class names come in form of: .<name> or #<name>
-  constructor(containerIdentifier: string, elementIdentifier: string,
+  constructor(gM: GameManagerClass, containerIdentifier: string, elementIdentifier: string,
     previousButtonIdentifier: string, backButtonIdentifier: string,
     next_buttonIdentifier: string, itemList: string[]) {
     super(containerIdentifier, elementIdentifier, previousButtonIdentifier, backButtonIdentifier, next_buttonIdentifier, itemList);
+    this.gM = gM;
   }
   hideElement(elemNr: number) {
     super.hideElement(elemNr);
@@ -22,13 +24,13 @@ class TutorialItemListClass extends ItemListClass<string> {
     this.elements[elemNr].style.borderStyle = 'solid';
   }
   elementClick(elemNr: number) {
-    TutorialPage.startTutorial(TutorialPage.tutorialList.elements[elemNr].innerHTML, false, 'SettingsPage');
+    this.gM.TutorialPage.startTutorialByElemNr(elemNr, false, 'SettingsPage');
   }
   populateElement(elemNr: number) {
     this.elements[elemNr].innerHTML = this.itemList[this.getItemListIndex(elemNr)];
   }
   backButtonClick() {
-    TutorialPage.exitTutorial();
+    this.gM.TutorialPage.exitTutorial();
   }
   hidePreviousButton() {
     super.hidePreviousButton();
@@ -56,7 +58,7 @@ class TutorialItemListClass extends ItemListClass<string> {
   }
 };
 
-class TutorialPageClass extends PageClass {
+export class TutorialPageClass extends PageClass {
   tutorialList: TutorialItemListClass;
   isMandatory: boolean = false;
   tutorialName: string = '';
@@ -69,11 +71,11 @@ class TutorialPageClass extends PageClass {
   unlockedTutorials: Set<string> = new Set();
   defaultTutorialPath: string = './images/tutorial/';
   pageButtonsVisibility: boolean = false;
-  constructor(name: string) {
-    super(name);
+  constructor(name: string, gM: GameManagerClass) {
+    super(name, gM);
 
     this.tutorialList = new TutorialItemListClass(
-      '.element_list.page_tutorial', '.element_list_item', '.element_list_prev_button',
+      gM, '.element_list.page_tutorial', '.element_list_item', '.element_list_prev_button',
       '.element_list_back_button', '.element_list_next_button', []
     );
     this.tutorials = {
@@ -186,12 +188,16 @@ class TutorialPageClass extends PageClass {
     this.image.setAttribute('src', this.getTutorialImageName());
     this.setTutorialButtons();
   }
+  startTutorialByElemNr(elemNr: number, isMandatory: boolean, lastPage: string): void {
+    const tutorialName = this.tutorialList.elements[elemNr].innerHTML;
+    this.startTutorial(tutorialName, isMandatory, lastPage);
+  }
   startTutorial(tutorialName: string, isMandatory: boolean, lastPage: string) {
     this.pageButtonsVisibility = getHtmlElement("#PageButtonsContainer").hidden;
     this.setUpTutorial(tutorialName, isMandatory, lastPage);
     getHtmlElement("#PageButtonsContainer").hidden = true;
     if (isMandatory) {
-      GM.hidePages('TutorialPage');
+      this.gM.hidePages('TutorialPage');
     }
     else {
       this.pageButtonsVisibility = false;
@@ -212,8 +218,6 @@ class TutorialPageClass extends PageClass {
     if (this.isMandatory) {
       this.tutorialList.hide();
     }
-    GM.hidePages(this.lastPage);
+    this.gM.hidePages(this.lastPage);
   }
 };
-
-export const TutorialPage = new TutorialPageClass('TutorialPage');

@@ -1,23 +1,23 @@
 //          BUY CREATURE PAGE
-
 import Decimal from "break_infinity.js";
-import { Player } from "../main";
+import { GameManagerClass } from "../base_classes";
 import { ItemListClass, ButtonGroupClass, PageClass } from "../base_classes";
 import { stuff } from "../data";
-import { getHtmlElementList, stylizeDecimals } from "../functions";
+import { getHtmlElement, getHtmlElementList, stylizeDecimals } from "../functions";
 import { ArmyCompsI } from "../types";
 import { Buyer } from "../store";
-import { TutorialPage } from "./tutorial";
 
 class StoreItemListClass extends ItemListClass<Buyer> {
   type: keyof ArmyCompsI<never>;
   buyerRows: [HTMLElement, HTMLElement, HTMLElement][] = [];
+  gM: GameManagerClass;
   //class names come in form of: .<name> or #<name>
-  constructor(containerIdentifier: string, elementIdentifier: string,
+  constructor(gM: GameManagerClass, containerIdentifier: string, elementIdentifier: string,
     previousButtonIdentifier: string, backButtonIdentifier: string,
-    next_buttonIdentifier: string, itemList = []) {
+    next_buttonIdentifier: string, itemList: Buyer[] = []) {
     super(containerIdentifier, elementIdentifier, previousButtonIdentifier, backButtonIdentifier, next_buttonIdentifier, itemList);
 
+    this.gM = gM;
     this.type = "creatures";
 
     //Entry format= nr_available, name, buy_button
@@ -37,7 +37,7 @@ class StoreItemListClass extends ItemListClass<Buyer> {
     //initialize buyer button's mouse envents
     for (let i = 0; i < this.buyerRows.length; i++) {
       this.buyerRows[i][2].addEventListener("click", () => {
-        if (StorePage.buyers[StorePage.type][i].buy(StorePage.buyNumberValues[StorePage.currentBuyNumberButton[this.type]])) {
+        if (this.gM.StorePage.buy(i, this.type)) {
           this.populateElement(i);
         }
       });
@@ -53,22 +53,23 @@ class StoreItemListClass extends ItemListClass<Buyer> {
     this.elements[elemNr].style.cursor = "default";
   }
   elementMouseenter(elemNr: number) {
-    StorePage.infoText.innerHTML = stuff[StorePage.type as keyof ArmyCompsI<never>][StorePage.buyers[this.type][elemNr].name].getText();
+    this.gM.StorePage.setInfoText(this.gM.StorePage.getBuyerText(elemNr));
   }
   elementMouseleave(elemNr: number) {
-    StorePage.infoText.innerHTML = "";
+    this.gM.StorePage.setInfoText("");
   }
   populateElement(elemNr: number) {
     const name = this.itemList[this.getItemListIndex(elemNr)].name;
     this.buyerRows[elemNr][1].innerHTML = name;
-    const amount = Player.inventory[this.type as keyof ArmyCompsI<never>][name];
+    const amount = this.gM.Player.getElementCount(this.type, name);
     if (amount) {
       this.buyerRows[elemNr][0].innerHTML = "(" + stylizeDecimals(amount, true) + ")";
     }
     else {
       this.buyerRows[elemNr][0].innerHTML = "(0)";
     }
-    this.buyerRows[elemNr][2].innerHTML = stylizeDecimals(this.itemList[this.getItemListIndex(elemNr)].getPrice(StorePage.buyNumberValues[StorePage.currentBuyNumberButton[this.type]]));
+    const buyAmount: Decimal = this.gM.StorePage.getCurrentBuyNumber();
+    this.buyerRows[elemNr][2].innerHTML = stylizeDecimals(this.itemList[this.getItemListIndex(elemNr)].getPrice(buyAmount));
   }
   hidePreviousButton() {
     super.hidePreviousButton();
@@ -105,8 +106,11 @@ class StoreItemListClass extends ItemListClass<Buyer> {
 }
 
 class StoreSubpageButtonGroupClass extends ButtonGroupClass {
-  constructor(containerIdentifier: string, buttonIdentifier: string, selectedStyle: Object, defaultStyle: Object) {
+  gM: GameManagerClass;
+  constructor(gM: GameManagerClass, containerIdentifier: string,
+    buttonIdentifier: string, selectedStyle: Object, defaultStyle: Object) {
     super(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle);
+    this.gM = gM;
   }
 
   showButton(buttonNr: number) {
@@ -119,49 +123,62 @@ class StoreSubpageButtonGroupClass extends ButtonGroupClass {
   }
   buttonClick(buttonNr: number) {
     super.buttonClick(buttonNr);
-    StorePage.changeSubpage(StorePage.subpageTypes[buttonNr]);
+    this.gM.StorePage.changeSubpage(buttonNr);
   }
 }
 
 class BuyNrButtonGroupClass extends ButtonGroupClass {
-  constructor(containerIdentifier: string, buttonIdentifier: string, selectedStyle: Object, defaultStyle: Object) {
+  gM: GameManagerClass;
+  constructor(gM: GameManagerClass, containerIdentifier: string, buttonIdentifier: string,
+    selectedStyle: Object, defaultStyle: Object) {
     super(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle);
+    this.gM = gM;
   }
   buttonClick(buttonNr: number) {
     super.buttonClick(buttonNr);
-    StorePage.currentBuyNumberButton[StorePage.type] = buttonNr;
-    StorePage.display();
+    this.gM.StorePage.setBuyNumberButton(buttonNr);
   }
 }
 
-class StorePageClass extends PageClass {
-  itemList: any;
-  buyers: any;
-  type: any;
-  buyNumberValues: any;
-  currentBuyNumberButton: any;
-  infoText: any;
-  subpageTypes: any;
-  pageButton: any;
+export class StorePageClass extends PageClass {
+  itemList: StoreItemListClass;
+  buyers: ArmyCompsI<Buyer[]>;
+  type: keyof ArmyCompsI<never>;
+  buyNumberValues: Decimal[];
+  currentBuyNumberButton: ArmyCompsI<number>;
+  infoText: HTMLElement = getHtmlElement("#StorePageInfo");
+  subpageTypes: (keyof ArmyCompsI<never>)[];
+  pageButton: HTMLElement = getHtmlElement("#StorePageButton");
   subpageButtons: StoreSubpageButtonGroupClass;
   buyNumberButtons: BuyNrButtonGroupClass;
-  constructor(name: string) {
-    super(name);
+  constructor(name: string, gM: GameManagerClass) {
+    super(name, gM);
 
     this.buyers = {
       "creatures": [new Buyer("creatures", "Human")],
       "weapons": [new Buyer("weapons", "Knife")],
     };
-    this.pageButton = document.querySelector("#StorePageButton");
     this.subpageTypes = ["creatures", "weapons"];
 
     this.buyNumberValues = [new Decimal(1), new Decimal(10), new Decimal(100), new Decimal(1000)];
     this.currentBuyNumberButton = { "creatures": 0, "weapons": 0 };
-    this.infoText = document.querySelector("#StorePageInfo");
+    //currently selected type
     this.type = "creatures";
-    this.itemList = new StoreItemListClass(".nr_name_button_flex_container.page_store", ".nr_name_button_container", ".element_list_prev_button", ".element_list_back_button", ".element_list_next_button", this.buyers[this.type]);
-    this.subpageButtons = new StoreSubpageButtonGroupClass("#StoreSubpageButtons", ".select_button", { "borderColor": "var(--selected-toggle-button-border-color)" }, { "borderColor": "var(--default-toggle-button-border-color)" });
-    this.buyNumberButtons = new BuyNrButtonGroupClass(".toggle_button_container.page_store", ".toggle_button", { "borderColor": "var(--selected-toggle-button-border-color)" }, { "borderColor": "var(--default-toggle-button-border-color)" });
+    this.itemList = new StoreItemListClass(
+      gM, ".nr_name_button_flex_container.page_store",
+      ".nr_name_button_container", ".element_list_prev_button", ".element_list_back_button",
+      ".element_list_next_button", this.buyers[this.type]
+    );
+    this.subpageButtons = new StoreSubpageButtonGroupClass(
+      gM, "#StoreSubpageButtons", ".select_button",
+      { "borderColor": "var(--selected-toggle-button-border-color)" },
+      { "borderColor": "var(--default-toggle-button-border-color)" }
+    );
+    this.buyNumberButtons = new BuyNrButtonGroupClass(
+      gM, ".toggle_button_container.page_store", ".toggle_button",
+      { "borderColor": "var(--selected-toggle-button-border-color)" },
+      { "borderColor": "var(--default-toggle-button-border-color)" }
+    );
 
     this.initializeEventListeners();
   }
@@ -176,12 +193,17 @@ class StorePageClass extends PageClass {
     this.buyNumberButtons.selectButton(this.currentBuyNumberButton[this.type]);
 
     if (this.timesVisited == 0) {
-      TutorialPage.unlockTutorial("Buy Creature Page");
-      TutorialPage.startTutorial("Buy Creature Page", true, "StorePage");
+      this.gM.TutorialPage.unlockTutorial("Buy Creature Page");
+      this.gM.TutorialPage.startTutorial("Buy Creature Page", true, "StorePage");
     }
     this.timesVisited++;
     this.itemList.show();
     this.itemList.changePage(this.itemList.page);
+  }
+  //buy an element of the currently selected type at the index
+  buy(index: number) {
+    const buyer = this.buyers[this.type][index];
+    return buyer.buy(this.buyNumberValues[this.currentBuyNumberButton[this.type]], this.gM);
   }
   displayEveryTick() { }
   //called when a save text is needed
@@ -189,7 +211,8 @@ class StorePageClass extends PageClass {
     let saveText = super.save();
     saveText += "/*/" + String(Object.keys(this.buyers).length);
     //save by subpage type
-    for (const type of Object.keys(this.buyers)) {
+    for (const t of Object.keys(this.buyers)) {
+      const type = t as keyof ArmyCompsI<never>;
       //save type name and what is current buy number button
       saveText += "/*/" + type + "/*/" + this.currentBuyNumberButton[type];
       //save buyer states (bought nr and the like)
@@ -212,7 +235,7 @@ class StorePageClass extends PageClass {
     const page_nr = Number(saveTextArr[i]);
     i++;
     for (let ii = 0; ii < page_nr; ii++) {
-      const type = saveTextArr[i]; i++;
+      const type = saveTextArr[i] as keyof ArmyCompsI<never>; i++;
       this.currentBuyNumberButton[type] = Number(saveTextArr[i]); i++;
       const buyer_nr = Number(saveTextArr[i]); i++;
       for (let iii = 0; iii < buyer_nr; iii++) {
@@ -224,12 +247,23 @@ class StorePageClass extends PageClass {
     i += this.buyNumberButtons.load(saveTextArr, i);
     return i;
   }
-  changeSubpage(changeTo: number) {
-    this.type = changeTo;
+  changeSubpage(buttonNr: number) {
+    this.type = this.subpageTypes[buttonNr];
     this.itemList.changeSelection(this.type, this.buyers[this.type]);
     this.itemList.show(true);
     this.buyNumberButtons.buttonClick(this.currentBuyNumberButton[this.type]);
   }
+  getBuyerText(elemNr: number): string {
+    return stuff[this.type][this.buyers[this.type][elemNr].name].getText();
+  }
+  setInfoText(text: string) {
+    this.infoText.innerHTML = text;
+  }
+  getCurrentBuyNumber(): Decimal {
+    return this.buyNumberValues[this.currentBuyNumberButton[this.type]];
+  }
+  setBuyNumberButton(buttonNr: number) {
+    this.currentBuyNumberButton[this.type] = buttonNr;
+    this.display();
+  }
 }
-
-export const StorePage = new StorePageClass("StorePage");

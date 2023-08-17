@@ -1,4 +1,6 @@
+import Decimal from "break_infinity.js";
 import { getHtmlElement, getHtmlElementList } from "./functions";
+import { ArmyCompsI, StringHashT } from "./types";
 
 //Provides get and set methods
 export class HashLike {
@@ -40,10 +42,12 @@ export class PageClass {
   name: string;
   container: HTMLElement;
   timesVisited: number;
-  constructor(name: string) {
+  gM: GameManagerClass;
+  constructor(name: string, gM: GameManagerClass) {
     this.name = name;
     this.container = $(name + 'Container').get(0)!;
     this.timesVisited = 0;
+    this.gM = gM;
 
     //call initializeEventListeners here
   }
@@ -188,7 +192,7 @@ export class ItemListClass<T> {
     this.changePage(0);
   }
   //show and hide list
-  show(doReset: boolean) {
+  show(doReset: boolean = false) {
     if (doReset) {
       this.reset();
     }
@@ -376,3 +380,76 @@ export class ButtonGroupClass {
     this.container.hidden = true;
   }
 }
+
+declare class TutorialPageClass {
+  startTutorial(tutorialName: string, isMandatory: boolean, lastPage: string): void;
+  unlockTutorial(name: string): void;
+  exitTutorial(): void;
+  startTutorialByElemNr(elemNr: number, isMandatory: boolean, lastPage: string): void;
+}
+
+declare class Buyer {
+
+}
+
+declare class StorePageClass {
+  infoText: HTMLElement;
+  itemList: ItemListClass<Buyer>;
+  buy(index: number, type: keyof ArmyCompsI<never>): boolean;
+  changeSubpage(buttonNr: number): void;
+  getBuyerText(elemNr: number): string;
+  setInfoText(text: string): void;
+  getCurrentBuyNumber(): Decimal;
+  setBuyNumberButton(buttonNr: number): void;
+}
+
+declare class ArmyPageClass {
+  currentArmy: number;
+  armyManagerContainer: HTMLElement;
+  armySizeInput: HTMLInputElement;
+  setElementEquipState(type: keyof ArmyCompsI<never>, name: string, newState: number): void;
+  changeArmy(armyNr: number): void;
+  setPartInfoText(text: string): void;
+  setInfoText(text: string): void;
+  getSelectRowsElement(type: keyof ArmyCompsI<never>, index: number, row: number): HTMLElement;
+  equipElementByArmy(type: keyof ArmyCompsI<never>, element: string, armyNr: number): void;
+  deequipElementByArmy(type: keyof ArmyCompsI<never>, element: string, armyNr: number): void;
+}
+
+declare class Army {
+  weapons: string[];
+  creature: string;
+  level: number;
+  size: Decimal;
+  maxWeapons: number;
+  setSize(newSize: Decimal): void;
+  getChangeText(type: keyof ArmyCompsI<never>, changeTo: string, changeIndex: number): string;
+  getText(): string;
+  changeElement(type: string, changeTo: string,
+    changeIndex: number, unlockStuff: boolean, armyNr: number): boolean;
+  getLevelUpText(): string;
+  getCompareLevelText(): string;
+  levelUp(): void;
+}
+
+export declare class PlayerClass extends HashLike {
+  armies: Army[];
+  gold: Decimal;
+  save(): string;
+  load(saveText: string): void;
+  getElementCount(type: keyof ArmyCompsI<never>, name: string): Decimal;
+  setElementCount(type: keyof ArmyCompsI<never>, name: string, newValue: Decimal): void;
+  getArmy(index: number): Army;
+};
+
+export declare class GameManagerClass {
+  Player: PlayerClass;
+  pages: StringHashT<PageClass>;
+  currentPage: string;
+  canSave: boolean;
+  TutorialPage: TutorialPageClass;
+  StorePage: StorePageClass;
+  ArmyPage: ArmyPageClass;
+  hidePages(page: string): void;
+  loadOfflineProgress(nrMiliseconds: number): void;
+};

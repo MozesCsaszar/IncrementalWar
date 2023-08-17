@@ -1,15 +1,17 @@
 import Decimal from "break_infinity.js";
-import { Player, GM } from "../../main";
+import { GM, Player } from "../../variables";
 import { PageClass, Fight } from "../../base_classes";
 import { FightingBoss, FightingArmy } from "../../boss";
 import { stuff } from "../../data";
 import { stylizeDecimals } from "../../functions";
 import { PopupWindow } from "../../components/popup_window";
-import { TowerPage } from "../../tower_page";
+import { TowerPage } from "../tower";
+import { TutorialPage } from "../tutorial";
+import { GameManagerClass } from "../../declared_classes";
 
 type FeedElement = [FightingBoss, [number, number]];
 
-class BossFightingPageClass extends PageClass {
+export class BossFightingPageClass extends PageClass {
   feedMoves: FeedElement[];
   feedElements: HTMLElement[] = [];
   fight?: Fight;
@@ -28,8 +30,8 @@ class BossFightingPageClass extends PageClass {
   fightingArmiesNr: number;
   fightingBossesNr: number;
   timesVisited: number = 0;
-  constructor(name: string) {
-    super(name);
+  constructor(name: string, gM: GameManagerClass) {
+    super(name, gM);
 
     this.fight = undefined;
 
@@ -252,5 +254,3 @@ class BossFightingPageClass extends PageClass {
     this.update_feed();
   }
 }
-
-export const BossFightingPage = new BossFightingPageClass("BossFightingPage");

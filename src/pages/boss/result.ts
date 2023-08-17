@@ -1,12 +1,11 @@
-import { GM } from "../../main";
 import { PageClass } from "../../base_classes";
-import { BossFightingPage } from "./fighting";
+import { GameManagerClass } from "../../declared_classes";
 
-class BossFightingResultPageClass extends PageClass {
+export class BossFightingResultPageClass extends PageClass {
   resultInfo: HTMLElement;
   backButton: HTMLElement;
-  constructor(name: string) {
-    super(name);
+  constructor(name: string, gM: GameManagerClass) {
+    super(name, gM);
 
     this.resultInfo = $("#AfterFightMessage").get(0)!;
     this.backButton = $("#BackButtonFromResults").get(0)!;
@@ -22,7 +21,7 @@ class BossFightingResultPageClass extends PageClass {
       const pageTopResourcesContainer = $("#PageTopResourcesContainer").get(0)!;
       pageTopResourcesContainer.hidden = false;
       //return to tower page
-      GM.hidePages("TowerPage");
+      this.gM.hidePages("TowerPage");
     });
   }
   displayOnLoad() { }
@@ -65,5 +64,3 @@ class BossFightingResultPageClass extends PageClass {
     return t;
   }
 }
-
-export const BossFightingResultPage = new BossFightingResultPageClass("BossFightingResultPage")
