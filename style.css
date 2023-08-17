@@ -30,11 +30,14 @@ body {
     --default-tower-floor-border-color:
     rgb(41, 0, 0);
     --default-tower-level-background-color:
-    rgb(184, 21, 62); 
+    rgb(184, 21, 62);
     --disabled-tower-level-background-color:
     rgb(73, 27, 27);
     --default-selection-list-border-color:
     rgb(128, 0, 128);
+    --default-page-button-background-color: rgb(50, 205, 50);
+    --default-page-button-border-color: rgb(67, 95, 119);
+    --selected-page-button-border-color:rgb(223, 233, 241);
 
     font-size: 16px;
     background-color: var(--default-background-color);
@@ -87,6 +90,55 @@ a {
     width:140px;
 }
 
+.select_subpage_container {
+    display:flex;
+    justify-content: center;
+}
+
+.select_subpage_container > .select_button {
+    margin-left: 3px;
+    width: 120px;
+    height: 30px;
+    font-size:15px;
+    font-weight: bolder;
+    border-color:orangered;
+
+}
+
+.element_list {
+    display: flex;
+    flex-direction: column;
+    width:350px;
+    height:fit-content;
+}
+
+.element_list > .element_list_item {
+    position:relative;
+    height: 32px;
+    border-style:solid;
+    border-width: 2px;
+    border-color: var(--default-selection-list-border-color);
+    margin:0px;
+    text-align: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.element_list > .element_list_buttons_container {
+    display: flex;
+    width: 350px;
+    justify-content: space-between;
+}
+
+.element_list_buttons_container > button {
+    width: 60px;
+    border-style: solid;
+    border-color: var(--default-selection-list-border-color);
+    border-width: 2px;
+    cursor: pointer;
+    text-align: center;
+}
+
 /*      Place for the resource display                      */
 
 #PageTopResourcesContainer {
@@ -129,17 +181,17 @@ a {
 #AllPageButtons > button {
     width: 85px;
     height: 30px;
-    background-color:limegreen;
+    background-color:
+    var(--default-page-button-background-color);
     border-radius: 10px;
-    border-color:rgb(202, 226, 247);
     border-style: solid;
+    border-color: var(--default-page-button-border-color);
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;
-    border-bottom:none;
-
+    border-bottom:
+    none;
     font-weight: bold;
     margin-left: 10px;
-    
     outline: none;
 }
 
@@ -185,7 +237,7 @@ a {
     align-self: center;
     align-items: center;
 }
-    
+
 #OfflineGreeting {
     font-size: 60px;
     font-weight: bolder;
@@ -269,7 +321,7 @@ a {
     top: -12px;
     right: 90px;
     transform: skewY(30deg);
-    
+
 }
 
 .tower_top1 {
@@ -364,19 +416,8 @@ a {
     align-self: center;
 }
 
-.select_army_button_container {
-    display:flex;
-    justify-content: center;
-}
-
-.select_army_button_container > button {
-    margin-left: 3px;
+.select_subpage_container.page_army > .select_button {
     width: 80px;
-    height: 30px;
-    font-size:15px;
-    font-weight: bolder;
-    border-color:orangered;
-    
 }
 
 .army_info_container {
@@ -393,36 +434,6 @@ a {
     width:100px;
 }
 
-.element_select_list {
-    display: flex;
-    flex-direction: column;
-    width:350px;
-    height:fit-content;
-}
-
-.element_select_list > .element_select_list_item {
-    position:relative;
-    height: 32px;
-    border-style:solid;
-    border-width: 2px;
-    border-color: var(--default-selection-list-border-color);
-    margin:0px;
-    text-align: center;
-    align-items: center;
-    cursor: pointer;
-}
-
-.element_select_list > .element_select_list_back_button {
-    width:120px;
-    align-self: center;
-    vertical-align: middle;
-    text-align: center;
-    border-style: solid;
-    border-color: var(--default-selection-list-border-color);
-    border-width: 2px;
-    cursor: pointer;
-}
-
 #ArmyPagePartInfo {
     width:300px;
 }
@@ -431,39 +442,41 @@ a {
     width:300px;
 }
 
-/*      Buy Pages in General                                */
+/*      Store Page                                         */
 
+
+#StorePageContainer {
+    display:flex;
+    flex-direction: column;
+    width:fit-content;
+    align-self: center;
+}
+
+#StoreSubpageContainer {
+    display: flex;
+}
 
 .buy_button {
     font-size: 15px;
 }
 
 .nr_name_button_flex_container {
-    display:flex;
+    --column-height: 30px;
+    display:grid;
     width:fit-content;
     flex-direction: column;
+    grid-template-columns: 460px;
+    grid-template-rows: repeat(12, var(--column-height));
+    height: 400px;
 }
 
 .nr_name_button_flex_container > .nr_name_button_container {
-    margin:2px;
+    margin:0px;
 }
-
-/*      Buy Creature Page                                   */
-
-#BuyCreaturePageContainer {
-    display:flex;
-    width:fit-content;
-    align-self: center;
-}
-
-
-
-/*      Buy Weapon Page                                     */
-
-#BuyWeaponPageContainer {
-    display: flex;
-    width:fit-content;
-    align-self: center;
+.nr_name_button_flex_container > .element_list_buttons_container {
+    position: relative;
+    text-align: center;
+    grid-row: 11;
 }
 
 
@@ -480,7 +493,7 @@ a {
 .fighting_army_select_label {
     display:grid;
     grid-template-columns: 150px 240px;
-    align-self: center;
+    grid-template-rows: 30px 160px;
 }
 
 .fighting_army_select_label > .select_boss_army_info {
@@ -503,7 +516,7 @@ a {
 
 /*      Boss Fight Page                                     */
 
-#BossFightPageContainer {
+#BossFightingPageContainer {
     display:grid;
     grid-template-columns: 310px 500px 310px;
     grid-template-rows: 200px 200px 200px;
@@ -518,7 +531,7 @@ a {
     text-align: center;
 }
 
-#BossFightMoveFeed > .boss_fight_move_feed_element {
+#BossFightMoveFeed > .boss_fight_move_feedElement {
     margin:0px;
     text-align: center;
 }
@@ -674,7 +687,7 @@ a {
     left:100px;
     text-align: center;
     font-size: 30;
-    
+
 }
 
 
@@ -699,6 +712,17 @@ a {
     margin-bottom: 10px;
 }
 
+/*      Settings Page                                                       */
+
+#SettingsPageContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+#SettingsPageContainer > button {
+    width: 200px;
+}
+
 /*      Tutorial Page                                                       */
 
 #TutorialPageContainer {
@@ -717,7 +741,7 @@ a {
     grid-column: 2;
 }
 
-.element_select_list.page_tutorial {
+.element_list.page_tutorial {
     padding-top: 190px;
     justify-self: left;
     grid-column: 1;
