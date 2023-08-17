@@ -1,3 +1,12 @@
+import Decimal from "break_infinity.js";
+import { Player, GM } from "../../../IncrementalWar";
+import { PageClass, Fight } from "../../base_classes";
+import { FightingBoss, FightingArmy } from "../../boss";
+import { stuff } from "../../data";
+import { stylizeDecimals } from "../../functions";
+import { PopupWindow } from "../../components/popup_window";
+import { TowerPage } from "../../tower_page";
+
 type FeedElement = [FightingBoss, [number, number]];
 
 class BossFightingPageClass extends PageClass {
@@ -217,7 +226,7 @@ class BossFightingPageClass extends PageClass {
     }
 
     //change page to fight end page
-    HidePages("BossFightingResultPage");
+    GM.hidePages("BossFightingResultPage");
   }
   update_feed() {
     let i, ii = this.feedMoves.length - 1;

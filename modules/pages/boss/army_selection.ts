@@ -1,3 +1,9 @@
+import { GM, Player } from "../../../IncrementalWar";
+import { PageClass, Fight } from "../../base_classes";
+import { BossSelectArmyButtonsClass } from "../../boss";
+import { stuff } from "../../data";
+import { BossFightingPage } from "./fighting";
+
 class BossArmySelectionPageClass extends PageClass {
   fight?: Fight;
   nrArmySelects: number;
@@ -47,7 +53,7 @@ class BossArmySelectionPageClass extends PageClass {
         }
       }
       this.reset();
-      GM.("BossFightingPage");
+      GM.hidePages("BossFightingPage");
     });
     //Back to tower page button
     this.backButton.addEventListener("click", () => {
@@ -55,19 +61,19 @@ class BossArmySelectionPageClass extends PageClass {
       $("#PageButtonsContainer").show();
       $("#PageTopResourcesContainer").show();
       //return to tower page
-      HidePages("TowerPage");
+      GM.hidePages("TowerPage");
     });
   }
   displayOnLoad() { }
   display() {
     //show necessary army selects
     for (let i = 0; i < this.fight!.maxSelectibleArmies; i++) {
-      this.armySelects[i].container.parentElement.hidden = false;
+      this.armySelects[i].container.parentElement!.hidden = false;
       this.armySelects[i].deselect();
     }
     //hide ones that are not useable in current fight
     for (let i = this.fight!.maxSelectibleArmies; i < this.nrArmySelects; i++) {
-      this.armySelects[i].container.parentElement.hidden = true;
+      this.armySelects[i].container.parentElement!.hidden = true;
     }
     this.bossInfo.innerHTML = stuff.bosses[this.fight!.bosses[0]].getText();
     if (this.timesVisited == 0) {
@@ -99,10 +105,10 @@ class BossArmySelectionPageClass extends PageClass {
   reset() {
     this.startFightButton.hidden = true;
     for (let i = 0; i < this.fight!.maxSelectibleArmies; i++) {
-      this.armySelects[i].selectButton([this.fight!.selectedArmies[i]]);
+      this.armySelects[i].selectButton(this.fight!.selectedArmies[i]);
       this.armyInfos[i].innerHTML = "No army to be seen here.";
     }
   }
 }
 
-const BossArmySelectionPage = new BossArmySelectionPageClass("BossArmySelectionPage");
+export const BossArmySelectionPage = new BossArmySelectionPageClass("BossArmySelectionPage");

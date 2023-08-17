@@ -1,12 +1,12 @@
 import Decimal from "break_infinity.js";
 import { Stats, SubStats } from "./stats";
 import { stuff } from "./data";
-import { ArmyCompsI, NewArmyT } from "./types";
+import { ArmyCompsI } from "./types";
 import { Player } from "../IncrementalWar";
-import { ItemListClass, ButtonGroupClass } from "./base_classes";
 import { getCompareColor, stylizeDecimals } from "./functions";
 import { ArmyPage } from "./pages/army";
 
+export type NewArmyT = [Decimal, Stats, Stats];
 
 //regular save divider = '/*/'
 export class Army implements ArmyCompsI<string[]> {

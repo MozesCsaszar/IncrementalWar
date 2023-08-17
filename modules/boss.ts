@@ -1,11 +1,11 @@
 import Decimal from "break_infinity.js";
-import { stuff } from "./data";
 import { Stats, SubStats } from "./stats";
 import { NumberHashT } from "./types";
 import { Army } from "./army";
-import { ButtonGroupClass, PageClass, Fight } from "./base_classes";
-import { GM, Player } from "../IncrementalWar";
+import { ButtonGroupClass } from "./base_classes";
+import { Player } from "../IncrementalWar";
 import { BossFightingPage } from "./pages/boss/fighting";
+import { BossArmySelectionPage } from "./pages/boss/army_selection";
 
 class CombatMove {
   name: string;
@@ -205,7 +205,7 @@ export class Boss {
 }
 
 //simulates a whole army fighting against a boss
-class FightingArmy {
+export class FightingArmy {
   stats: Stats;
   maxUnits: Decimal;
   units: Decimal;
@@ -256,7 +256,7 @@ class FightingArmy {
 }
 
 //simualtes a single soldier fighting against a boss
-class FightingUnit {
+export class FightingUnit {
   army: FightingArmy;
   stats: Stats;
   isDead: boolean;
@@ -283,7 +283,7 @@ class FightingUnit {
 }
 
 //simulates a boss fighting against armies represented by the FightingUnits which can get close enough to attack
-class FightingBoss {
+export class FightingBoss {
   stats: Stats;
   maxUnits: Decimal;
   units: Decimal;
@@ -444,7 +444,7 @@ class FightingBoss {
   }
 }
 
-class BossSelectArmyButtonsClass extends ButtonGroupClass {
+export class BossSelectArmyButtonsClass extends ButtonGroupClass {
   number: number;
   selected: number;
   buttons: any;

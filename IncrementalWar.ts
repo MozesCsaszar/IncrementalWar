@@ -9,32 +9,14 @@ family or close circle of friends.
 
 import Decimal from "break_infinity.js";
 import { Army } from "./modules/army";
-import { BossFightingResultPage } from "./modules/boss";
 import { ArmyCompsI, StringHashT } from "./modules/types";
 import { PageClass } from "./modules/base_classes";
 import { getHtmlElement, stylizeDecimals } from "./modules/functions";
 import { ArmyPage } from "./modules/pages/army";
-
-//A popup window for your inspection needs
-const PopupWindow = {
-  container: $("#PopupWindowContainer").get(0)!,
-  left: -1000,
-  top: -1000,
-  show(left: number, top: number, content: string) {
-    PopupWindow.container.hidden = false;
-    PopupWindow.container.innerHTML = content;
-    PopupWindow.move(left, top);
-  },
-  move(left: number, top: number) {
-    PopupWindow.container.style.left = left + "5";
-    PopupWindow.container.style.top = top + "5";
-    PopupWindow.left = left;
-    PopupWindow.top = top;
-  },
-  hide() {
-    PopupWindow.container.hidden = true;
-  },
-};
+import { BossArmySelectionPage } from "./modules/pages/boss/army_selection";
+import { BossFightingPage } from "./modules/pages/boss/fighting";
+import { BossFightingResultPage } from "./modules/pages/boss/result";
+import { TowerPage } from "./modules/tower_page";
 
 export class PlayerClass {
   static save(): string {
@@ -116,7 +98,7 @@ export const Player = new PlayerClass();
 class GameManagerClass {
   saveInterval?: number;
   renderInterval?: number;
-  currentPage: string = "StorePage;
+  currentPage: string = "StorePage";
   pages: StringHashT<PageClass>;
   canSave: boolean;
   constructor() {
@@ -280,66 +262,9 @@ getHtmlElement("#ContinueFromOfflineProgress").addEventListener("click", () => {
   GM.hidePages(currentPage);
 });
 
-//a function to save game to local storage
-// function SaveToLocalStorage() {
-//     const localStorage = window.localStorage;
-//     localStorage.clear();
-//     localStorage.setItem('Player',Player.save());
-//     for(let i = 0; i < pages.length; i++) {
-//         let text = pages[i].save();
-//         localStorage.setItem(page_names[i],text);
-//     }
-//     localStorage.setItem('Unlockables',UH.save());
-//     localStorage.setItem('currentPage',String(currentPage));
-//     localStorage.setItem('lastSavedTime',Date.now());
-// }
-
-//a function to load game from local storage
-// function LoadFromLocalStorage() {
-//     const localStorage = window.localStorage;
-//     UH.load(localStorage.getItem('Unlockables'));
-//     Player.load(localStorage.getItem('Player'));
-//     for(let i = 0; i < pages.length; i++) {
-//         pages[i].load(localStorage.getItem(page_names[i]));
-//     }
-//     //load offline progress
-//     let a = Number(localStorage.getItem('currentPage'));
-//     //hide stuff to show a proper offline load page
-//     document.getElementById('PageButtonsContainer').hidden = true;
-//     goldText.parentElement.hidden = true;
-//     LoadOfflineProgress(Date.now() - Number(localStorage.getItem('lastSavedTime')), a);
-// }
-
-// function OpenGame() {
-//     if(window.localStorage.length != 0) {
-//         LoadFromLocalStorage();
-//         document.getElementById('PageButtonsContainer').hidden = false;
-//         goldText.parentElement.hidden = false;
-//         HidePages(window.localStorage.getItem('currentPage'));
-//     }
-//     else {
-//         console.log('here');
-//         document.getElementById("OfflinePageContainer").hidden = true;
-//         //UNCOMMENT THIS
-//         HidePages(4);
-//         pages[currentPage].displayOnLoad();
-//         SaveToLocalStorage();
-//         SettingsPage.changeTheme();
-//     }
-// }
-
-// function CloseGame() {
-//     if(window.localStorage.length != 0) {
-//         SaveToLocalStorage();
-//     }
-// }
-
-let save_interval;
-
 //load the game on each session when starting up
 window.addEventListener("load", () => {
   GM.openGame();
-  // save_interval = setInterval(GM.SaveToLocalStorage,1000);
 });
 //save game whenever you switch tabs in browser (close, refresh, go to new/other tab)
 // document.addEventListener('visibilitychange', function() {

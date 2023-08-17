@@ -1,3 +1,5 @@
+import { PageClass } from "./base_classes";
+
 class TowerSelectArmyButtonsClass extends ButtonGroupClass {
   constructor(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle) {
     super(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle);
@@ -200,5 +202,5 @@ class TowerPageClass extends PageClass {
   }
 }
 
-const TowerPage = new TowerPageClass("TowerPage");
+export const TowerPage = new TowerPageClass("TowerPage");
 

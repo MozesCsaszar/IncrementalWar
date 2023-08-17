@@ -1,3 +1,7 @@
+import { GM } from "../../../IncrementalWar";
+import { PageClass } from "../../base_classes";
+import { BossFightingPage } from "./fighting";
+
 class BossFightingResultPageClass extends PageClass {
   resultInfo: HTMLElement;
   backButton: HTMLElement;
@@ -18,7 +22,7 @@ class BossFightingResultPageClass extends PageClass {
       const pageTopResourcesContainer = $("#PageTopResourcesContainer").get(0)!;
       pageTopResourcesContainer.hidden = false;
       //return to tower page
-      HidePages("TowerPage");
+      GM.hidePages("TowerPage");
     });
   }
   displayOnLoad() { }
