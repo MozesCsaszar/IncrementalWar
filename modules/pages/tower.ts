@@ -1,11 +1,13 @@
-import { PageClass } from "./base_classes";
+import { Player } from "../../IncrementalWar";
+import { ButtonGroupClass, PageClass } from "../base_classes";
+import { getHtmlElement, getHtmlElementList } from "../functions";
 
 class TowerSelectArmyButtonsClass extends ButtonGroupClass {
-  constructor(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle) {
+  constructor(containerIdentifier: string, buttonIdentifier: string, selectedStyle: Object, defaultStyle: Object) {
     super(containerIdentifier, buttonIdentifier, selectedStyle, defaultStyle);
   }
 
-  buttonClick(buttonNr) {
+  buttonClick(buttonNr: number) {
     super.buttonClick(buttonNr);
     TowerPage.changeArmy(buttonNr);
   }
@@ -13,10 +15,16 @@ class TowerSelectArmyButtonsClass extends ButtonGroupClass {
 
 class TowerPageClass extends PageClass {
   Tower: any;
-  constructor(name) {
+  towerFloors: HTMLElement[] = getHtmlElementList(".tower_part");
+  towerLevels: HTMLElement[] = getHtmlElementList(".tower_level");
+  towerInfo: HTMLElement = getHtmlElement("#TowerPageTowerInfo");
+  pageButton: HTMLElement = getHtmlElement("#TowerPageButton");
+  changeArmyButtons: TowerSelectArmyButtonsClass;
+  currentArmy: number;
+  armyInfo: HTMLElement = getHtmlElement("#TowerPageArmyInfo");
+  constructor(name: string) {
     super(name);
 
-    this.towerFloors = Array.from(document.querySelectorAll(".tower_part").values());
     //reverse tower floors
     let i = 0;
     let j = this.towerFloors.length;
@@ -27,20 +35,22 @@ class TowerPageClass extends PageClass {
     }
     //remove undefined element from start
     this.towerFloors.shift();
-    this.towerLevels = document.querySelectorAll(".tower_level");
-    this.towerInfo = document.getElementById("TowerPageTowerInfo");
-    this.pageButton = document.getElementById("TowerPageButton");
-    this.changeArmyButtons = new TowerSelectArmyButtonsClass(".toggle_button_container.page_tower", ".toggle_button", { "borderColor": "var(--selected-toggle-button-border-color)" }, { "borderColor": "var(--default-toggle-button-border-color)" });
+    this.towerLevels;
+    this.towerInfo;
+    this.pageButton;
+    this.changeArmyButtons = new TowerSelectArmyButtonsClass(
+      ".toggle_button_container.page_tower", ".toggle_button",
+      { "borderColor": "var(--selected-toggle-button-border-color)" },
+      { "borderColor": "var(--default-toggle-button-border-color)" }
+    );
     this.currentArmy = 0;
-    this.armyInfo = document.getElementById("TowerPageArmyInfo");
+    this.armyInfo;
     this.Tower = new TowerClass();
 
     this.initializeEventListeners();
   }
   //called when page reloads
   initializeEventListeners() {
-    const this = this;
-
     //initialize TOWER FLOOR hover functions
     for (let i = 0; i < this.towerFloors.length; i++) {
       //floors that are not yet implemented have their stuff here (mouseenter)
@@ -130,7 +140,7 @@ class TowerPageClass extends PageClass {
     }
     this.timesVisited++;
   }
-  displayEveryTick(this) { }
+  displayEveryTick() { }
   //called when a save text is needed
   save() {
     let saveText = super.save();
@@ -144,38 +154,39 @@ class TowerPageClass extends PageClass {
     return saveText;
   }
   //called when you need to get values from a saveText
-  load(saveText) {
-    saveText = saveText.split("/*/");
-    let i = super.load(saveText);
-    this.currentArmy = Number(saveText[i]); i++;
-    i = this.Tower.load(saveText, i);
-    i += this.changeArmyButtons.load(saveText, i);
+  load(saveText: string) {
+    const saveTextArr = saveText.split("/*/");
+    let i = super.load(saveTextArr);
+    this.currentArmy = Number(saveTextArr[i]); i++;
+    i = this.Tower.load(saveTextArr, i);
+    i += this.changeArmyButtons.load(saveTextArr, i);
 
     //display changes with on load function
     this.displayOnLoad();
+    return i;
   }
-  changeArmy(changeTo) {
+  changeArmy(changeTo: number) {
     this.currentArmy = changeTo;
     this.armyInfo.innerHTML = Player.armies[this.currentArmy].getText(true);
     this.displayFloor(this.Tower.currentFloor);
   }
-  displayFloor(floor_nr) {
+  displayFloor(floorNr: number) {
     //hide which is not needed, then show which is needed
-    let j = this.Tower.floors[floor_nr].levels.length;
+    let j = this.Tower.floors[floorNr].levels.length;
     while (j < this.towerLevels.length) {
       this.towerLevels[j].hidden = true;
       j++;
     }
     j = 0;
-    while (j < this.Tower.floors[floor_nr].levels.length) {
+    while (j < this.Tower.floors[floorNr].levels.length) {
       //only show if it is unlocked
       this.towerLevels[j].hidden = false;
       j++;
     }
     //color by availability and set position
     j = 0;
-    while (j < this.Tower.floors[floor_nr].levels.length) {
-      this.displayLevel(floor_nr, j);
+    while (j < this.Tower.floors[floorNr].levels.length) {
+      this.displayLevel(floorNr, j);
       j++;
     }
     //display floor info
@@ -184,21 +195,22 @@ class TowerPageClass extends PageClass {
   displayFloorText() {
     this.towerInfo.innerHTML = this.Tower.floors[this.Tower.currentFloor].getText();
   }
-  displayLevel(floor_nr, level_nr) {
-    const level = this.Tower.floors[floor_nr].levels[level_nr];
-    const content_text = level.raiding_army == -1 ? " " : string(level.raiding_army + 1);
-    this.towerLevels[level_nr].setAttribute("contenttext", content_text);
-    this.towerLevels[level_nr].innerHTML = content_text;
-    this.towerLevels[level_nr].style.background = level.get_color();
-    this.towerLevels[level_nr].style.width = level.width;
-    this.towerLevels[level_nr].style.height = level.height;
-    this.towerLevels[level_nr].style.top = level.top;
-    this.towerLevels[level_nr].style.left = level.left;
-    this.towerLevels[level_nr].style.zIndex = level.z_index;
+  displayLevel(floorNr: number, levelNr: number) {
+    const level = this.Tower.floors[floorNr].levels[levelNr];
+    const content_text = level.raiding_army == -1 ? " " : String(level.raiding_army + 1);
+    const htmlLevel = this.towerLevels[levelNr];
+    htmlLevel.setAttribute("contenttext", content_text);
+    htmlLevel.innerHTML = content_text;
+    htmlLevel.style.background = level.get_color();
+    htmlLevel.style.width = level.width;
+    htmlLevel.style.height = level.height;
+    htmlLevel.style.top = level.top;
+    htmlLevel.style.left = level.left;
+    htmlLevel.style.zIndex = level.z_index;
   }
-  displayLevelText(floor_nr, level_nr) {
-    const level = this.Tower.floors[floor_nr].levels[level_nr];
-    this.towerInfo.innerHTML = level.getText(this.Tower.floors[this.Tower.currentFloor].name, floor_nr, level_nr);
+  displayLevelText(floorNr: number, levelNr: number) {
+    const level = this.Tower.floors[floorNr].levels[levelNr];
+    this.towerInfo.innerHTML = level.getText(this.Tower.floors[this.Tower.currentFloor].name, floorNr, levelNr);
   }
 }
 

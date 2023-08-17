@@ -69,9 +69,9 @@ class TowerLevel extends ParentTowerLevel {
       "<br><i>" + this.desc + "</i>";
   }
 
-  raid(level_nr) {
+  raid(levelNr) {
     /*
-        Input:  level_nr: the number of the level in the current floor
+        Input:  levelNr: the number of the level in the current floor
         Output: the number of the level this army was raiding before this floor
                 -1 if ther was no such army
     */
@@ -86,9 +86,9 @@ class TowerLevel extends ParentTowerLevel {
         this.raiding_army = -1;
         Player.armies[TowerPage.currentArmy].raiding = -1;
         //remove the problematic element from the array which stores the raided places
-        TowerPage.Tower.removeRaidedLevel(TowerPage.Tower.currentFloor, level_nr);
-        //return the same level_nr as this level
-        last_one = level_nr;
+        TowerPage.Tower.removeRaidedLevel(TowerPage.Tower.currentFloor, levelNr);
+        //return the same levelNr as this level
+        last_one = levelNr;
       }
       else {
         //if this army was already raiding, remove previous raid
@@ -97,13 +97,13 @@ class TowerLevel extends ParentTowerLevel {
         }
         //if the level is already raided, remove it
         if (this.raiding_army != -1) {
-          TowerPage.Tower.changeRaidedLevel(TowerPage.Tower.currentFloor, level_nr, TowerPage.currentArmy);
+          TowerPage.Tower.changeRaidedLevel(TowerPage.Tower.currentFloor, levelNr, TowerPage.currentArmy);
         }
         else {
-          TowerPage.Tower.addRaidedLevel(TowerPage.Tower.currentFloor, level_nr, TowerPage.currentArmy);
+          TowerPage.Tower.addRaidedLevel(TowerPage.Tower.currentFloor, levelNr, TowerPage.currentArmy);
         }
         this.raiding_army = TowerPage.currentArmy;
-        Player.armies[TowerPage.currentArmy].raiding = level_nr;
+        Player.armies[TowerPage.currentArmy].raiding = levelNr;
       }
       //unlock new levels
       if (!this.unlocked_next_levels) {
@@ -164,7 +164,7 @@ class BossFightLevel extends ParentTowerLevel {
 
   tick(nr_ticks) { }
 
-  raid(level_nr) {
+  raid(levelNr) {
     document.querySelector("#PageButtonsContainer").hidden = true;
     document.querySelector("#PageTopResourcesContainer").hidden = true;
     BossArmySelectionPage.fight = new Fight([this.boss], 1, false)
@@ -205,10 +205,10 @@ class TowerClass {
     return goldPerSecond;
   }
 
-  removeRaidedLevel(floor_nr, level_nr) {
+  removeRaidedLevel(floorNr, levelNr) {
     let found = undefined;
     for (let j = 0; j < this.raidedLevels.length; j++) {
-      if (this.raidedLevels[j][0] == floor_nr && this.raidedLevels[j][1] == level_nr) {
+      if (this.raidedLevels[j][0] == floorNr && this.raidedLevels[j][1] == levelNr) {
         found = this.raidedLevels.splice(j, 1)[0];
         break;
       }
@@ -232,12 +232,12 @@ class TowerClass {
     }
     return found;
   }
-  addRaidedLevel(floor_nr, level_nr, armyNr) {
-    this.raidedLevels.push([floor_nr, level_nr, armyNr]);
+  addRaidedLevel(floorNr, levelNr, armyNr) {
+    this.raidedLevels.push([floorNr, levelNr, armyNr]);
   }
-  changeRaidedLevel(floor_nr, level_nr, newArmy_nr) {
+  changeRaidedLevel(floorNr, levelNr, newArmy_nr) {
     for (let j = 0; j < this.raidedLevels.length; j++) {
-      if (this.raidedLevels[j][0] == floor_nr && this.raidedLevels[j][1] == level_nr) {
+      if (this.raidedLevels[j][0] == floorNr && this.raidedLevels[j][1] == levelNr) {
         this.raidedLevels[i][2] - newArmy_nr;
         break;
       }
