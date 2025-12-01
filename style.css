@@ -1,278 +1,265 @@
 /* Some preset stuff */
 
 [hidden] {
-    display: none !important;
+  display: none !important;
 }
 
-
 body {
-    /*VARIABLES GO HERE*/
-    --default-background-color:
-    rgb(35, 7, 9);
-    --default-color:
-    rgb(168, 127, 52);
-    --default-toggle-button-border-color:
-    rgb(252, 25, 25);
-    --selected-toggle-button-border-color:
-    rgb(145, 76, 45);
-    --default-button-border-color:
-    rgb(252, 25, 25);
-    --default-tower-floor-background-color:
-    rgb(146, 0, 0);
-    --hover-tower-floor-background-color:
-    rgb(110, 0, 0);
-    --selected-tower-floor-background-color:
-    rgb(90, 9, 9);
-    --hover-selected-tower-floor-background-color:
-    rgb(73, 9, 9);
-    --default-tower-floor-color:
-    rgb(39, 1, 1);
-    --default-tower-floor-border-color:
-    rgb(41, 0, 0);
-    --default-tower-level-background-color:
-    rgb(184, 21, 62); 
-    --disabled-tower-level-background-color:
-    rgb(73, 27, 27);
-    --default-selection-list-border-color:
-    rgb(128, 0, 128);
+  /*VARIABLES GO HERE*/
+  --default-background-color: rgb(35, 7, 9);
+  --default-color: rgb(168, 127, 52);
+  --default-toggle-button-border-color: rgb(252, 25, 25);
+  --selected-toggle-button-border-color: rgb(145, 76, 45);
+  --default-button-border-color: rgb(252, 25, 25);
+  --default-tower-floor-background-color: rgb(146, 0, 0);
+  --hover-tower-floor-background-color: rgb(110, 0, 0);
+  --selected-tower-floor-background-color: rgb(90, 9, 9);
+  --hover-selected-tower-floor-background-color: rgb(73, 9, 9);
+  --default-tower-floor-color: rgb(39, 1, 1);
+  --default-tower-floor-border-color: rgb(41, 0, 0);
+  --default-tower-level-background-color: rgb(184, 21, 62);
+  --disabled-tower-level-background-color: rgb(73, 27, 27);
+  --default-selection-list-border-color: rgb(128, 0, 128);
 
-    font-size: 16px;
-    background-color: var(--default-background-color);
-    color:
-    var(--default-color);
-    display: flex;
-    flex-direction: column;
+  font-size: 16px;
+  background-color: var(--default-background-color);
+  color: var(--default-color);
+  display: flex;
+  flex-direction: column;
 }
 
 button {
-    font-size: 14px;
-    text-align: center;
-    color:var(--default-color);
-    background-color: var(--default-background-color);
-    border-color: var(--default-button-border-color);
-    border-width: 2px;
+  font-size: 14px;
+  text-align: center;
+  color: var(--default-color);
+  background-color: var(--default-background-color);
+  border-color: var(--default-button-border-color);
+  border-width: 2px;
 }
 
 button:hover {
-    cursor:pointer;
+  cursor: pointer;
 }
 
 div {
-    margin:5px;
+  margin: 5px;
 }
 
 div:hover {
-    cursor:default;
+  cursor: default;
 }
 
 a {
-    color:aqua;
+  color: aqua;
 }
 
 /*      General Stuff                                       */
 
 .nr_name_button_container {
-    display:flex;
+  display: flex;
 }
 
 .nr_name_button_container > .nr_available_div {
-    width:100px;
+  width: 100px;
 }
 
 .nr_name_button_container > .element_name_div {
-    width:200px;
+  width: 200px;
 }
 
 .nr_name_button_container > .complementary_button {
-    width:140px;
+  width: 140px;
 }
 
 /*      Place for the resource display                      */
 
 #PageTopResourcesContainer {
-    height: auto;
+  height: auto;
 }
 
 #PageTopResourcesContainer > div {
-    font-variant-numeric: tabular-nums;
-    font-size: medium;
-    break-inside: avoid;
-    padding: 10px;
+  font-variant-numeric: tabular-nums;
+  font-size: medium;
+  break-inside: avoid;
+  padding: 10px;
 }
 
 #CurrentGoldContainer {
-    display: flex;
-    color:gold;
-    float:left;
+  display: flex;
+  color: gold;
+  float: left;
 }
 
 #GoldText {
-    margin-top:0px;
-    margin-left:-2px;
+  margin-top: 0px;
+  margin-left: -2px;
 }
 
 /*      Overhead fo the things that are over your head      */
 
 #PageButtonsContainer {
-    display:flex;
-    flex-direction: column;
-    justify-content: center;
-    margin-bottom: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 0px;
 }
 
 #PageButtonsContainer > #AllPageButtons {
-    display:flex;
-    justify-content: center;
-    margin-bottom: 0px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0px;
 }
 
 #AllPageButtons > button {
-    width: 85px;
-    height: 30px;
-    background-color:limegreen;
-    border-radius: 10px;
-    border-color:rgb(202, 226, 247);
-    border-style: solid;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
-    border-bottom:none;
+  width: 85px;
+  height: 30px;
+  background-color: limegreen;
+  border-radius: 10px;
+  border-color: rgb(202, 226, 247);
+  border-style: solid;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-bottom: none;
 
-    font-weight: bold;
-    margin-left: 10px;
-    
-    outline: none;
+  font-weight: bold;
+  margin-left: 10px;
+
+  outline: none;
 }
 
 /*      Popup Window                                        */
 
 #PopupWindowContainer {
-    position: absolute;
-    font-size:medium;
-    background-color: #00000070;
-    color:var(--default-color);
-    width:250px;
-    height: auto;
-    border-width: 25px;
-    border-color: rgb(4, 0, 255);
+  position: absolute;
+  font-size: medium;
+  background-color: #00000070;
+  color: var(--default-color);
+  width: 250px;
+  height: auto;
+  border-width: 25px;
+  border-color: rgb(4, 0, 255);
 }
 
 /*      Regulate every army selection/changing button order     */
 
 .toggle_button_container {
-    display:flex;
+  display: flex;
 }
 
 .toggle_button_container > button {
-    margin-left: 8px;
-    width: 30px;
-    height: 30px;
-    background-color: var(--default-background-color);
-    color:var(--default-color);
-    border-color: var(--default-toggle-button-border-color);
-    border-radius: 6px;
+  margin-left: 8px;
+  width: 30px;
+  height: 30px;
+  background-color: var(--default-background-color);
+  color: var(--default-color);
+  border-color: var(--default-toggle-button-border-color);
+  border-radius: 6px;
 }
 
 .info_text {
-    width:250px;
+  width: 250px;
 }
 
 /*      Offline Page*/
 #OfflinePageContainer {
-    position:absolute;
-    display:flex;
-    flex-direction: column;
-    width:1000px;
-    align-self: center;
-    align-items: center;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  width: 1000px;
+  align-self: center;
+  align-items: center;
 }
-    
+
 #OfflineGreeting {
-    font-size: 60px;
-    font-weight: bolder;
-    background: linear-gradient(to right, rgba(48,130,59,1) 0%, rgba(254,173,0,1) 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    width:fit-content;
-    filter: drop-shadow(4px 2px black);
+  font-size: 60px;
+  font-weight: bolder;
+  background: linear-gradient(
+    to right,
+    rgba(48, 130, 59, 1) 0%,
+    rgba(254, 173, 0, 1) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  width: fit-content;
+  filter: drop-shadow(4px 2px black);
 }
 #OfflineInfoText {
-    font-size: 20px;
-    width: 500px;
+  font-size: 20px;
+  width: 500px;
 }
 #ContinueFromOfflineProgress {
-    font-size: 20px;
-    border: 5px solid goldenrod;
-    background-color: green;
-    width:fit-content;
+  font-size: 20px;
+  border: 5px solid goldenrod;
+  background-color: green;
+  width: fit-content;
 }
 
 /*      Tower Page                  */
 
-#TowerPageContainer{
-    width:fit-content;
-    align-self: center;
+#TowerPageContainer {
+  width: fit-content;
+  align-self: center;
 }
 
-.tower_page_container{
-    display:flex;
+.tower_page_container {
+  display: flex;
 }
 
 .tower {
-    margin-left:60px;
-    margin-right:60px;
+  margin-left: 60px;
+  margin-right: 60px;
 }
 
 .tower > div {
-    position: relative;
-    background-color: var(--default-tower-floor-background-color);
-    color: var(--default-tower-floor-color);
-    /*TROUBLES here*/
-    height: 20px;
-    /*TILL HERE*/
-    margin: -1px 0px -1px 0px;
-    border-bottom: 2px solid var(--default-tower-floor-border-color);
-    border-top: 2px solid var(--default-tower-floor-border-color);
-    text-align: center;
-    cursor: pointer;
+  position: relative;
+  background-color: var(--default-tower-floor-background-color);
+  color: var(--default-tower-floor-color);
+  /*TROUBLES here*/
+  height: 20px;
+  /*TILL HERE*/
+  margin: -1px 0px -1px 0px;
+  border-bottom: 2px solid var(--default-tower-floor-border-color);
+  border-top: 2px solid var(--default-tower-floor-border-color);
+  text-align: center;
+  cursor: pointer;
 }
-.tower > div::after{
-    content: "";
-    border: 2px solid var(--default-tower-floor-border-color);
-    z-index: 1;
-    height: inherit;
-    background-color: inherit;
-    position: absolute;
-    cursor: pointer;
+.tower > div::after {
+  content: "";
+  border: 2px solid var(--default-tower-floor-border-color);
+  z-index: 1;
+  height: inherit;
+  background-color: inherit;
+  position: absolute;
+  cursor: pointer;
 }
 .tower > div::before {
-    content: "";
-    position: absolute;
-    border: 2px solid var(--default-tower-floor-border-color);
-    background-color: inherit;
-    height: inherit;
-    z-index: 1;
-    cursor: pointer;
+  content: "";
+  position: absolute;
+  border: 2px solid var(--default-tower-floor-border-color);
+  background-color: inherit;
+  height: inherit;
+  z-index: 1;
+  cursor: pointer;
 }
 
 .tower_floor {
-    width: 90px;
+  width: 90px;
 }
 .tower_floor::after {
-    width: 30px;
-    top: -12px;
-    left: 90px;
-    transform: skewY(-30deg);
+  width: 30px;
+  top: -12px;
+  left: 90px;
+  transform: skewY(-30deg);
 }
 .tower_floor::before {
-    width: 30px;
-    top: -12px;
-    right: 90px;
-    transform: skewY(30deg);
-    
+  width: 30px;
+  top: -12px;
+  right: 90px;
+  transform: skewY(30deg);
 }
 
-.tower_top1 {
+/* .tower_top1 {
     width: 90px;
 }
 .tower_top1::after {
@@ -302,437 +289,430 @@ a {
     top: -12px;
     right: 70px;
     transform: skew(-30deg, 30deg);
-}
+} */
 
-.tower > .tower_top3 {
-    width: 46px;
-    height: 35px;
-    left: 22;
+/* .tower > .tower_top3 {
+  width: 46px;
+  height: 35px;
+  left: 22;
 }
 .tower > .tower_top3::after {
-    width: 28px;
-    height: 25px;
-    top: 7px;
-    left: 39px;
-    border:none;
-    border-top: 2px solid var(--default-tower-floor-border-color);
-    transform: skew(-30deg, 33deg);
+  width: 28px;
+  height: 25px;
+  top: 7px;
+  left: 39px;
+  border: none;
+  border-top: 2px solid var(--default-tower-floor-border-color);
+  transform: skew(-30deg, 33deg);
 }
 .tower > .tower_top3::before {
-    width: 28px;
-    height: 25px;
-    top: 7px;
-    right: 39px;
-    border:none;
-    border-top: 2px solid var(--default-tower-floor-border-color);
-    transform: skew(30deg, -33deg);
-}
+  width: 28px;
+  height: 25px;
+  top: 7px;
+  right: 39px;
+  border: none;
+  border-top: 2px solid var(--default-tower-floor-border-color);
+  transform: skew(30deg, -33deg);
+} */
 
-#TowerLevelsContainer{
-    position:relative;
-    margin-left: 10px;
-    width:500px;
+#TowerLevelsContainer {
+  position: relative;
+  margin-left: 10px;
+  width: 500px;
 }
 
 #TowerLevelsContainer > .tower_level {
-    position: absolute;
-    background-color: var(--default-tower-level-background-color);
-    border: 2px solid var(--default-tower-floor-border-color);
-    text-align: center;
-    font-size: 20px;
-    font-weight: bolder;
-    cursor: pointer;
+  position: absolute;
+  background-color: var(--default-tower-level-background-color);
+  border: 2px solid var(--default-tower-floor-border-color);
+  text-align: center;
+  font-size: 20px;
+  font-weight: bolder;
+  cursor: pointer;
 }
 .tower_level::before {
-    content: attr(contenttext);
-    position: absolute;
-    width: inherit;
-    height: calc(25px);
-    top: calc(-29px);
-    right: calc(-19px);
-    border: 2px solid black;
-    background-color: inherit;
-    transform: skew(-50deg, 0deg);
-    z-index: calc(100% - 1);
-    cursor: pointer;
+  content: attr(contenttext);
+  position: absolute;
+  width: inherit;
+  height: calc(25px);
+  top: calc(-29px);
+  right: calc(-19px);
+  border: 2px solid black;
+  background-color: inherit;
+  transform: skew(-50deg, 0deg);
+  z-index: calc(100% - 1);
+  cursor: pointer;
 }
 
 /*      Army Page                                   */
 
 #ArmyPageContainer {
-    width:fit-content;
-    align-self: center;
+  width: fit-content;
+  align-self: center;
 }
 
 .select_army_button_container {
-    display:flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 .select_army_button_container > button {
-    margin-left: 3px;
-    width: 80px;
-    height: 30px;
-    font-size:15px;
-    font-weight: bolder;
-    border-color:orangered;
-    
+  margin-left: 3px;
+  width: 80px;
+  height: 30px;
+  font-size: 15px;
+  font-weight: bolder;
+  border-color: orangered;
 }
 
 .army_info_container {
-    display:flex;
+  display: flex;
 }
 
 .army_management_container {
-    display: flex;
-    flex-direction: column;
-    width:fit-content;
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
 }
 
-.army_management_container > .nr_name_button_flex_container > .nr_name_button_container > .element_name_div {
-    width:100px;
+.army_management_container
+  > .nr_name_button_flex_container
+  > .nr_name_button_container
+  > .element_name_div {
+  width: 100px;
 }
 
 .element_select_list {
-    display: flex;
-    flex-direction: column;
-    width:350px;
-    height:fit-content;
+  display: flex;
+  flex-direction: column;
+  width: 350px;
+  height: fit-content;
 }
 
 .element_select_list > .element_select_list_item {
-    position:relative;
-    height: 32px;
-    border-style:solid;
-    border-width: 2px;
-    border-color: var(--default-selection-list-border-color);
-    margin:0px;
-    text-align: center;
-    align-items: center;
-    cursor: pointer;
+  position: relative;
+  height: 32px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: var(--default-selection-list-border-color);
+  margin: 0px;
+  text-align: center;
+  align-items: center;
+  cursor: pointer;
 }
 
 .element_select_list > .element_select_list_back_button {
-    width:120px;
-    align-self: center;
-    vertical-align: middle;
-    text-align: center;
-    border-style: solid;
-    border-color: var(--default-selection-list-border-color);
-    border-width: 2px;
-    cursor: pointer;
+  width: 120px;
+  align-self: center;
+  vertical-align: middle;
+  text-align: center;
+  border-style: solid;
+  border-color: var(--default-selection-list-border-color);
+  border-width: 2px;
+  cursor: pointer;
 }
 
 #ArmyPagePartInfo {
-    width:300px;
+  width: 300px;
 }
 
 #ArmyPageInfo {
-    width:300px;
+  width: 300px;
 }
 
 /*      Buy Pages in General                                */
 
-
 .buy_button {
-    font-size: 15px;
+  font-size: 15px;
 }
 
 .nr_name_button_flex_container {
-    display:flex;
-    width:fit-content;
-    flex-direction: column;
+  display: flex;
+  width: fit-content;
+  flex-direction: column;
 }
 
 .nr_name_button_flex_container > .nr_name_button_container {
-    margin:2px;
+  margin: 2px;
 }
 
 /*      Buy Creature Page                                   */
 
 #BuyCreaturePageContainer {
-    display:flex;
-    width:fit-content;
-    align-self: center;
+  display: flex;
+  width: fit-content;
+  align-self: center;
 }
-
-
 
 /*      Buy Weapon Page                                     */
 
 #BuyWeaponPageContainer {
-    display: flex;
-    width:fit-content;
-    align-self: center;
+  display: flex;
+  width: fit-content;
+  align-self: center;
 }
-
 
 /*      Select Army Before Boss Fight Page                  */
 
 #BossArmySelectionPageContainer {
-    display:grid;
-    grid-template-columns: 400px 300px 400px;
-    grid-template-rows: 200px 200px 200px;
-    justify-content: center;
+  display: grid;
+  grid-template-columns: 400px 300px 400px;
+  grid-template-rows: 200px 200px 200px;
+  justify-content: center;
 }
 
-
 .fighting_army_select_label {
-    display:grid;
-    grid-template-columns: 150px 240px;
-    align-self: center;
+  display: grid;
+  grid-template-columns: 150px 240px;
+  align-self: center;
 }
 
 .fighting_army_select_label > .select_boss_army_info {
-    grid-column: 1 / 3;
+  grid-column: 1 / 3;
 }
 
 .fighting_army_select_label > .toggle_button_container {
-    margin-top: -2px;
+  margin-top: -2px;
 }
 
 #BackFromBossArmySelectionPage {
-    width:70;
-    height:30;
+  width: 70;
+  height: 30;
 }
 
 #StartBossFightButton {
-    width: 75px;
-    height: 30px;
+  width: 75px;
+  height: 30px;
 }
 
 /*      Boss Fight Page                                     */
 
 #BossFightPageContainer {
-    display:grid;
-    grid-template-columns: 310px 500px 310px;
-    grid-template-rows: 200px 200px 200px;
-    justify-content: center;
+  display: grid;
+  grid-template-columns: 310px 500px 310px;
+  grid-template-rows: 200px 200px 200px;
+  justify-content: center;
 }
 
 #BossFightMoveFeed {
-    display:flex;
-    flex-direction: column;
-    height:400px;
-    align-self: center;
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+  align-self: center;
+  text-align: center;
 }
 
 #BossFightMoveFeed > .boss_fight_move_feed_element {
-    margin:0px;
-    text-align: center;
+  margin: 0px;
+  text-align: center;
 }
 
 .army_in_boss_fight {
-    display:flex;
-    flex-direction: column;
-    width: 300px;;
+  display: flex;
+  flex-direction: column;
+  width: 300px;
 }
-
-
 
 .army_in_boss_fight_health_background {
-    height: 20px;
-    background-color: rgb(201, 146, 146);
-    width: 300px;
-    z-index: 1;
+  height: 20px;
+  background-color: rgb(201, 146, 146);
+  width: 300px;
+  z-index: 1;
 }
 .army_in_boss_fight_health_foreground {
-    position:absolute;
-    width: inherit;
-    height:20;
-    background-color: rgba(255, 0, 0, 1);
+  position: absolute;
+  width: inherit;
+  height: 20;
+  background-color: rgba(255, 0, 0, 1);
 }
 .army_in_boss_fight_health_text {
-    position:absolute;
-    width:inherit;
-    height: inherit;
-    text-align: center;
-    color:var(--default-color);
+  position: absolute;
+  width: inherit;
+  height: inherit;
+  text-align: center;
+  color: var(--default-color);
 }
 
 .army_in_boss_fight_units_background {
-    height: 20px;
-    background-color: rgb(164, 129, 180);
-    width: 300px;
-    z-index: 1;
+  height: 20px;
+  background-color: rgb(164, 129, 180);
+  width: 300px;
+  z-index: 1;
 }
 .army_in_boss_fight_units_foreground {
-    position:absolute;
-    width: inherit;
-    height:20;
-    background-color: rgb(95, 13, 133);
+  position: absolute;
+  width: inherit;
+  height: 20;
+  background-color: rgb(95, 13, 133);
 }
 .army_in_boss_fight_units_text {
-    position:absolute;
-    width:inherit;
-    height: inherit;
-    text-align: center;
-    color:var(--default-color);
+  position: absolute;
+  width: inherit;
+  height: inherit;
+  text-align: center;
+  color: var(--default-color);
 }
 
 .army_in_boss_fight_attack_background {
-    height: 20px;
-    background-color: rgb(214, 190, 137);
-    width: 300px;
-    z-index: 1;
+  height: 20px;
+  background-color: rgb(214, 190, 137);
+  width: 300px;
+  z-index: 1;
 }
 .army_in_boss_fight_attack_foreground {
-    position:absolute;
-    width: inherit;
-    height:20;
-    background-color: rgb(245, 185, 57);
+  position: absolute;
+  width: inherit;
+  height: 20;
+  background-color: rgb(245, 185, 57);
 }
 .army_in_boss_fight_attack_text {
-    position:absolute;
-    width:inherit;
-    height: inherit;
-    text-align: center;
-    color:rgb(42, 48, 53);
+  position: absolute;
+  width: inherit;
+  height: inherit;
+  text-align: center;
+  color: rgb(42, 48, 53);
 }
 
 .boss_in_boss_fight {
-    display:flex;
-    flex-direction: column;
-    width: 300px;;
+  display: flex;
+  flex-direction: column;
+  width: 300px;
 }
 
 .army_in_boss_fight_name {
-    width: 300px;
-    text-align: center;
-    font-size: 30;
+  width: 300px;
+  text-align: center;
+  font-size: 30;
 }
 
 .boss_in_boss_fight_health_background {
-    height: 20px;
-    background-color: rgb(201, 146, 146);
-    width: 300px;
+  height: 20px;
+  background-color: rgb(201, 146, 146);
+  width: 300px;
 }
 .boss_in_boss_fight_health_foreground {
-    position:absolute;
-    width:300px;
-    height:20;
-    background-color: rgba(255, 0, 0, 1);
-    resize:horizontal;
-    z-index: 1;
+  position: absolute;
+  width: 300px;
+  height: 20;
+  background-color: rgba(255, 0, 0, 1);
+  resize: horizontal;
+  z-index: 1;
 }
 .boss_in_boss_fight_health_text {
-    position:absolute;
-    width:inherit;
-    height: inherit;
-    text-align: center;
-    color:var(--default-color);
-    z-index: 2;
+  position: absolute;
+  width: inherit;
+  height: inherit;
+  text-align: center;
+  color: var(--default-color);
+  z-index: 2;
 }
 
 .boss_in_boss_fight_units_background {
-    height: 20px;
-    background-color: rgb(164, 129, 180);
-    width: 300px;
-    z-index: 1;
+  height: 20px;
+  background-color: rgb(164, 129, 180);
+  width: 300px;
+  z-index: 1;
 }
 .boss_in_boss_fight_units_foreground {
-    position:absolute;
-    width: inherit;
-    height:20;
-    background-color: rgb(95, 13, 133);
-    z-index: 1;
+  position: absolute;
+  width: inherit;
+  height: 20;
+  background-color: rgb(95, 13, 133);
+  z-index: 1;
 }
 .boss_in_boss_fight_units_text {
-    position:absolute;
-    width:inherit;
-    height: inherit;
-    text-align: center;
-    color:var(--default-color);
-    z-index: 2;
+  position: absolute;
+  width: inherit;
+  height: inherit;
+  text-align: center;
+  color: var(--default-color);
+  z-index: 2;
 }
 
 .boss_in_boss_fight_attack_background {
-    height: 20px;
-    background-color: rgb(214, 190, 137);
-    width: 300px;
-    z-index: 1;
+  height: 20px;
+  background-color: rgb(214, 190, 137);
+  width: 300px;
+  z-index: 1;
 }
 .boss_in_boss_fight_attack_foreground {
-    position:absolute;
-    width: inherit;
-    height:20;
-    background-color: rgb(245, 185, 57);
-    z-index: 1;
+  position: absolute;
+  width: inherit;
+  height: 20;
+  background-color: rgb(245, 185, 57);
+  z-index: 1;
 }
 .boss_in_boss_fight_attack_text {
-    position:absolute;
-    width:inherit;
-    height: inherit;
-    text-align: center;
-    color:rgb(42, 48, 53);
-    z-index: 2;
+  position: absolute;
+  width: inherit;
+  height: inherit;
+  text-align: center;
+  color: rgb(42, 48, 53);
+  z-index: 2;
 }
 
 .boss_in_boss_fight_name {
-    width: 300px;
-    left:100px;
-    text-align: center;
-    font-size: 30;
-    
+  width: 300px;
+  left: 100px;
+  text-align: center;
+  font-size: 30;
 }
-
 
 /*      Results Page                                                        */
 
 #BossFightingResultPageContainer {
-    display: flex;
-    flex-direction: column;
-    width:fit-content;
-    align-self: center;
-    align-items: center;
-    width:600px;
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  align-self: center;
+  align-items: center;
+  width: 600px;
 }
 
 #BossFightingResultPageContainer > button {
-    width:80px;
+  width: 80px;
 }
 
 .select_buttons_container {
-    width: 100px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+  width: 100px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 /*      Tutorial Page                                                       */
 
 #TutorialPageContainer {
-    width: 100%;
-    display: grid;
-    grid-template-columns: auto 1200px;
-    justify-content: center;
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1200px;
+  justify-content: center;
 }
 
 .image_previous_next_container {
-    display:grid;
-    grid-template-rows: 700px 30px;
-    grid-template-columns: 600px 600px;
-    justify-self: center;
-    align-self: center;
-    grid-column: 2;
+  display: grid;
+  grid-template-rows: 700px 30px;
+  grid-template-columns: 600px 600px;
+  justify-self: center;
+  align-self: center;
+  grid-column: 2;
 }
 
 .element_select_list.page_tutorial {
-    padding-top: 190px;
-    justify-self: left;
-    grid-column: 1;
+  padding-top: 190px;
+  justify-self: left;
+  grid-column: 1;
 }
 
 .tutorial_previous_button {
-    width:150px;
-    justify-self: left;
-    grid-row:2;
-    grid-column: 1;
+  width: 150px;
+  justify-self: left;
+  grid-row: 2;
+  grid-column: 1;
 }
 
 .tutorial_next_button {
-    width:150px;
-    justify-self: right;
-    grid-row: 2;
-    grid-column: 2;
+  width: 150px;
+  justify-self: right;
+  grid-row: 2;
+  grid-column: 2;
 }
